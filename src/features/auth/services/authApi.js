@@ -21,3 +21,14 @@ export async function getCurrentUser() {
 
   return { user: session.user, profile };
 }
+
+export async function login(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) throw new Error(error.message);
+
+  return data;
+}

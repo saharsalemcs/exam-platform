@@ -10,8 +10,6 @@ function LoginForm() {
   const { data: userData, isLoading: isFetchingUser } = useUser();
   const navigate = useNavigate();
 
-  let error = "fskdls";
-
   useEffect(
     function () {
       if (userData?.profile && !isFetchingUser) {
