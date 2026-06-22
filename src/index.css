@@ -1,1 +1,288 @@
+/* 2. Tailwind v4 Engine Import */
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+/* 3. Theme Configuration */
+@theme {
+  --color-bg: #0d1117;
+  --color-surface: #111318;
+  --color-surface-2: #161a22;
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-primary: #d4af58;
+  --color-primary-glow: rgba(212, 175, 88, 0.08);
+  --color-accent: #4a7cff;
+  --color-success: #2dd4bf;
+  --color-warning: #edd88a;
+  --color-danger: #c85d6a;
+  --color-emerald: #10b981;
+  --color-lime: #84cc16;
+  --color-cyan: #22d3ee;
+  --color-text: #f0ede6;
+  --color-text-muted: #9a9690;
+  --color-text-faint: #5a5750;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --spacing-2xl: 64px;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* --font-sans: "DM Sans", ui-sans-serif, system-ui;
+    --font-display: "Sora", sans-serif; */
+
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui;
+  /* --font-display: "Plus Jakarta Sans", sans-serif; */
+  --font-display: "Clash Display", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 24px rgba(212, 175, 88, 0.12);
+
+  --animate-pulse-red: pulse-red 1s infinite;
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-shimmer: shimmer 2s infinite linear;
+  --animate-slide-in: slide-in-right 250ms ease forwards;
+  --animate-fade-scale: fade-scale-in 250ms ease forwards;
+  --animate-toast: slide-in-toast 250ms ease forwards;
+
+  --animate-fade-up: fade-up 0.5s ease both;
+  --animate-fade-scale: fade-scale-in 0.5s ease both;
+  --animate-number-roll: numberRoll 0.5s ease both;
+  --animate-dot-pop: dotPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-slide-in-left: slideIn 0.4s ease both;
+  --animate-pulse-ring: pulseRing 2s ease-in-out infinite;
+
+  @keyframes pulse-red {
+    0%,
+    100% {
+      color: var(--color-danger);
+      text-shadow: 0 0 8px rgba(224, 92, 106, 0.5);
+    }
+
+    50% {
+      color: #ff8a98;
+      text-shadow: 0 0 16px rgba(224, 92, 106, 0.8);
+    }
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-4px);
+    }
+
+    75% {
+      transform: translateX(4px);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(20px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-scale-in {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-toast {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes numberRoll {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes dotPop {
+    0% {
+      transform: scale(0);
+    }
+
+    60% {
+      transform: scale(1.4);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pulseRing {
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.08;
+      transform: scale(1.2);
+    }
+  }
+}
+
+/* 4. Global Base Styles */
+@layer base {
+  body {
+    background-color: var(--color-bg);
+    background-image:
+      radial-gradient(
+        ellipse at 50% -8%,
+        rgba(212, 175, 88, 0.042) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse at 90% 18%,
+        rgba(74, 124, 255, 0.032) 0%,
+        transparent 52%
+      ),
+      linear-gradient(rgba(212, 175, 88, 0.017) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212, 175, 88, 0.017) 1px, transparent 1px),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.18) 0%,
+        transparent 40%,
+        rgba(0, 0, 0, 0.22) 100%
+      );
+    background-size:
+      100% 100%,
+      100% 100%,
+      52px 52px,
+      52px 52px,
+      100% 100%;
+    background-position:
+      center top,
+      center center,
+      center,
+      center,
+      center;
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-surface-2);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border);
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
+/* 5. Utility Layer */
+@layer utilities {
+  .bg-shimmer-grad {
+    background: linear-gradient(
+      to right,
+      var(--color-surface-2) 4%,
+      var(--color-border) 25%,
+      var(--color-surface-2) 36%
+    );
+    background-size: 1000px 100%;
+  }
+}
