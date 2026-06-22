@@ -24,5 +24,6 @@ export function useUser() {
     retry: false,
   });
 
+  // data === { user, profile }
   return { data, isLoading };
 }
