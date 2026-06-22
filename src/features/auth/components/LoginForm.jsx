@@ -1,14 +1,25 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/useUser";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import { AlertCircle, GraduationCap, Lock, Mail } from "lucide-react";
+import { GraduationCap, Lock, Mail } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useLogin } from "../hooks/useLogin";
+import FormInput from "@/components/shared/FormInput";
 
 function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const { data: userData, isLoading: isFetchingUser } = useUser();
+  const { login, isLoggingIn } = useLogin();
   const navigate = useNavigate();
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({
+    defaultValues: { email: "", password: "" },
+    mode: "onTouched",
+  });
 
   useEffect(
     function () {
@@ -25,6 +36,12 @@ function LoginForm() {
   );
 
   if (isFetchingUser) return <LoadingSpinner />;
+
+  function onSubmit({ email, password }) {
+    console.log(email);
+    console.log(password);
+    login({ email, password });
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
@@ -52,7 +69,7 @@ function LoginForm() {
           </div>
         </div>
 
-        <form className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* Email */}
           <div className="relative">
             <Mail
@@ -64,27 +81,23 @@ function LoginForm() {
                 top: "50%",
                 transform: "translateY(-50%)",
                 color: "var(--color-text-muted)",
+                zIndex: 1, // للتأكد من ظهور الأيقونة فوق المدخل
               }}
             />
-            <input
+            <FormInput
               type="email"
               placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: "100%",
-                border: "1px solid var(--color-border)",
-                height: 42,
-                paddingLeft: 40,
-                paddingRight: 12,
-                borderRadius: "var(--radius-md)",
-                color: "var(--color-text-muted)",
-                outline: "none",
-                fontSize: 14,
-                background: "var(--color-surface-2)",
-              }}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email",
+                },
+              })}
+              error={errors?.email?.message}
             />
           </div>
+
           {/* Pass */}
           <div className="relative">
             <Lock
@@ -96,30 +109,26 @@ function LoginForm() {
                 top: "50%",
                 transform: "translateY(-50%)",
                 color: "var(--color-text-muted)",
+                zIndex: 1,
               }}
             />
-            <input
+            <FormInput
               type="password"
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: "100%",
-                border: "1px solid var(--color-border)",
-                height: 42,
-                paddingLeft: 40,
-                paddingRight: 42,
-                borderRadius: "var(--radius-md)",
-                color: "var(--color-text-muted)",
-                outline: "none",
-                fontSize: 14,
-                background: "var(--color-surface-2)",
-              }}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password needs to be at least 8 characters",
+                },
+              })}
+              error={errors?.password?.message}
             />
           </div>
 
           <button
             type="submit"
+            disabled={isLoggingIn} // تعطيل الزر أثناء تسجيل الدخول
             style={{
               width: "100%",
               height: 42,
@@ -128,10 +137,11 @@ function LoginForm() {
               color: "var(--color-bg)",
               fontSize: 14,
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: isLoggingIn ? "not-allowed" : "pointer",
+              opacity: isLoggingIn ? 0.7 : 1,
             }}
           >
-            Sign In
+            {isLoggingIn ? "Signing In..." : "Sign In"}
           </button>
 
           <p
@@ -148,7 +158,7 @@ function LoginForm() {
               to="/register"
               style={{ color: "var(--color-accent)", fontWeight: 600 }}
             >
-              Create one
+              Sign up
             </Link>
           </p>
         </form>

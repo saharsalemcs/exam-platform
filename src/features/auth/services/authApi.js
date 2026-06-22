@@ -22,6 +22,23 @@ export async function getCurrentUser() {
   return { user: session.user, profile };
 }
 
+export async function register(fullName, email, password, role) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName.trim(),
+        role,
+      },
+    },
+  });
+
+  if (error) throw new Error(error.message);
+
+  return data;
+}
+
 export async function login(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -29,6 +46,9 @@ export async function login(email, password) {
   });
 
   if (error) throw new Error(error.message);
+
+  console.log(data);
+  console.log(error);
 
   return data;
 }
