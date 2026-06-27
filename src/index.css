@@ -36,6 +36,10 @@
   --radius-md: 12px;
   --radius-lg: 20px;
 
+  /* Sidebar layout tokens */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+
   /* --font-sans: "DM Sans", ui-sans-serif, system-ui;
     --font-display: "Sora", sans-serif; */
 
