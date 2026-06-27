@@ -5,7 +5,6 @@ import { getInitials } from "@/lib/utils";
 import {
   BarChart2,
   BookOpen,
-  ChevronRight,
   GraduationCap,
   LayoutDashboard,
   LogOut,
@@ -29,7 +28,7 @@ const TEACHER_NAV = [
 ];
 
 function Sidebar() {
-  const { data, isFetchingUser } = useUser();
+  const { data } = useUser();
   const { logout, isLoggingOut } = useLogout();
   const profile = data?.profile;
   const isTeacher = profile?.role === ROLES.TEACHER;
