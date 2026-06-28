@@ -6,7 +6,7 @@ function HomePage() {
         background: "var(--color-background-tertiary)",
       }}
     >
-      Amory
+      Home Page
     </div>
   );
 }

@@ -10,7 +10,6 @@ import {
   LogOut,
   User,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
 import NavItem from "../shared/NavItem";
 
 const STUDENT_NAV = [
