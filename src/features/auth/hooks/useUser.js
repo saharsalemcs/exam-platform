@@ -1,22 +1,35 @@
-/**
- * useUser — fetches the current logged-in user + their profile.
- *
- * This is the single source of truth for "who is logged in".
- * Used in ProtectedRoute, Sidebar, Header, and anywhere role matters.
- *
- * Returns:
- *   data        — { user, profile } or null if not logged in
- *   isLoading   — true on first load (showing splash screen)
- *   isError     — something went wrong
- *
- * React Query caches this. It won't re-fetch on every component mount —
- * only when the window regains focus or staleTime expires.
- */
-
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentUser } from "../services/authApi";
+import supabase from "@/services/supabase";
+import { useEffect } from "react";
 
 export function useUser() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (
+        event === "SIGNED_IN" ||
+        event === "INITIAL_SESSION" ||
+        event === "TOKEN_REFRESHED"
+      ) {
+        if (session?.user) {
+          const userData = await getCurrentUser();
+          queryClient.setQueryData(["user"], userData);
+        }
+      }
+
+      if (event === "SIGNED_OUT") {
+        queryClient.setQueryData(["user"], null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [queryClient]);
+
+  // initial fetch
   const { data, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: getCurrentUser,

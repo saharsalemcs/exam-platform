@@ -38,8 +38,6 @@ function LoginForm() {
   if (isFetchingUser) return <LoadingSpinner />;
 
   function onSubmit({ email, password }) {
-    console.log(email);
-    console.log(password);
     login({ email, password });
   }
 
