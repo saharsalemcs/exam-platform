@@ -74,6 +74,13 @@ function App() {
             </Route>
           </Route>
 
+          {/* Teacher Routes */}
+          <Route element={<ProtectedRoute allowedRole="teacher" />}>
+            <Route element={<AppLayout />}>
+              <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+            </Route>
+          </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -1,38 +1,74 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
-function FormInput({ type, placeholder, error, onFocus, onBlur, ...rest }) {
+const FormInput = forwardRef(function FormInput(
+  { type = "text", placeholder, error, onFocus, onBlur, ...rest },
+  ref,
+) {
   const [isFocused, setIsFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const isPassword = type === "password";
+  const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
   return (
     <div className="flex flex-col gap-1.5">
-      <input
-        style={{
-          width: "100%",
-          border: isFocused
-            ? "1px solid var(--color-primary)"
-            : "1px solid var(--color-border)",
-          height: 42,
-          paddingLeft: 40,
-          paddingRight: 12,
-          borderRadius: "var(--radius-sm)",
-          color: "var(--color-text-muted)",
-          outline: "none",
-          fontSize: 14,
-          backgroundColor: "var(--color-surface-2)",
-          transition: "border-color 0.2s ease", // حركة ناعمة أثناء التحديد
-        }}
-        type={type}
-        placeholder={placeholder}
-        {...rest}
-        onFocus={(e) => {
-          setIsFocused(true);
-          if (onFocus) onFocus(e); // لضمان عدم تعارضها مع react-hook-form
-        }}
-        onBlur={(e) => {
-          setIsFocused(false);
-          if (onBlur) onBlur(e); // لضمان عدم تعارضها مع react-hook-form
-        }}
-      />
+      <div className="relative">
+        <input
+          ref={ref}
+          type={inputType}
+          placeholder={placeholder}
+          style={{
+            width: "100%",
+            height: 42,
+            paddingLeft: 38,
+            paddingRight: isPassword ? 40 : 14,
+            borderRadius: "var(--radius-sm)",
+            border: error
+              ? "1px solid var(--color-danger)"
+              : isFocused
+                ? "1px solid var(--color-primary)"
+                : "1px solid var(--color-border)",
+            backgroundColor: "var(--color-surface-2)",
+            color: "var(--color-text)",
+            fontSize: 14,
+            outline: "none",
+            transition: "border-color 0.15s ease",
+          }}
+          onFocus={(e) => {
+            setIsFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            onBlur?.(e);
+          }}
+          {...rest}
+        />
+
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            style={{
+              position: "absolute",
+              right: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--color-text-muted)",
+              display: "flex",
+              alignItems: "center",
+              padding: 0,
+            }}
+          >
+            {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+          </button>
+        )}
+      </div>
 
       {error && (
         <p
@@ -45,6 +81,6 @@ function FormInput({ type, placeholder, error, onFocus, onBlur, ...rest }) {
       )}
     </div>
   );
-}
+});
 
 export default FormInput;

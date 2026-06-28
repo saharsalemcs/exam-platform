@@ -18,7 +18,7 @@ import NavItem from "../shared/NavItem";
 
 const STUDENT_NAV = [
   { label: "Dashboard", to: "/student/dashboard", icon: LayoutDashboard },
-  { label: "Exams", to: "/student/exams", icon: BookOpen },
+  { label: "Available Exams", to: "/student/exams", icon: BookOpen },
   { label: "Results", to: "/student/results", icon: BarChart2 },
   { label: "Profile", to: "/student/profile", icon: CircleUser },
 ];

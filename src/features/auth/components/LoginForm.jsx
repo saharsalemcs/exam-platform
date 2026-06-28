@@ -18,22 +18,20 @@ function LoginForm() {
     formState: { errors },
   } = useForm({
     defaultValues: { email: "", password: "" },
-    mode: "onTouched",
+
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
-  useEffect(
-    function () {
-      if (userData?.profile && !isFetchingUser) {
-        const dest =
-          userData.profile.role === "teacher"
-            ? "/teacher/dashboard"
-            : "/student/dashboard";
-
-        navigate(dest, { replace: true });
-      }
-    },
-    [isFetchingUser, navigate, userData],
-  );
+  useEffect(() => {
+    if (userData?.profile && !isFetchingUser) {
+      const dest =
+        userData.profile.role === "teacher"
+          ? "/teacher/dashboard"
+          : "/student/dashboard";
+      navigate(dest, { replace: true });
+    }
+  }, [isFetchingUser, navigate, userData]);
 
   if (isFetchingUser) return <LoadingSpinner />;
 
@@ -53,38 +51,53 @@ function LoginForm() {
       >
         {/* Logo */}
         <div className="mb-6 flex flex-col items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-md)] border-1 border-solid border-[var(--color-border)] bg-[var(--color-surface-2)] text-lg font-bold text-[var(--color-primary)]">
-            <GraduationCap />
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] border-1 border-solid border-[var(--color-border)] bg-[var(--color-surface-2)] text-lg font-bold text-[var(--color-primary)]"
+            style={{ boxShadow: "var(--shadow-glow)" }}
+          >
+            <GraduationCap strokeWidth={2.5} size={22} />
           </div>
-
           <div className="text-center">
-            <h1 className="m-0 text-lg font-bold tracking-tight text-[var(--color-text)]">
+            <h1
+              className="text-lg font-bold tracking-tight"
+              style={{ color: "var(--color-text)" }}
+            >
               Welcome Back to EduTest
             </h1>
-            <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-              sign in to continue
+            <p
+              className="mt-1 text-sm"
+              style={{ color: "var(--color-text-muted)" }}
+            >
+              Sign in to continue
             </p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+          noValidate
+        >
           {/* Email */}
           <div className="relative">
             <Mail
+              size={15}
               style={{
                 position: "absolute",
-                width: 16,
-                height: 16,
-                left: 12,
-                top: "50%",
+                left: 13,
+                top: 21,
                 transform: "translateY(-50%)",
                 color: "var(--color-text-muted)",
-                zIndex: 1, // للتأكد من ظهور الأيقونة فوق المدخل
+                pointerEvents: "none",
+                zIndex: 1,
+                width: 16,
+                height: 16,
               }}
             />
             <FormInput
               type="email"
               placeholder="Email Address"
+              error={errors?.email?.message}
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -92,27 +105,27 @@ function LoginForm() {
                   message: "Please enter a valid email",
                 },
               })}
-              error={errors?.email?.message}
             />
           </div>
 
-          {/* Pass */}
+          {/* Password */}
           <div className="relative">
             <Lock
+              size={15}
               style={{
                 position: "absolute",
-                width: 16,
-                height: 16,
-                left: 12,
-                top: "50%",
+                left: 13,
+                top: 21,
                 transform: "translateY(-50%)",
                 color: "var(--color-text-muted)",
+                pointerEvents: "none",
                 zIndex: 1,
               }}
             />
             <FormInput
               type="password"
               placeholder="Password"
+              error={errors?.password?.message}
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -120,13 +133,12 @@ function LoginForm() {
                   message: "Password needs to be at least 8 characters",
                 },
               })}
-              error={errors?.password?.message}
             />
           </div>
 
           <button
             type="submit"
-            disabled={isLoggingIn} // تعطيل الزر أثناء تسجيل الدخول
+            disabled={isLoggingIn}
             style={{
               width: "100%",
               height: 42,
@@ -137,19 +149,16 @@ function LoginForm() {
               fontWeight: 600,
               cursor: isLoggingIn ? "not-allowed" : "pointer",
               opacity: isLoggingIn ? 0.7 : 1,
+              border: "none",
+              transition: "opacity 0.15s ease",
             }}
           >
             {isLoggingIn ? "Signing In..." : "Sign In"}
           </button>
 
           <p
-            style={{
-              fontSize: 12,
-              textAlign: "center",
-              color: "var(--color-text-muted)",
-              marginTop: 16,
-              marginBottom: 0,
-            }}
+            className="mt-4 text-center text-xs"
+            style={{ color: "var(--color-text-muted)" }}
           >
             Don't have an account?{" "}
             <Link
