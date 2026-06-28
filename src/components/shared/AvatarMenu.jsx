@@ -1,7 +1,7 @@
 import { getInitials } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
-// ── AvatarMenu ───────────────────────────────────────────────────────
+//  AvatarMenu
 function AvatarMenu({ profile }) {
   const navigate = useNavigate();
 
@@ -10,6 +10,7 @@ function AvatarMenu({ profile }) {
 
   return (
     <button
+      title="Go to profile"
       onClick={() => navigate(profilePath)}
       aria-label={`Go to profile — ${profile?.full_name}`}
       className="flex cursor-pointer items-center gap-2.5 rounded-[var(--radius-sm)] px-2 py-1.5 transition-all duration-150"
@@ -31,8 +32,8 @@ function AvatarMenu({ profile }) {
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
         style={{
           backgroundColor: "var(--color-primary)",
-          color: "#0d1117",
-          boxShadow: "0 0 8px rgba(212,175,88,0.25)",
+          color: "var(--color-bg)",
+          boxShadow: "0 0 8px var(--shadow-glow)",
         }}
       >
         {getInitials(profile?.full_name)}

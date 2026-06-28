@@ -2,10 +2,20 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { useSidebar } from "./useSidebar";
 
 function AppLayout() {
   const { pathname } = useLocation();
+  const {
+    isOpen,
+    isCollapsed,
+    sidebarWidth,
+    toggleOpen,
+    toggleCollapsed,
+    close,
+  } = useSidebar();
 
+  // Scroll content to top on route change
   useEffect(() => {
     document
       .getElementById("main-content")
@@ -14,13 +24,18 @@ function AppLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      <Sidebar
+        isOpen={isOpen}
+        isCollapsed={isCollapsed}
+        onClose={close}
+        onToggleCollapse={toggleCollapsed}
+      />
 
       <div
         className="flex min-h-screen flex-1 flex-col"
-        style={{ marginLeft: "var(--sidebar-width)" }}
+        style={{ marginLeft: sidebarWidth }}
       >
-        <Header />
+        <Header sidebarWidth={sidebarWidth} onMenuClick={toggleOpen} />
 
         <main
           id="main-content"
@@ -31,7 +46,7 @@ function AppLayout() {
             minHeight: `calc(100vh - var(--header-height))`,
           }}
         >
-          <div className="max-w-[1400px] px-7 py-7">
+          <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
             <Outlet />
           </div>
         </main>
