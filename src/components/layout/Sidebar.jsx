@@ -15,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 import NavItem from "../shared/NavItem";
-import { NavLink } from "react-router-dom";
 
 const STUDENT_NAV = [
   { label: "Dashboard", to: "/student/dashboard", icon: LayoutDashboard },
@@ -69,75 +68,74 @@ function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
         }}
       >
         {/* Logo */}
-        <NavLink to={isTeacher ? "/teacher/dashboard" : "/student/dashboard"}>
+
+        <div
+          className="flex h-16 shrink-0 items-center gap-3 px-4"
+          style={{ borderBottom: "1px solid var(--color-border)" }}
+        >
           <div
-            className="flex h-16 shrink-0 items-center gap-3 px-4 py-10"
-            style={{ borderBottom: "1px solid var(--color-border)" }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] border-1 border-solid border-[var(--color-border)] bg-[var(--color-surface-2)] text-lg font-bold text-[var(--color-primary)]"
+            style={{ boxShadow: "var(--shadow-glow)" }}
           >
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] border-1 border-solid border-[var(--color-border)] bg-[var(--color-surface-2)] text-lg font-bold text-[var(--color-primary)]"
-              style={{ boxShadow: "var(--shadow-glow)" }}
-            >
-              <GraduationCap strokeWidth={2.5} />
-            </div>
-
-            {/* Brand name — hidden when collapsed */}
-            {!isCollapsed && (
-              <div className="flex min-w-0 flex-1 flex-col leading-none">
-                <span
-                  className="text-l font-bold tracking-tight"
-                  style={{ color: "var(--color-text)" }}
-                >
-                  EduTest
-                </span>
-                <span
-                  className="mt-1 text-[11px] capitalize"
-                  style={{ color: "var(--color-text-faint)" }}
-                >
-                  {isTeacher ? "Teacher Portal" : "Student Portal"}
-                </span>
-              </div>
-            )}
-
-            {/* Collapse toggle — desktop only */}
-            <button
-              onClick={onToggleCollapse}
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="ml-auto hidden cursor-pointer items-center justify-center rounded-[var(--radius-sm)] p-1.5 transition-all duration-150 lg:flex"
-              style={{
-                color: "var(--color-text-faint)",
-                backgroundColor: "transparent",
-                border: "none",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "var(--color-text)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "var(--color-text-faint)";
-              }}
-            >
-              {isCollapsed ? (
-                <PanelLeftOpen size={17} />
-              ) : (
-                <PanelLeftClose size={17} />
-              )}
-            </button>
-
-            {/* Close button — mobile only */}
-            <button
-              onClick={onClose}
-              aria-label="Close navigation"
-              className="ml-auto flex cursor-pointer items-center justify-center rounded-[var(--radius-sm)] p-1.5 transition-all duration-150 md:hidden"
-              style={{
-                color: "var(--color-text-faint)",
-                backgroundColor: "transparent",
-                border: "none",
-              }}
-            >
-              <X size={16} />
-            </button>
+            <GraduationCap strokeWidth={2.5} />
           </div>
-        </NavLink>
+
+          {/* Brand name — hidden when collapsed */}
+          {!isCollapsed && (
+            <div className="flex min-w-0 flex-1 flex-col leading-none">
+              <span
+                className="text-l font-bold tracking-tight"
+                style={{ color: "var(--color-text)" }}
+              >
+                EduTest
+              </span>
+              <span
+                className="mt-1 text-[11px] capitalize"
+                style={{ color: "var(--color-text-faint)" }}
+              >
+                {isTeacher ? "Teacher Portal" : "Student Portal"}
+              </span>
+            </div>
+          )}
+
+          {/* Collapse toggle — desktop only */}
+          {/* <button
+            onClick={onToggleCollapse}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="ml-auto hidden cursor-pointer items-center justify-center rounded-[var(--radius-sm)] p-1.5 transition-all duration-150 lg:flex"
+            style={{
+              color: "var(--color-text-faint)",
+              backgroundColor: "transparent",
+              border: "none",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--color-text)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--color-text-faint)";
+            }}
+          >
+            {isCollapsed ? (
+              <PanelLeftOpen size={17} />
+            ) : (
+              <PanelLeftClose size={17} />
+            )}
+          </button> */}
+
+          {/* Close button — mobile only */}
+          <button
+            onClick={onClose}
+            aria-label="Close navigation"
+            className="ml-auto flex cursor-pointer items-center justify-center rounded-[var(--radius-sm)] p-1.5 transition-all duration-150 md:hidden"
+            style={{
+              color: "var(--color-text-faint)",
+              backgroundColor: "transparent",
+              border: "none",
+            }}
+          >
+            <X size={16} />
+          </button>
+        </div>
 
         {/*  Section label — hidden when collapsed  */}
 
