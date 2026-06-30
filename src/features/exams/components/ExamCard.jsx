@@ -1,5 +1,13 @@
 import ExamStatusBadge from "@/components/shared/ExamStatusBadge";
-import { BookOpen, Clock, Tag, User } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle2,
+  Clock,
+  PlayCircle,
+  Tag,
+  User,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const DIFFICULTY = {
   easy: {
@@ -26,13 +34,22 @@ const DIFFICULTY = {
  * exam -> obj from supabase -> { id, title, description, category, duration_mins, total_marks, profiles }
  *
  * index -> for stagger animation
- * attemptInfo -> 'in-progress' | 'submitted' | 'timed-out
+ * attemptInfo -> { [examId]: { status, attemptId } }
+ * 'in-progress' | 'submitted' | 'timed-out
  */
 function ExamCard({ exam, index = 0, attemptInfo }) {
+  const navigate = useNavigate();
+
   const difficulty = DIFFICULTY[exam.difficulty] ?? DIFFICULTY.medium;
   const isCompleted =
     attemptInfo?.status === "submitted" || attemptInfo?.status === "timed-out";
   const isInProgress = attemptInfo?.status === "in_progress";
+
+  function handleAction(e) {
+    e.preventDefault();
+    if (isCompleted) navigate(`/student/results/${attemptInfo.attemptId}`);
+    else navigate(`/student/exams/${exam.id}`);
+  }
 
   return (
     <article
@@ -42,6 +59,23 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
           ? "1px solid rgba(45,212,191,0.2)"
           : "1px solid var(--color-border)",
         backgroundColor: "var(--color-surface)",
+        animationDelay: `${index * 60}ms`,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "translateY(-2px)";
+        e.currentTarget.style.boxShadow = isCompleted
+          ? "0 0 20px rgba(45,212,191,0.1)"
+          : "var(--shadow-glow)";
+        e.currentTarget.style.borderColor = isCompleted
+          ? "rgba(45,212,191,0.35)"
+          : "rgba(212,175,88,0.3)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
+        e.currentTarget.style.borderColor = isCompleted
+          ? "rgba(45,212,191,0.2)"
+          : "var(--color-border)";
       }}
     >
       {/* Card body */}
@@ -150,6 +184,42 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Action button */}
+      <div className="px-5 pb-5">
+        <button
+          onClick={handleAction}
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-sm)] py-2.5 font-semibold transition-opacity duration-150 hover:opacity-85"
+          style={
+            isCompleted
+              ? {
+                  backgroundColor: "rgba(45,212,191,0.1)",
+                  border: "1px solid rgba(45,212,191,0.2)",
+                  color: "var(--color-success)",
+                }
+              : {
+                  backgroundColor: "var(--color-primary)",
+                  border: "1px solid transparent",
+                  color: "#0d1117",
+                }
+          }
+        >
+          {isCompleted ? (
+            <>
+              <CheckCircle2 size={17} /> View Results
+            </>
+          ) : isInProgress ? (
+            <>
+              {" "}
+              <PlayCircle size={17} /> Continue Exam
+            </>
+          ) : (
+            <>
+              <PlayCircle size={17} /> Start Exam
+            </>
+          )}
+        </button>
       </div>
     </article>
   );
