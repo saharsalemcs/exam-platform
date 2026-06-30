@@ -11,7 +11,7 @@ export async function getExams({
       `id, title, description, category, difficulty,
       duration_mins, total_marks, pass_marks,
       is_published, created_at,
-      profiles:created_by ( full_name )`,
+      profiles:created_by(full_name)`,
     )
     .eq("is_published", true)
     .order("created_at", { ascending: false });
@@ -27,7 +27,6 @@ export async function getExams({
   const { data, error } = await query;
   if (error) throw new Error(error.message);
 
-  console.log(data);
   return data ?? [];
 }
 
@@ -39,8 +38,6 @@ export async function getExamCategories() {
     .not("category", "is", null);
 
   if (error) throw new Error(error.message);
-
-  console.log(data);
 
   const unique = [...new Set(data.map((r) => r.category))].sort();
 
