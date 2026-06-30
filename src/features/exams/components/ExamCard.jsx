@@ -1,5 +1,6 @@
 import ExamStatusBadge from "@/components/shared/ExamStatusBadge";
 import {
+  AlertTriangle,
   BookOpen,
   CheckCircle2,
   Clock,
@@ -43,39 +44,46 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
   const difficulty = DIFFICULTY[exam.difficulty] ?? DIFFICULTY.medium;
   const isCompleted =
     attemptInfo?.status === "submitted" || attemptInfo?.status === "timed-out";
-  const isInProgress = attemptInfo?.status === "in_progress";
+  const isInterrupted = attemptInfo?.status === "in_progress";
 
   function handleAction(e) {
     e.preventDefault();
     if (isCompleted) navigate(`/student/results/${attemptInfo.attemptId}`);
     else navigate(`/student/exams/${exam.id}`);
   }
+  const cardBorderColor = isInterrupted
+    ? "rgba(200,93,106,0.3)"
+    : isCompleted
+      ? "rgba(45,212,191,0.2)"
+      : "var(--color-border)";
 
   return (
     <article
       className="flex animate-[fade-up_0.4s_ease_both] flex-col overflow-hidden rounded-[var(--radius-md)] transition-all duration-200"
       style={{
         border: isCompleted
-          ? "1px solid rgba(45,212,191,0.2)"
+          ? `1px solid ${cardBorderColor}`
           : "1px solid var(--color-border)",
         backgroundColor: "var(--color-surface)",
         animationDelay: `${index * 60}ms`,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow = isCompleted
-          ? "0 0 20px rgba(45,212,191,0.1)"
-          : "var(--shadow-glow)";
-        e.currentTarget.style.borderColor = isCompleted
-          ? "rgba(45,212,191,0.35)"
-          : "rgba(212,175,88,0.3)";
+        e.currentTarget.style.boxShadow = isInterrupted
+          ? "0 0 20px rgba(200,93,106,0.12)"
+          : isCompleted
+            ? "0 0 20px rgba(45,212,191,0.1)"
+            : "var(--shadow-glow)";
+        e.currentTarget.style.borderColor = isInterrupted
+          ? "rgba(200,93,106,0.45)"
+          : isCompleted
+            ? "rgba(45,212,191,0.35)"
+            : "rgba(212,175,88,0.3)";
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
         e.currentTarget.style.boxShadow = "none";
-        e.currentTarget.style.borderColor = isCompleted
-          ? "rgba(45,212,191,0.2)"
-          : "var(--color-border)";
+        e.currentTarget.style.borderColor = cardBorderColor;
       }}
     >
       {/* Card body */}
@@ -112,7 +120,7 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
           {/* Completed badge */}
           {isCompleted && <ExamStatusBadge status="completed" />}
           {/* In-Progress badge */}
-          {isInProgress && <ExamStatusBadge status="in-progress" />}
+          {isInterrupted && <ExamStatusBadge status="in-progress" />}
         </div>
 
         {/* Title + description */}
@@ -132,6 +140,29 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
             </p>
           )}
         </div>
+        {/* Interrupted warning */}
+        {isInterrupted && (
+          <div
+            className="flex items-start gap-2 rounded-[var(--radius-sm)] px-3 py-2"
+            style={{
+              backgroundColor: "rgba(200,93,106,0.08)",
+              border: "1px solid rgba(200,93,106,0.2)",
+            }}
+          >
+            <AlertTriangle
+              size={12}
+              className="mt-0.5 shrink-0"
+              style={{ color: "var(--color-danger)" }}
+            />
+            <p
+              className="text-[11px] leading-relaxed"
+              style={{ color: "var(--color-danger)" }}
+            >
+              This exam was interrupted. Resume to continue with your remaining
+              time.
+            </p>
+          </div>
+        )}
 
         {/* Meta row */}
         <div
@@ -198,21 +229,27 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
                   border: "1px solid rgba(45,212,191,0.2)",
                   color: "var(--color-success)",
                 }
-              : {
-                  backgroundColor: "var(--color-primary)",
-                  border: "1px solid transparent",
-                  color: "#0d1117",
-                }
+              : isInterrupted
+                ? {
+                    backgroundColor: "var(--color-danger)",
+                    border: "1px solid transparent",
+                    color: "var(--color-bg)",
+                  }
+                : {
+                    backgroundColor: "var(--color-primary)",
+                    border: "1px solid transparent",
+                    color: "var(--color-bg)",
+                  }
           }
         >
           {isCompleted ? (
             <>
               <CheckCircle2 size={17} /> View Results
             </>
-          ) : isInProgress ? (
+          ) : isInterrupted ? (
             <>
               {" "}
-              <PlayCircle size={17} /> Continue Exam
+              <AlertTriangle size={17} /> Resume Exam
             </>
           ) : (
             <>

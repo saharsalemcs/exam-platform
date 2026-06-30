@@ -1,4 +1,4 @@
-import { CheckCircle2, PlayCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, PlayCircle } from "lucide-react";
 
 const BADGE_CONFIGS = {
   completed: {
@@ -14,6 +14,13 @@ const BADGE_CONFIGS = {
     color: "var(--color-warning)",
     bg: "rgba(237,216,138,0.1)",
     border: "1px solid rgba(237,216,138,0.2)",
+  },
+  interrupted: {
+    label: "Interrupted",
+    icon: AlertTriangle,
+    color: "var(--color-danger)",
+    bg: "rgba(200,93,106,0.12)",
+    border: "1px solid rgba(200,93,106,0.3)",
   },
 };
 
