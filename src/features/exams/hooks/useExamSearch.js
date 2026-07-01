@@ -1,16 +1,33 @@
-//  useExamSearch => manage UI state  (search + filter)
-
-import { useDebounce } from "@/hooks/useDebounce";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useExamSearch() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const debouncedSearch = useDebounce(search);
+  const timerRef = useRef(null);
+
+  useEffect(
+    function () {
+      if (search === "") {
+        if (timerRef.current) clearTimeout(timerRef.current);
+        setDebouncedSearch("");
+        return;
+      }
+
+      timerRef.current = setTimeout(() => {
+        setDebouncedSearch(search);
+      }, 400);
+
+      return () => clearTimeout(timerRef.current);
+    },
+    [search],
+  );
 
   function clearFilters() {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setDebouncedSearch("");
     setSearch("");
     setCategory("");
     setDifficulty("");
