@@ -94,16 +94,7 @@ function EmptyState({
         </h3>
 
         {description && (
-          <p
-            className={cn(
-              dims.maxWidth,
-              dims.descSize,
-              "mx-auto leading-relaxed",
-            )}
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            {description}
-          </p>
+          <p style={{ color: "var(--color-text-muted)" }}>{description}</p>
         )}
       </div>
 

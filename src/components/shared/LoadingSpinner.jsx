@@ -1,4 +1,4 @@
-import { RingLoader } from "react-loadly";
+import { RippleLoader } from "react-loadly";
 
 function LoadingSpinner() {
   return (
@@ -7,7 +7,7 @@ function LoadingSpinner() {
       aria-label="Loading"
       className="flex h-screen items-center justify-center"
     >
-      <RingLoader
+      <RippleLoader
         size={45}
         color="var(--color-primary)"
         speed={1}
