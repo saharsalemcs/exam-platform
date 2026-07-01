@@ -8,7 +8,7 @@ import AppLayout from "./components/layout/AppLayout";
 // import StudentDashboard from "./features/student/StudentDashboard";
 import { lazy, Suspense } from "react";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
-import NotFound from "./pages/NotFound";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,7 +109,7 @@ function App() {
             </Route>
           </Route>
 
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
