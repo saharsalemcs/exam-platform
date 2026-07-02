@@ -26,7 +26,8 @@ function Button({
       "border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-glow)]",
     ghost:
       "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]",
-    success: "bg-[var(--color-success)] text-[#0d1117] hover:opacity-85",
+    success:
+      "bg-[rgba(45,212,191,0.1)] text-[var(--color-success)] border border-[rgba(45,212,191,0.25)] hover:opacity-85",
   };
   const variantClass = styles[variant] ?? "";
   return (
