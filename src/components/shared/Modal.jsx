@@ -27,6 +27,52 @@ function Modal({
     [isOpen],
   );
 
+  // close modal with Escape key
+  useEffect(
+    function () {
+      if (!isOpen) return;
+
+      function handleKeyDown(e) {
+        if (e.key === "Escape") {
+          onClose();
+          return;
+        }
+
+        // prevent Tab to be outside the modal ==> improving accessability: Focus trap
+        if (e.key === "Tab" && panelRef.current) {
+          const focusable = panelRef.current.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+          );
+          if (focusable.length === 0) return;
+
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    },
+    [isOpen, onClose],
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      previousActiveElement.current = document.activeElement;
+      requestAnimationFrame(() => panelRef.current?.focus());
+    } else if (previousActiveElement.current) {
+      previousActiveElement.current.focus();
+    }
+  }, [isOpen]);
+
   if (!isOpen) return;
 
   return createPortal(
