@@ -5,7 +5,7 @@ function Modal({
   isOpen,
   onClose,
   children,
-  maxWidth = "560",
+  maxWidth = 580,
   labelledBy,
   closeOnBackdropClick = true,
 }) {

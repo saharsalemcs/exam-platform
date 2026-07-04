@@ -8,10 +8,13 @@ function ProtectedRoute({ allowedRole }) {
 
   if (isLoading) return <LoadingSpinner />;
 
+  // Not logged in => go to /login
   if (!data) return <Navigate to="/login" replace />;
 
   const { profile } = data;
 
+  // Logged in but wrong role => redirect to their correct dashboard
+  // يعني لو انا ال كتبت الرول غلط مثلا
   if (allowedRole && profile?.role !== allowedRole) {
     const fallback =
       profile?.role === ROLES.TEACHER

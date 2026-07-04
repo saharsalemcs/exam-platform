@@ -1,12 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-// import LoginPage from "./features/auth/pages/LoginPage";
-// import RegisterPage from "./features/auth/pages/RegisterPage";
+import { lazy, Suspense } from "react";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
-// import StudentDashboard from "./features/student/StudentDashboard";
-import { lazy, Suspense } from "react";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -30,6 +27,9 @@ const AvailableExamsPage = lazy(
 );
 const ExamDetailsPage = lazy(
   () => import("./features/exams/pages/ExamDetailsPage"),
+);
+const ExamSessionPage = lazy(
+  () => import("./features/exam-session/pages/ExamSessionPage"),
 );
 const StudentResultPage = lazy(
   () => import("./features/results/pages/StudentResultPage"),
@@ -89,6 +89,11 @@ function App() {
               />
               <Route path="/student/profile" element={<ProfilePage />} />
             </Route>
+            {/* Fullscreen - no sidebar/header */}
+            <Route
+              path="/student/exam/:examId/session"
+              element={<ExamSessionPage />}
+            />
           </Route>
 
           {/* Teacher Routes */}
