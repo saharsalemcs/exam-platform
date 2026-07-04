@@ -1,0 +1,70 @@
+import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+
+function Modal({
+  isOpen,
+  onClose,
+  children,
+  maxWidth = "560",
+  labelledBy,
+  closeOnBackdropClick = true,
+}) {
+  const panelRef = useRef(null);
+  const previousActiveElement = useRef(null);
+
+  // prevent scroll if modal is open
+  useEffect(
+    function () {
+      if (!isOpen) return;
+
+      // store the original overflow value before any scroll to return it after the modal closed
+      const original = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+
+      // clean up
+      return () => (document.body.style.overflow = original);
+    },
+    [isOpen],
+  );
+
+  if (!isOpen) return;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={labelledBy}
+    >
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0"
+        style={{
+          backgroundColor: "rgba(0,0,0,0.7)",
+          backdropFilter: "blur(4px)",
+        }}
+        onClick={closeOnBackdropClick ? onClose : undefined}
+        aria-hidden="true"
+      />
+
+      {/* Panel */}
+      <div
+        ref={panelRef}
+        tabIndex={-1}
+        className="relative flex max-h-[85vh] w-full animate-[fade-scale-in_0.25s_ease_both] flex-col rounded-[var(--radius-lg)] outline-none"
+        style={{
+          maxWidth,
+          backgroundColor: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+          boxShadow: "var(--shadow-md)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+export default Modal;
