@@ -85,6 +85,5 @@ export async function getExamById(examId) {
 
   if (error) throw new Error(error.message);
 
-  console.log(data);
   return data;
 }

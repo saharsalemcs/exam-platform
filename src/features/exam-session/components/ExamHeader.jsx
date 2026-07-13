@@ -3,7 +3,7 @@ import Tag from "@/components/shared/Tag";
 function ExamHeader({ exam, questions }) {
   return (
     <div
-      className="flex items-center justify-between rounded-lg p-lg"
+      className="mb-lg flex flex-wrap items-center justify-between rounded-lg p-lg"
       style={{
         backgroundColor: "var(--color-surface)",
         border: "1px solid var(--color-border)",
