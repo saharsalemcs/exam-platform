@@ -1,3 +1,4 @@
+import Button from "@/components/shared/Button";
 import ExamStatusBadge from "@/components/shared/ExamStatusBadge";
 import {
   AlertTriangle,
@@ -43,7 +44,7 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
 
   const difficulty = DIFFICULTY[exam.difficulty] ?? DIFFICULTY.medium;
   const isCompleted =
-    attemptInfo?.status === "submitted" || attemptInfo?.status === "timed-out";
+    attemptInfo?.status === "submitted" || attemptInfo?.status === "timed_out";
   const isInterrupted = attemptInfo?.status === "in_progress";
 
   function handleAction(e) {
@@ -141,28 +142,36 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
           )}
         </div>
         {/* Interrupted warning */}
-        {isInterrupted && (
+        {/* {isInterrupted && (
           <div
-            className="flex items-start gap-2 rounded-[var(--radius-sm)] px-3 py-2"
+            className="flex items-start gap-3 rounded-[var(--radius-md)] p-4"
             style={{
               backgroundColor: "rgba(200,93,106,0.08)",
               border: "1px solid rgba(200,93,106,0.2)",
             }}
           >
             <AlertTriangle
-              size={12}
+              size={16}
               className="mt-0.5 shrink-0"
               style={{ color: "var(--color-danger)" }}
             />
-            <p
-              className="text-[11px] leading-relaxed"
-              style={{ color: "var(--color-danger)" }}
-            >
-              This exam was interrupted. Resume to continue with your remaining
-              time.
-            </p>
+            <div>
+              <p
+                className="text-sm font-semibold"
+                style={{ color: "var(--color-danger)" }}
+              >
+                Exam Interrupted
+              </p>
+              <p
+                className="mt-0.5 text-xs leading-relaxed"
+                style={{ color: "var(--color-text-muted)" }}
+              >
+                Your previous session was interrupted. If you resume, the timer
+                will continue from where it stopped - no extra time is added.
+              </p>
+            </div>
           </div>
-        )}
+        )} */}
 
         {/* Meta row */}
         <div
@@ -219,28 +228,12 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
 
       {/* Action button */}
       <div className="px-5 pb-5">
-        <button
-          onClick={handleAction}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-sm)] py-2.5 font-semibold transition-opacity duration-150 hover:opacity-85"
-          style={
-            isCompleted
-              ? {
-                  backgroundColor: "rgba(45,212,191,0.1)",
-                  border: "1px solid rgba(45,212,191,0.2)",
-                  color: "var(--color-success)",
-                }
-              : isInterrupted
-                ? {
-                    backgroundColor: "var(--color-danger)",
-                    border: "1px solid transparent",
-                    color: "var(--color-bg)",
-                  }
-                : {
-                    backgroundColor: "var(--color-primary)",
-                    border: "1px solid transparent",
-                    color: "var(--color-bg)",
-                  }
+        <Button
+          variant={
+            isCompleted ? "success" : isInterrupted ? "danger" : "primary"
           }
+          onClick={handleAction}
+          className="flex w-full"
         >
           {isCompleted ? (
             <>
@@ -256,7 +249,7 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
               <PlayCircle size={17} /> Start Exam
             </>
           )}
-        </button>
+        </Button>
       </div>
     </article>
   );

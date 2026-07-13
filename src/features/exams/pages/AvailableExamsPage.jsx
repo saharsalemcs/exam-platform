@@ -176,6 +176,7 @@ function AvailableExamsPage() {
           {exams.map((exam, i) => (
             <ExamCard
               exam={exam}
+              key={exam.id}
               index={i}
               attemptInfo={attemptStatus[exam.id]}
             />

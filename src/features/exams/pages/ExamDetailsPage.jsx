@@ -220,7 +220,7 @@ function ExamDetailsPage() {
         </div>
 
         {/*  Interrupted warning  */}
-
+        {/* 
         {isInterrupted && (
           <div
             className="flex items-start gap-3 rounded-[var(--radius-md)] p-4"
@@ -250,7 +250,7 @@ function ExamDetailsPage() {
               </p>
             </div>
           </div>
-        )}
+        )} */}
 
         {/*  No questions warning  */}
 

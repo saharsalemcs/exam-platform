@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
 import NotFoundPage from "./pages/NotFoundPage";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,62 +63,75 @@ function PageLoader() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
-      <BrowserRouter>
-        <Suspense fallback={<PageLoader />} />
-        <Routes>
-          {/* Root */}
-          <Route path="/" element={<HomePage />} />
+    <>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+        <BrowserRouter>
+          <Suspense fallback={<PageLoader />} />
+          <Routes>
+            {/* Root */}
+            <Route path="/" element={<HomePage />} />
 
-          {/* Public Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+            {/* Public Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-          {/* Student Routes */}
-          <Route element={<ProtectedRoute allowedRole="student" />}>
-            <Route element={<AppLayout />}>
-              <Route path="/student/dashboard" element={<StudentDashboard />} />
-              <Route path="/student/exams" element={<AvailableExamsPage />} />
+            {/* Student Routes */}
+            <Route element={<ProtectedRoute allowedRole="student" />}>
+              <Route element={<AppLayout />}>
+                <Route
+                  path="/student/dashboard"
+                  element={<StudentDashboard />}
+                />
+                <Route path="/student/exams" element={<AvailableExamsPage />} />
+                <Route
+                  path="/student/exams/:examId"
+                  element={<ExamDetailsPage />}
+                />
+                <Route
+                  path="/student/results/:attemptId"
+                  element={<StudentResultPage />}
+                />
+                <Route path="/student/profile" element={<ProfilePage />} />
+              </Route>
+              {/* Fullscreen - no sidebar/header */}
               <Route
-                path="/student/exams/:examId"
-                element={<ExamDetailsPage />}
+                path="/student/exam/:examId/session"
+                element={<ExamSessionPage />}
               />
-              <Route
-                path="/student/results/:attemptId"
-                element={<StudentResultPage />}
-              />
-              <Route path="/student/profile" element={<ProfilePage />} />
             </Route>
-            {/* Fullscreen - no sidebar/header */}
-            <Route
-              path="/student/exam/:examId/session"
-              element={<ExamSessionPage />}
-            />
-          </Route>
 
-          {/* Teacher Routes */}
-          <Route element={<ProtectedRoute allowedRole="teacher" />}>
-            <Route element={<AppLayout />}>
-              <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
-              <Route path="/teacher/exams" element={<ExamManagementPage />} />
-              <Route
-                path="/teacher/exams/:examId/edit"
-                element={<ExamManagementPage />}
-              />
-              <Route path="/teacher/results" element={<TeacherResultsPage />} />
-              <Route
-                path="/teacher/results/:examId"
-                element={<TeacherResultsPage />}
-              />
-              <Route path="/teacher/profile" element={<ProfilePage />} />
+            {/* Teacher Routes */}
+            <Route element={<ProtectedRoute allowedRole="teacher" />}>
+              <Route element={<AppLayout />}>
+                <Route
+                  path="/teacher/dashboard"
+                  element={<TeacherDashboard />}
+                />
+                <Route path="/teacher/exams" element={<ExamManagementPage />} />
+                <Route
+                  path="/teacher/exams/:examId/edit"
+                  element={<ExamManagementPage />}
+                />
+                <Route
+                  path="/teacher/results"
+                  element={<TeacherResultsPage />}
+                />
+                <Route
+                  path="/teacher/results/:examId"
+                  element={<TeacherResultsPage />}
+                />
+                <Route path="/teacher/profile" element={<ProfilePage />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+
+      <Toaster position="top-center" reverseOrder={false} pauseOnHover />
+    </>
   );
 }
 

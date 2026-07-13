@@ -17,11 +17,11 @@ export function useLogin() {
       });
 
       const role = data.user?.user_metadata?.role;
+      toast.success("Login successful. Welcome back");
       navigate(
         role === "teacher" ? "/teacher/dashboard" : "/student/dashboard",
         { replace: true },
       );
-      toast.success("Login successful. Welcome back");
     },
 
     onError: (err) => {
