@@ -1,8 +1,7 @@
 import Button from "@/components/shared/Button";
 import { Bookmark } from "lucide-react";
-import { useExamSession } from "../hooks/useExamSession";
 
-function QuestionCard({ exam }) {
+function QuestionCard({ session }) {
   const {
     questions,
     currentQuestion,
@@ -11,7 +10,7 @@ function QuestionCard({ exam }) {
     answers,
     toggleBookmark,
     selectAnswer,
-  } = useExamSession(exam);
+  } = session;
 
   return (
     <div

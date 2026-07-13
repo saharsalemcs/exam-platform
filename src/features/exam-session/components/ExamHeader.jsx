@@ -1,6 +1,7 @@
 import Tag from "@/components/shared/Tag";
 
-function ExamHeader({ exam, questions }) {
+function ExamHeader({ session }) {
+  const { exam, questions } = session;
   return (
     <div
       className="mb-lg flex flex-wrap items-center justify-between rounded-lg p-lg"
