@@ -4,14 +4,7 @@ import Button from "@/components/shared/Button";
 import SubmitConfirmModal from "./SubmitConfirmModal";
 
 function Navigation({ session }) {
-  const {
-    currentIndex,
-    questions,
-    goNext,
-    goPrev,
-    isSubmitting,
-    handleSubmit,
-  } = session;
+  const { currentIndex, questions, goNext, goPrev, handleSubmit } = session;
   const isLastQuestion = currentIndex === questions.length - 1;
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
@@ -25,9 +18,9 @@ function Navigation({ session }) {
         <Button
           variant="primary"
           onClick={() => setIsSubmitModalOpen(true)}
-          disabled={isSubmitting}
+          // disabled={}
         >
-          <Flag size={16} /> {isSubmitting ? "Submitting..." : "Submit Exam"}
+          <Flag size={16} /> Submit Exam
         </Button>
       ) : (
         <Button variant="primary" onClick={goNext}>
@@ -38,11 +31,7 @@ function Navigation({ session }) {
       <SubmitConfirmModal
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}
-        onConfirm={() => {
-          setIsSubmitModalOpen(false);
-          handleSubmit("submitted");
-        }}
-        isSubmitting={isSubmitting}
+        onConfirm={() => handleSubmit("submitted")}
       />
     </div>
   );

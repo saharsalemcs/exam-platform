@@ -1,5 +1,5 @@
 import Button from "@/components/shared/Button";
-import { Bookmark } from "lucide-react";
+import { Bookmark, BookmarkCheck } from "lucide-react";
 
 function QuestionCard({ session }) {
   const {
@@ -35,8 +35,17 @@ function QuestionCard({ session }) {
           onClick={() => toggleBookmark(currentQuestion?.id)}
           className={`hover:bg-transparent hover:text-[var(--color-warning)] ${bookmarks[currentQuestion?.id] ? " text-[var(--color-warning)]" : ""} `}
         >
-          <Bookmark size={16} />
-          {bookmarks[currentQuestion?.id] ? "Bookmarked" : "Bookmark"}
+          {bookmarks[currentQuestion?.id] ? (
+            <>
+              <BookmarkCheck size={16} />
+              Bookmarked
+            </>
+          ) : (
+            <>
+              <Bookmark size={16} />
+              Bookmark
+            </>
+          )}
         </Button>
       </div>
 

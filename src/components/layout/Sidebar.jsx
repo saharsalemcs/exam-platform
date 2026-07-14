@@ -7,6 +7,7 @@ import {
   BookOpen,
   CircleUser,
   GraduationCap,
+  History,
   LayoutDashboard,
   LogOut,
   PanelLeftClose,
@@ -19,7 +20,7 @@ import NavItem from "../shared/NavItem";
 const STUDENT_NAV = [
   { label: "Dashboard", to: "/student/dashboard", icon: LayoutDashboard },
   { label: "Available Exams", to: "/student/exams", icon: BookOpen },
-  { label: "My Results", to: "/student/results", icon: BarChart2 },
+  { label: "Exams History", to: "/student/exams-history", icon: History },
   { label: "Profile", to: "/student/profile", icon: CircleUser },
 ];
 
