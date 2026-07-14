@@ -2,7 +2,7 @@ import Button from "@/components/shared/Button";
 import Modal from "@/components/shared/Modal";
 import { AlertTriangle } from "lucide-react";
 
-function SubmitConfirmModal({ isOpen, onClose, onConfirm, isSubmitting }) {
+function SubmitConfirmModal({ isOpen, onClose, onConfirm, isPending }) {
   return (
     <Modal
       maxWidth={420}
@@ -38,11 +38,11 @@ function SubmitConfirmModal({ isOpen, onClose, onConfirm, isSubmitting }) {
         </p>
 
         <div className="mt-2 flex shrink-0 justify-end gap-3">
-          <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          <Button variant="secondary" onClick={onClose} disabled={isPending}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={onConfirm} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit"}
+          <Button variant="primary" onClick={onConfirm} disabled={isPending}>
+            {isPending ? "Submitting..." : "Submit"}
           </Button>
         </div>
       </div>

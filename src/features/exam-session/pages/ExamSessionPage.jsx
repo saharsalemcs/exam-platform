@@ -10,6 +10,7 @@ import Navigation from "../components/Navigation";
 import CountdownTimer from "../components/CountdownTimer";
 import { useEffect } from "react";
 import ExamSidebar from "../components/ExamSidebar";
+import TimesUpModal from "../components/TimesUpModal";
 
 function ExamSessionPage() {
   const { examId } = useParams();
@@ -49,6 +50,12 @@ function ExamSessionPage() {
         <ExamSidebar session={session} />
       </div>
       <Navigation session={session} />
+
+      <TimesUpModal
+        isOpen={session.showTimesUp}
+        isPending={session.status === "submitting"}
+        onConfirm={() => session.handleSubmit("timed_out")}
+      />
     </div>
 
     // <div

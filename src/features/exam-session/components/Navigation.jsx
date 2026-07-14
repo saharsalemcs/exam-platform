@@ -32,6 +32,7 @@ function Navigation({ session }) {
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}
         onConfirm={() => handleSubmit("submitted")}
+        isPending={session.status === "submitting"}
       />
     </div>
   );

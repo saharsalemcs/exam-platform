@@ -2,7 +2,7 @@ import { formatTime } from "@/lib/utils";
 import { Clock } from "lucide-react";
 
 function CountdownTimer({ timeLeft }) {
-  const isWarning = timeLeft <= 300 && timeLeft > 60;
+  const isWarning = timeLeft <= 120 && timeLeft > 60;
   const isDanger = timeLeft <= 60;
 
   const color = isDanger
@@ -42,7 +42,7 @@ function CountdownTimer({ timeLeft }) {
       </span>
 
       <span
-        className="hidden text-xs sm:inline"
+        className="hidden text-sm sm:inline"
         style={{ color, opacity: 0.75 }}
       >
         {isDanger ? "Hurry up!" : isWarning ? "Running out" : "remaining"}

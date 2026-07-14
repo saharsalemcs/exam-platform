@@ -8,6 +8,9 @@ function Modal({
   maxWidth = 580,
   labelledBy,
   closeOnBackdropClick = true,
+  role = "dialog",
+  panelClassName = "",
+  panelStyle = {},
 }) {
   const panelRef = useRef(null);
   const previousActiveElement = useRef(null);
@@ -78,7 +81,7 @@ function Modal({
   return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
+      role={role}
       aria-modal="true"
       aria-labelledby={labelledBy}
     >
@@ -97,12 +100,13 @@ function Modal({
       <div
         ref={panelRef}
         tabIndex={-1}
-        className="relative flex max-h-[85vh] w-full animate-[fade-scale-in_0.25s_ease_both] flex-col rounded-[var(--radius-lg)] outline-none"
+        className={`relative flex max-h-[85vh] w-full animate-[fade-scale-in_0.25s_ease_both] flex-col rounded-[var(--radius-lg)] outline-none ${panelClassName}`}
         style={{
           maxWidth,
           backgroundColor: "var(--color-surface)",
           border: "1px solid var(--color-border)",
           boxShadow: "var(--shadow-md)",
+          ...panelStyle,
         }}
         onClick={(e) => e.stopPropagation()}
       >
