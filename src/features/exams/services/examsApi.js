@@ -74,8 +74,7 @@ export async function getExamById(examId) {
       is_published, created_at,
       profiles:created_by ( full_name ),
       questions (
-        id, body, type, options,
-        correct_answer, marks, order_index
+        id, body, type, options, marks, order_index
       )
     `,
     )

@@ -1,5 +1,7 @@
-import Button from "@/components/shared/Button";
 import { ChevronLeft, ChevronRight, Flag } from "lucide-react";
+import { useState } from "react";
+import Button from "@/components/shared/Button";
+import SubmitConfirmModal from "./SubmitConfirmModal";
 
 function Navigation({ session }) {
   const {
@@ -11,6 +13,7 @@ function Navigation({ session }) {
     handleSubmit,
   } = session;
   const isLastQuestion = currentIndex === questions.length - 1;
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   return (
     <div className="mt-6 flex items-center justify-between">
@@ -21,7 +24,7 @@ function Navigation({ session }) {
       {isLastQuestion ? (
         <Button
           variant="primary"
-          onClick={() => handleSubmit("submitted")}
+          onClick={() => setIsSubmitModalOpen(true)}
           disabled={isSubmitting}
         >
           <Flag size={16} /> {isSubmitting ? "Submitting..." : "Submit Exam"}
@@ -31,6 +34,16 @@ function Navigation({ session }) {
           Next <ChevronRight size={16} />
         </Button>
       )}
+
+      <SubmitConfirmModal
+        isOpen={isSubmitModalOpen}
+        onClose={() => setIsSubmitModalOpen(false)}
+        onConfirm={() => {
+          setIsSubmitModalOpen(false);
+          handleSubmit("submitted");
+        }}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }
