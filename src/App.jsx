@@ -32,6 +32,9 @@ const ExamDetailsPage = lazy(
 const ExamSessionPage = lazy(
   () => import("./features/exam-session/pages/ExamSessionPage"),
 );
+const StudentExamsHistoryPage = lazy(
+  () => import("./features/exams-history/pages/StudentExamsHistoryPage"),
+);
 const StudentResultPage = lazy(
   () => import("./features/results/pages/StudentResultPage"),
 );
@@ -87,6 +90,10 @@ function App() {
                 <Route
                   path="/student/exams/:examId"
                   element={<ExamDetailsPage />}
+                />
+                <Route
+                  path="/student/exams-history"
+                  element={<StudentExamsHistoryPage />}
                 />
                 <Route
                   path="/student/results/:attemptId"

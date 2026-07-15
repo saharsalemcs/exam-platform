@@ -41,12 +41,12 @@ function AvailableExamsPage() {
       {/* Page header */}
       <div className="flex flex-col gap-1">
         <h2
-          className="text-xl font-bold tracking-tight"
+          className="text-2xl font-bold tracking-tight"
           style={{ color: "var(--color-text)" }}
         >
           Available Exams
         </h2>
-        <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
+        <p className="text-[16px]" style={{ color: "var(--color-text-muted)" }}>
           {isLoading
             ? "Loading..."
             : `${exams.length} exam${exams.length !== 1 ? "s" : ""} available`}

@@ -7,6 +7,7 @@ import AvatarMenu from "../shared/AvatarMenu";
 const PAGE_META = {
   "/student/dashboard": { title: "Dashboard", breadcrumb: null },
   "/student/exams": { title: "Available Exams", breadcrumb: "Exams" },
+  "/student/exams-history": { title: "Exams History", breadcrumb: "Exams" },
   "/student/results": { title: "My Results", breadcrumb: "Results" },
   "/student/profile": { title: "Profile", breadcrumb: "Profile" },
 
