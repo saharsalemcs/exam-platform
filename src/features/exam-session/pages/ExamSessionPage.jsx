@@ -7,7 +7,6 @@ import QuestionCard from "../components/QuestionCard";
 import ExamHeader from "../components/ExamHeader";
 import { useExamDetails } from "@/features/exams/hooks/useExamDetails";
 import Navigation from "../components/Navigation";
-import CountdownTimer from "../components/CountdownTimer";
 import { useEffect } from "react";
 import ExamSidebar from "../components/ExamSidebar";
 import TimesUpModal from "../components/TimesUpModal";
