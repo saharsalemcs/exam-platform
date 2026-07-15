@@ -4,10 +4,10 @@ const variants = {
   warning: "bg-warning/10 text-warning border-warning/20",
 };
 
-function Tag({ label, color, icon = null }) {
+function Tag({ label, color, icon = null, className = "" }) {
   return (
     <span
-      className={`rounded-full border px-2 py-1 text-[11px] font-medium ${variants[color]} `}
+      className={`rounded-full border px-4 py-1 text-[13px] font-medium ${variants[color]} ${className} `}
     >
       {icon && <span className="text-base leading-none">{icon}</span>}
       {label}

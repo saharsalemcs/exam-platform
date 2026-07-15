@@ -7,7 +7,7 @@ export function useStudentExamsHistory({ studentId }) {
     isPending: isFetchingStudentExams,
     error: studentExamsError,
   } = useQuery({
-    queryKey: ["exams-history"],
+    queryKey: ["exams-history", studentId],
     queryFn: () => getExamsHistory(studentId),
     enabled: !!studentId,
   });
