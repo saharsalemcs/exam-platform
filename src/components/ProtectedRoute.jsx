@@ -1,7 +1,7 @@
 import { useUser } from "@/features/auth/hooks/useUser";
 import { Navigate, Outlet } from "react-router-dom";
+import { ROLES } from "@/utils/constants";
 import LoadingSpinner from "./shared/LoadingSpinner";
-import { ROLES } from "@/constants/roles";
 
 function ProtectedRoute({ allowedRole }) {
   const { data, isLoading } = useUser();

@@ -1,7 +1,7 @@
-import { ROLES } from "@/constants/roles";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { useUser } from "@/features/auth/hooks/useUser";
 import { getInitials } from "@/lib/utils";
+import { ROLES } from "@/utils/constants";
 import {
   BarChart2,
   BookOpen,

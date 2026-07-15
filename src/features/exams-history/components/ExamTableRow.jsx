@@ -1,36 +1,12 @@
 import Tag from "@/components/shared/Tag";
 import { formatTime } from "@/lib/utils";
 import { Link } from "react-router-dom";
-
-// Helpers
-const DIFFICULTY_COLOR = {
-  easy: "accent",
-  medium: "warning",
-  hard: "danger",
-};
-
-function getPercentage(score, totalMarks) {
-  if (!totalMarks) return 0;
-  return Math.round((score / totalMarks) * 100);
-}
-
-function isPassed(score, passMarks) {
-  return score >= (passMarks ?? 0);
-}
-
-function formatSubmittedAt(isoString) {
-  const date = new Date(isoString);
-  const datePart = date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-  });
-  const timePart = date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-  return `${datePart}, ${timePart}`;
-}
+import {
+  DIFFICULTY_COLOR,
+  getPercentage,
+  isPassed,
+  formatSubmittedAt,
+} from "../hooks/examHistoryHelpers";
 
 function ExamTableRow({ attempt }) {
   const exam = attempt.exams;

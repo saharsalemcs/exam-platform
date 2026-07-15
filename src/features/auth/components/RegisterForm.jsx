@@ -9,9 +9,9 @@ import {
   BookOpen,
   MailCheck,
 } from "lucide-react";
-import { ROLES } from "@/constants/roles";
 import { useRegister } from "../hooks/useRegister";
 import FormInput from "@/components/shared/FormInput";
+import { ROLES } from "@/utils/constants";
 
 // ── Icon style helper — نفس الـ pattern بتاع LoginForm ──────────────
 const iconStyle = {

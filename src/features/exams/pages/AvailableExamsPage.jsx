@@ -4,16 +4,11 @@ import { useExams } from "../hooks/useExams";
 import { useExamSearch } from "../hooks/useExamSearch";
 import { useExamCategories } from "../hooks/useExamCategories";
 import { useStudentExamStatus } from "../hooks/useStudentExamStatus";
+import { DIFFICULTIES } from "@/utils/constants";
 import FilterSelect from "@/components/shared/FilterSelect";
 import EmptyState from "@/components/shared/EmptyState";
 import EmptyStateAction from "@/components/shared/EmptyStateAction";
 import ExamCard from "../components/ExamCard";
-
-const DIFFICULTIES = [
-  { value: "easy", label: "Easy" },
-  { value: "medium", label: "Medium" },
-  { value: "hard", label: "Hard" },
-];
 
 function AvailableExamsPage() {
   const {
