@@ -18,7 +18,7 @@ function ExamRulesModal({ isOpen, onClose, onConfirm, examTitle }) {
     <Modal isOpen={isOpen} onClose={onClose} labelledBy="rules-modal-title">
       {/* Header */}
       <div
-        className="flex items-start justify-between gap-3 p-5 sm:p-6"
+        className="flex items-center justify-between gap-3 p-5 sm:p-6"
         style={{ borderBottom: "1px solid var(--color-border)" }}
       >
         <div className="flex items-start gap-3">
@@ -40,7 +40,7 @@ function ExamRulesModal({ isOpen, onClose, onConfirm, examTitle }) {
               Exam Rules & Guidelines
             </h2>
             <p
-              className="mt-0.5 text-base font-semibold sm:text-lg"
+              className="mt-0.5 text-sm font-semibold sm:text-lg"
               style={{ color: "var(--color-text-muted)" }}
             >
               {examTitle}
@@ -75,7 +75,7 @@ function ExamRulesModal({ isOpen, onClose, onConfirm, examTitle }) {
                 {items.map((rule, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2 text-sm leading-relaxed"
+                    className="flex items-start gap-2 text-[14px] leading-relaxed"
                     style={{ color: "var(--color-text-muted)" }}
                   >
                     <span
@@ -92,10 +92,7 @@ function ExamRulesModal({ isOpen, onClose, onConfirm, examTitle }) {
       </div>
 
       {/* Footer - checkbox + actions  */}
-      <div
-        className="flex flex-col gap-3 p-3 sm:gap-4 sm:p-6"
-        style={{ borderTop: "1px solid var(--color-border)" }}
-      >
+      <div className="flex flex-col gap-3 p-3 sm:gap-4 sm:p-6">
         <label
           className="flex cursor-pointer items-start gap-2.5 rounded-[var(--radius-sm)] p-1.5 transition-all duration-150 sm:p-3"
           style={{

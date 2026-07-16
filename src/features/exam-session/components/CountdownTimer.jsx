@@ -46,42 +46,10 @@ function CountdownTimer({ timeLeft }) {
         className="hidden text-sm sm:inline"
         style={{ color, opacity: 0.75 }}
       >
-        {isDanger ? "Hurry up!" : isWarning ? "Running out" : "fds"}
+        {isDanger ? "Hurry up!" : isWarning ? "Running out" : ""}
       </span>
     </div>
   );
 }
 
 export default CountdownTimer;
-
-// import { Clock } from "lucide-react";
-
-// function formatTime(totalSeconds) {
-//   const minutes = Math.floor(totalSeconds / 60);
-//   const seconds = totalSeconds % 60;
-//   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-// }
-
-// function CountdownTimer({ secondsLeft }) {
-//   if (secondsLeft === null) return null;
-
-//   const isLow = secondsLeft <= 60; // warn in the final minute
-
-//   return (
-//     <div
-//       className="flex items-center gap-2 rounded-full px-4 py-2 font-mono text-sm font-semibold"
-//       style={{
-//         backgroundColor: isLow
-//           ? "rgba(200,93,106,0.1)"
-//           : "var(--color-surface-2)",
-//         border: `1px solid ${isLow ? "var(--color-danger)" : "var(--color-border)"}`,
-//         color: isLow ? "var(--color-danger)" : "var(--color-text)",
-//       }}
-//     >
-//       <Clock size={16} />
-//       {formatTime(secondsLeft)}
-//     </div>
-//   );
-// }
-
-// export default CountdownTimer;

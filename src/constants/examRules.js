@@ -1,4 +1,4 @@
-import { ShieldAlert, Clock, Wifi, FileCheck } from "lucide-react";
+import { ShieldAlert, Clock, FileCheck } from "lucide-react";
 
 export const EXAM_RULES = [
   {
@@ -19,16 +19,6 @@ export const EXAM_RULES = [
       "The exam has a fixed time limit. Once started, the timer cannot be paused.",
       "If your time runs out, the exam will be submitted automatically.",
       "Once submitted, you cannot retake this exam.",
-    ],
-  },
-  {
-    category: "Technical Requirements",
-    icon: Wifi,
-    color: "var(--color-accent)",
-    items: [
-      "Ensure you have a stable internet connection before starting.",
-      "Your answers are saved automatically as you progress.",
-      "Refreshing the page will not lose your progress, but losing connection might.",
     ],
   },
   {
