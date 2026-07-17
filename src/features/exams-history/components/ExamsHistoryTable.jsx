@@ -1,5 +1,5 @@
 import ExamTableRow from "./ExamTableRow";
-import ExamCard from "./ExamCard";
+import ExamHistoryCard from "./ExamHistoryCard";
 
 const COLUMNS = [
   "Exam Title",
@@ -52,7 +52,7 @@ function ExamsHistoryTable({ exams }) {
 
       <div className="flex flex-col gap-3 sm:hidden">
         {exams.map((attempt) => (
-          <ExamCard key={attempt.id} attempt={attempt} />
+          <ExamHistoryCard key={attempt.id} attempt={attempt} />
         ))}
       </div>
     </>
