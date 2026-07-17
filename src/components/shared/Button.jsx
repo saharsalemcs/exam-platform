@@ -15,6 +15,7 @@ function Button({
   onClick,
   disabled = false,
   type = "button",
+  fullWidth = false,
   ...rest
 }) {
   const styles = {
@@ -40,6 +41,7 @@ function Button({
         "transition-all duration-150",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
+        fullWidth && "w-full",
         SIZES[size],
         variantClass,
         className,

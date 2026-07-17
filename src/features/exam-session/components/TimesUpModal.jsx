@@ -52,7 +52,6 @@ function TimesUpModal({ isOpen, onConfirm, isPending }) {
           size="lg"
           fullWidth
           onClick={onConfirm}
-          isLoading={isPending}
           disabled={isPending}
         >
           {isPending ? "Submitting…" : "View My Results"}

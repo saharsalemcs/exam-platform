@@ -16,7 +16,6 @@ function ExamSessionPage() {
   const { exam, isLoading, error } = useExamDetails(examId);
 
   const session = useExamSession(exam);
-  // console.log(session);
 
   useEffect(() => {
     if (exam && session.status === "idle") {

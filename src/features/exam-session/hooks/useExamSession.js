@@ -257,10 +257,9 @@ export function useExamSession(exam) {
   // -------------- Auto-submit عند انتهاء الوقت --------------
   useEffect(() => {
     if (showTimesUp && status === "active") {
-      timeExpiredRef.current = true;
-      handleSubmit("timed_out");
+      pauseTimer();
     }
-  }, [showTimesUp, status, handleSubmit]);
+  }, [showTimesUp, status, pauseTimer]);
 
   // -------------- beforeunload --------------
   useEffect(() => {
