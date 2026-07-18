@@ -1,4 +1,8 @@
-const LETTERS = ["A", "B", "C", "D", "E", "F"];
+import OptionButton from "./OptionButton";
+
+function getOptionLetter(index) {
+  return String.fromCharCode(65 + index);
+}
 
 const STATUS_BADGE = {
   correct: {
@@ -12,57 +16,8 @@ const STATUS_BADGE = {
   skipped: {
     label: "Skipped",
     className: "bg-text-muted/15 text-text-muted border-border",
-    // style: { backgroundColor: "var(--color-surface-2)" },
   },
 };
-
-function OptionButton({ option, letter, isCorrect, isSelected }) {
-  const showCorrectStyle = isCorrect;
-  const showWrongStyle = isSelected && !isCorrect;
-
-  return (
-    <div
-      className="flex items-center gap-3 rounded-[var(--radius-sm)] px-4 py-3"
-      style={{
-        border: showCorrectStyle
-          ? "1px solid var(--color-accent)"
-          : showWrongStyle
-            ? "1px solid var(--color-danger)"
-            : "1px solid var(--color-border)",
-        backgroundColor: showCorrectStyle
-          ? "rgba(59,130,246,0.08)"
-          : showWrongStyle
-            ? "rgba(200,93,106,0.08)"
-            : "transparent",
-      }}
-    >
-      <span
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold"
-        style={{
-          backgroundColor: "var(--color-surface-2)",
-          color: showCorrectStyle
-            ? "var(--color-accent)"
-            : "var(--color-text-muted)",
-        }}
-      >
-        {letter}
-      </span>
-
-      <span
-        className="flex-1 text-sm"
-        style={{
-          color: showCorrectStyle
-            ? "var(--color-accent)"
-            : "var(--color-text-muted)",
-        }}
-      >
-        {option.text}
-      </span>
-
-      {showCorrectStyle && <span className="text-accent">✓</span>}
-    </div>
-  );
-}
 
 function ReviewNote({
   status,
@@ -74,7 +29,7 @@ function ReviewNote({
   if (status === "correct") {
     return (
       <p
-        className="rounded-[var(--radius-sm)] px-4 py-3 text-center text-sm text-accent"
+        className="rounded-lg border border-border px-3 py-2 text-center text-sm text-accent"
         style={{ backgroundColor: "rgba(59,130,246,0.06)" }}
       >
         Correct! Well done.
@@ -85,7 +40,7 @@ function ReviewNote({
   if (status === "skipped") {
     return (
       <p
-        className="rounded-[var(--radius-sm)] px-4 py-3 text-center text-sm"
+        className="rounded-lg border border-border px-3 py-2 text-center text-sm"
         style={{
           backgroundColor: "var(--color-surface-2)",
           color: "var(--color-text-muted)",
@@ -102,18 +57,18 @@ function ReviewNote({
   // wrong
   return (
     <p
-      className="rounded-[var(--radius-sm)] px-4 py-3 text-center text-sm"
+      className="rounded-lg border border-border px-3 py-2 text-center text-sm"
       style={{
         backgroundColor: "var(--color-surface-2)",
         color: "var(--color-text-muted)",
       }}
     >
       You answered{" "}
-      <span className="font-bold text-danger">
+      <span className="font-semibold text-danger">
         {selectedLetter}. {selectedText}
       </span>{" "}
       — correct answer was{" "}
-      <span className="font-bold text-accent">
+      <span className="font-semibold text-accent">
         {correctLetter}. {correctText}
       </span>
     </p>
@@ -197,7 +152,7 @@ function QuestionReviewCard({ question, index }) {
             <OptionButton
               key={option.id}
               option={option}
-              letter={LETTERS[i]}
+              letter={getOptionLetter(i)}
               isCorrect={option.id === correctOptionId}
               isSelected={option.id === selectedOptionId}
             />
@@ -207,9 +162,9 @@ function QuestionReviewCard({ question, index }) {
         {/* Note */}
         <ReviewNote
           status={status}
-          correctLetter={LETTERS[correctIndex]}
+          correctLetter={getOptionLetter(correctIndex)}
           correctText={options[correctIndex]?.text}
-          selectedLetter={LETTERS[selectedIndex]}
+          selectedLetter={getOptionLetter(selectedIndex)}
           selectedText={options[selectedIndex]?.text}
         />
       </div>
