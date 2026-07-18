@@ -86,7 +86,7 @@ export async function getExamResult(attemptId, studentId) {
     let reason;
     if (attempt.status === "violated") reason = "cheat";
     else if (attempt.status === "timed_out") reason = "timed_out";
-    else reason = "manual";
+    else reason = "auto";
 
     return reason;
   };
