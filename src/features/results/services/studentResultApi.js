@@ -82,6 +82,15 @@ export async function getExamResult(attemptId, studentId) {
     : 0;
   const passed = attempt.score >= (attempt.exams?.pass_marks ?? 0);
 
+  const getSubmitReason = () => {
+    let reason;
+    if (attempt.status === "violated") reason = "cheat";
+    else if (attempt.status === "timed_out") reason = "timed_out";
+    else reason = "manual";
+
+    return reason;
+  };
+
   return {
     exam: {
       title: attempt.exams?.title ?? "—",
@@ -95,9 +104,11 @@ export async function getExamResult(attemptId, studentId) {
     percentage,
     passed,
     cheatingDetected: attempt.status === "violated",
+    timesUP: attempt.status === "timed_out",
     correctCount,
     wrongCount,
     skippedCount,
     questions: questionResults,
+    getSubmitReason,
   };
 }
