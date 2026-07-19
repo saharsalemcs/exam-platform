@@ -10,6 +10,7 @@ import { useUser } from "@/features/auth/hooks/useUser";
 import { useStudentDashboardStats } from "../hooks/useStudentDashboardStats";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmptyState from "@/components/shared/EmptyState";
+import PerformanceChart from "../components/PerformanceChart";
 
 const TODAY_LABEL = new Date().toLocaleDateString("en-US", {
   month: "short",
@@ -75,7 +76,39 @@ function StudentDashboardPage() {
       </div>
 
       {/* Stat cards */}
-      <StatCardsGrid stats={stats} />
+      <StatCardsGrid
+        stats={{
+          totalExams: stats.totalExams,
+          averageScore: stats.averageScore,
+          highestScore: stats.highestScore,
+          passRate: stats.passRate,
+        }}
+      />
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_360px]">
+        <div
+          className="rounded-lg p-lg"
+          style={{
+            backgroundColor: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+          }}
+        >
+          <h3
+            className="text-lg font-bold"
+            style={{ color: "var(--color-text)" }}
+          >
+            Performance Over Time
+          </h3>
+          <p
+            className="mb-4 text-sm"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            Score trend across exam submissions
+          </p>
+          <PerformanceChart data={stats.performanceOverTime} />
+        </div>
+      </div>
     </div>
   );
 }

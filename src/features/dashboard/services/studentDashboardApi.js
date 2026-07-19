@@ -2,8 +2,6 @@ import { calculatePercentage } from "@/lib/utils";
 import supabase from "@/services/supabase";
 
 export async function getStudentDashboardStats(studentId) {
-  // const percentage = calculatePercentage(attempt.score, totalMarks);
-
   const { data: attempts, error: attemptsErr } = await supabase
     .from("exam_attempts")
     .select(
@@ -20,30 +18,39 @@ export async function getStudentDashboardStats(studentId) {
     .order("submitted_at", { ascending: true });
 
   if (attemptsErr) throw new Error(attemptsErr.message);
-  const finished = attempts ?? [];
-  const totalExams = finished.length;
+  const finishedAttempts = attempts ?? [];
+  const totalExams = finishedAttempts.length;
 
-  const percentages = finished.map((a) =>
+  const percentages = finishedAttempts.map((a) =>
     calculatePercentage(a.score, a.total_marks),
   );
 
+  // 4 Stats
   const averageScore = percentages.length
     ? Math.round(
         percentages.reduce((sum, p) => sum + p, 0) / percentages.length,
       )
     : 0;
   const highestScore = percentages.length ? Math.max(...percentages) : 0;
-  const passedCount = finished.filter(
+  const passedCount = finishedAttempts.filter(
     (a) => a.score >= (a.exams?.pass_marks ?? 0),
   ).length;
   const passRate = totalExams
     ? Math.round((passedCount / totalExams) * 100)
     : 0;
 
+  // Performance over Time >> array of objects >> [{id, title, percentage}, {}, ... ]
+  const performanceOverTime = finishedAttempts.map((a) => ({
+    id: a.id,
+    title: a.exams?.title ?? "—",
+    percentage: calculatePercentage(a.score, a.total_marks),
+  }));
+
   return {
     totalExams,
     averageScore,
     highestScore,
     passRate,
+    performanceOverTime,
   };
 }
