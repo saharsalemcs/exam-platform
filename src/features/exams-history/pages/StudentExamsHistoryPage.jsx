@@ -44,7 +44,7 @@ function StudentExamsHistoryPage() {
     !hasNoSubmissionsAtAll && filteredExams.length === 0;
 
   return (
-    <div className="flex flex-col gap-lg">
+    <div className="flex flex-col gap-lg p-4">
       {/* Page header */}
       <div className="flex flex-col gap-1">
         <h2

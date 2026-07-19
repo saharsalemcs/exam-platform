@@ -20,8 +20,8 @@ const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 
 // student
-const StudentDashboard = lazy(
-  () => import("./features/dashboard/pages/StudentDashboard"),
+const StudentDashboardPage = lazy(
+  () => import("./features/dashboard/pages/StudentDashboardPage"),
 );
 const AvailableExamsPage = lazy(
   () => import("./features/exams/pages/AvailableExamsPage"),
@@ -84,7 +84,7 @@ function App() {
               <Route element={<AppLayout />}>
                 <Route
                   path="/student/dashboard"
-                  element={<StudentDashboard />}
+                  element={<StudentDashboardPage />}
                 />
                 <Route path="/student/exams" element={<AvailableExamsPage />} />
                 <Route

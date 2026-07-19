@@ -1,3 +1,4 @@
+import { calculatePercentage } from "@/lib/utils";
 import supabase from "@/services/supabase";
 
 export async function getExamResult(attemptId, studentId) {
@@ -77,9 +78,8 @@ export async function getExamResult(attemptId, studentId) {
   });
 
   const totalMarks = attempt.total_marks ?? 0;
-  const percentage = totalMarks
-    ? Math.round((attempt.score / totalMarks) * 100)
-    : 0;
+
+  const percentage = calculatePercentage(attempt.score, totalMarks);
   const passed = attempt.score >= (attempt.exams?.pass_marks ?? 0);
 
   const getSubmitReason = () => {
