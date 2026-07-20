@@ -1,16 +1,13 @@
-import {
-  AlertTriangle,
-  BookOpen,
-  CheckCircle2,
-  TrendingUp,
-  Trophy,
-} from "lucide-react";
+import { AlertTriangle, BookOpen } from "lucide-react";
 import StatCardsGrid from "../components/StatCardsGrid";
 import { useUser } from "@/features/auth/hooks/useUser";
 import { useStudentDashboardStats } from "../hooks/useStudentDashboardStats";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmptyState from "@/components/shared/EmptyState";
 import PerformanceChart from "../components/PerformanceChart";
+import AnswersBreakdownChart from "../components/AnswersBreakdownChart";
+import Table from "@/components/shared/Table";
+import { recentExamsColumns } from "../components/recentExamsColumns";
 
 const TODAY_LABEL = new Date().toLocaleDateString("en-US", {
   month: "short",
@@ -86,7 +83,7 @@ function StudentDashboardPage() {
       />
 
       {/* Charts */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_360px]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
         <div
           className="rounded-lg p-lg"
           style={{
@@ -95,7 +92,7 @@ function StudentDashboardPage() {
           }}
         >
           <h3
-            className="text-lg font-bold"
+            className="font-display text-lg font-semibold"
             style={{ color: "var(--color-text)" }}
           >
             Performance Over Time
@@ -108,7 +105,31 @@ function StudentDashboardPage() {
           </p>
           <PerformanceChart data={stats.performanceOverTime} />
         </div>
+
+        <div
+          className="h-full rounded-lg p-lg"
+          style={{
+            backgroundColor: "var(--color-surface)",
+            border: "1px solid var(--color-border)",
+          }}
+        >
+          <h3
+            className="font-display text-lg font-semibold"
+            style={{ color: "var(--color-text)" }}
+          >
+            Answers Breakdown
+          </h3>
+          <p
+            className="mb-4 text-sm"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            Distribution by outcome
+          </p>
+          <AnswersBreakdownChart breakdown={stats.answersBreakdown} />
+        </div>
       </div>
+
+      <Table columns={recentExamsColumns} rows={stats.recentExams} />
     </div>
   );
 }

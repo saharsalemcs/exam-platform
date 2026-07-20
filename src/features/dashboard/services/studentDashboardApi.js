@@ -1,5 +1,10 @@
 import { calculatePercentage } from "@/lib/utils";
 import supabase from "@/services/supabase";
+const REASON_MAP = {
+  submitted: "MANUAL",
+  timed_out: "TIME_UP",
+  violated: "CHEAT",
+};
 
 export async function getStudentDashboardStats(studentId) {
   const { data: attempts, error: attemptsErr } = await supabase
@@ -57,7 +62,6 @@ export async function getStudentDashboardStats(studentId) {
       .in("attempt_id", attemptIds);
 
     if (answersErr) throw new Error(answersErr.message);
-    console.log(answers);
     const correct = (answers ?? []).filter((a) => a.is_correct === true).length;
     const skipped = (answers ?? []).filter((a) => a.selected == null).length;
     const total = (answers ?? []).length;
@@ -70,6 +74,21 @@ export async function getStudentDashboardStats(studentId) {
     };
   }
 
+  //  Recent Exams
+  const recentExams = [...finishedAttempts]
+    .sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at))
+    .slice(0, 5)
+    .map((a) => ({
+      id: a.id,
+      examTitle: a.exams?.title ?? "—",
+      instructorName: a.exams?.instructor?.full_name ?? "—",
+      percentage: calculatePercentage(a.score, a.total_marks),
+      reason: REASON_MAP[a.status] ?? a.status,
+      passed: a.score >= (a.exams?.pass_marks ?? 0),
+      timeTaken: a.time_taken ?? 0,
+      submittedAt: a.submitted_at,
+    }));
+
   return {
     totalExams,
     averageScore,
@@ -77,5 +96,6 @@ export async function getStudentDashboardStats(studentId) {
     passRate,
     performanceOverTime,
     answersBreakdown,
+    recentExams,
   };
 }

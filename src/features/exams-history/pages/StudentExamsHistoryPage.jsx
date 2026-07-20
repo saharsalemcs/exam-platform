@@ -8,8 +8,9 @@ import { DIFFICULTIES } from "@/utils/constants";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmptyState from "@/components/shared/EmptyState";
 import Button from "@/components/shared/Button";
-import ExamsHistoryTable from "../components/ExamsHistoryTable";
 import FilterSelect from "@/components/shared/FilterSelect";
+import Table from "@/components/shared/Table";
+import { studentHistoryColumns } from "../components/studentHistoryColumns";
 
 function StudentExamsHistoryPage() {
   const { data } = useUser();
@@ -170,7 +171,9 @@ function StudentExamsHistoryPage() {
 
       {!isFetchingStudentExams &&
         !studentExamsError &&
-        filteredExams.length > 0 && <ExamsHistoryTable exams={filteredExams} />}
+        filteredExams.length > 0 && (
+          <Table columns={studentHistoryColumns} rows={studentExams} />
+        )}
     </div>
   );
 }
