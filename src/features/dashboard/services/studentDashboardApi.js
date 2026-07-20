@@ -46,11 +46,36 @@ export async function getStudentDashboardStats(studentId) {
     percentage: calculatePercentage(a.score, a.total_marks),
   }));
 
+  // Answers Breakdown (Correct/Wrong/Skipped )
+  let answersBreakdown = { correct: 0, wrong: 0, skipped: 0, total: 0 };
+
+  const attemptIds = finishedAttempts.map((a) => a.id);
+  if (attemptIds.length) {
+    const { data: answers, error: answersErr } = await supabase
+      .from("answers")
+      .select("selected, is_correct")
+      .in("attempt_id", attemptIds);
+
+    if (answersErr) throw new Error(answersErr.message);
+    console.log(answers);
+    const correct = (answers ?? []).filter((a) => a.is_correct === true).length;
+    const skipped = (answers ?? []).filter((a) => a.selected == null).length;
+    const total = (answers ?? []).length;
+
+    answersBreakdown = {
+      correct,
+      wrong: total - correct - skipped,
+      skipped,
+      total,
+    };
+  }
+
   return {
     totalExams,
     averageScore,
     highestScore,
     passRate,
     performanceOverTime,
+    answersBreakdown,
   };
 }

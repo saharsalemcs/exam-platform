@@ -35,8 +35,8 @@ function PerformanceChart({ data }) {
   const chartData = data.map((d) => ({ ...d, label: truncateLabel(d.title) }));
 
   return (
-    <div className="h-[320px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="h-full w-full">
+      <ResponsiveContainer width="100%" height={240}>
         <AreaChart
           data={chartData}
           margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
