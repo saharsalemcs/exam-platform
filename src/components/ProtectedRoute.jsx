@@ -18,7 +18,7 @@ function ProtectedRoute({ allowedRole }) {
   if (allowedRole && profile?.role !== allowedRole) {
     const fallback =
       profile?.role === ROLES.TEACHER
-        ? "/teacher/dashboard"
+        ? "/instructor/dashboard"
         : "student/dashboard";
 
     return <Navigate to={fallback} replace />;

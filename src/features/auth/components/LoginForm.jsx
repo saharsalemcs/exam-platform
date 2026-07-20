@@ -27,7 +27,7 @@ function LoginForm() {
     if (userData?.profile && !isFetchingUser) {
       const dest =
         userData.profile.role === "teacher"
-          ? "/teacher/dashboard"
+          ? "/instructor/dashboard"
           : "/student/dashboard";
       navigate(dest, { replace: true });
     }

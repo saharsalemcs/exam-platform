@@ -1,12 +1,12 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { lazy, Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
 import NotFoundPage from "./pages/NotFoundPage";
-import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,12 +39,21 @@ const StudentResultPage = lazy(
   () => import("./features/results/pages/StudentResultPage"),
 );
 
-// Teacher
-const TeacherDashboard = lazy(
-  () => import("./features/dashboard/pages/TeacherDashboard"),
+// Instructor
+const InstructorDashboard = lazy(
+  () => import("./features/dashboard/pages/InstructorDashboard"),
 );
-const ExamManagementPage = lazy(
-  () => import("./features/exams/pages/ExamManagementPage"),
+const ExamWizardPage = lazy(
+  () => import("./features/exam-wizard/pages/ExamWizardPage"),
+);
+const ExamsManagementPage = lazy(
+  () => import("./features/exams/pages/ExamsManagementPage"),
+);
+const InstructorExamHistoryPage = lazy(
+  () => import("./features/exams/pages/ExamsManagementPage"),
+);
+const StudentsPage = lazy(
+  () => import("./features/students/pages/StudentsPage"),
 );
 const TeacherResultsPage = lazy(
   () => import("./features/results/pages/TeacherResultsPage"),
@@ -108,27 +117,39 @@ function App() {
               />
             </Route>
 
-            {/* Teacher Routes */}
+            {/* Instructor Routes */}
             <Route element={<ProtectedRoute allowedRole="teacher" />}>
               <Route element={<AppLayout />}>
                 <Route
-                  path="/teacher/dashboard"
-                  element={<TeacherDashboard />}
-                />
-                <Route path="/teacher/exams" element={<ExamManagementPage />} />
-                <Route
-                  path="/teacher/exams/:examId/edit"
-                  element={<ExamManagementPage />}
+                  path="/instructor/dashboard"
+                  element={<InstructorDashboard />}
                 />
                 <Route
+                  path="/instructor/exam-wizard"
+                  element={<ExamWizardPage />}
+                />
+                <Route
+                  path="/instructor/exams"
+                  element={<ExamsManagementPage />}
+                />
+                <Route
+                  path="/instructor/exams-history"
+                  element={<InstructorExamHistoryPage />}
+                />
+                <Route path="/instructor/students" element={<StudentsPage />} />
+                <Route
+                  path="/instructor/exams/:examId/edit"
+                  element={<ExamsManagementPage />}
+                />
+                {/* <Route
                   path="/teacher/results"
                   element={<TeacherResultsPage />}
                 />
                 <Route
                   path="/teacher/results/:examId"
                   element={<TeacherResultsPage />}
-                />
-                <Route path="/teacher/profile" element={<ProfilePage />} />
+                /> */}
+                <Route path="/instructor/profile" element={<ProfilePage />} />
               </Route>
             </Route>
 
