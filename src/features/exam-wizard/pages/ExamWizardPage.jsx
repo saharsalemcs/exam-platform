@@ -1,11 +1,43 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ExamWizardProvider from "../context/ExamWizardContext";
 import StepIndicator from "@/components/shared/StepIndicator";
 import { useSearchParams } from "react-router-dom";
+import { useExamWizardContext } from "../hooks/useExamWizardContext";
+import ExamDetailsStep from "../components/ExamDetailsStep";
 
-function ExamWizardPage() {
+const VALID_STEPS = [1, 2, 3];
+
+function ExamWizardContent() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentStep = Number(searchParams.get("step")) || 1;
+  const { examDetails, questions } = useExamWizardContext();
+  const rawStep = Number(searchParams.get("step"));
+  const step = VALID_STEPS.includes(rawStep) ? rawStep : 1;
+
+  function goToStep(n) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("step", String(n));
+        return next;
+      },
+      { replace: true },
+    );
+  }
+
+  useEffect(() => {
+    if (!searchParams.has("step")) {
+      goToStep(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (step === 2 && !examDetails?.title) {
+      goToStep(1);
+    } else if (step === 3 && questions.length === 0) {
+      goToStep(examDetails?.title ? 2 : 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, examDetails?.title, questions.length]);
 
   return (
     // page header
@@ -18,11 +50,18 @@ function ExamWizardPage() {
           Follow the steps to build and publish your exam.
         </p>
       </header>
-      <StepIndicator currentStep={currentStep} />
+      <StepIndicator currentStep={step} />
+
+      {step === 1 && <ExamDetailsStep onNext={() => goToStep(2)} />}
     </div>
   );
-  // return <ExamWizardProvider initialQuestions ={} initialExam={}>
-  // </ExamWizardProvider>;
+}
+function ExamWizardPage() {
+  return (
+    <ExamWizardProvider>
+      <ExamWizardContent />
+    </ExamWizardProvider>
+  );
 }
 
 export default ExamWizardPage;

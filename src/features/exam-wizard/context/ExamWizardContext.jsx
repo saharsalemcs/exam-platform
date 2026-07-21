@@ -28,7 +28,7 @@ function ExamWizardProvider({
     setExamDetails(details);
   }
 
-  function clearExam() {
+  function clearExamData() {
     setQuestions([]);
     setExamDetails({});
   }
@@ -38,7 +38,7 @@ function ExamWizardProvider({
       value={{
         questions,
         handleAddQuestion,
-        clearExam,
+        clearExamData,
         examDetails,
         handleDeleteQuestion,
         handleExamDetails,
