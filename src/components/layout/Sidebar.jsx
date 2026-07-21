@@ -3,8 +3,8 @@ import { useUser } from "@/features/auth/hooks/useUser";
 import { getInitials } from "@/lib/utils";
 import { ROLES } from "@/utils/constants";
 import {
-  BarChart2,
   BookOpen,
+  CirclePlus,
   CircleUser,
   GraduationCap,
   History,
@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   User,
+  UsersRound,
   X,
 } from "lucide-react";
 import NavItem from "../shared/NavItem";
@@ -25,10 +26,12 @@ const STUDENT_NAV = [
 ];
 
 const TEACHER_NAV = [
-  { label: "Dashboard", to: "/teacher/dashboard", icon: LayoutDashboard },
-  { label: "My Exams", to: "/teacher/exams", icon: BookOpen },
-  { label: "Results", to: "/teacher/results", icon: BarChart2 },
-  { label: "Profile", to: "/teacher/profile", icon: CircleUser },
+  { label: "Dashboard", to: "/instructor/dashboard", icon: LayoutDashboard },
+  { label: "Create Exam", to: "/instructor/exam-wizard", icon: CirclePlus },
+  { label: "Exams Management", to: "/instructor/exams", icon: BookOpen },
+  { label: "Exams History", to: "/instructor/exams-history", icon: History },
+  { label: "Students", to: "/instructor/students", icon: UsersRound },
+  { label: "Profile", to: "/instructor/profile", icon: CircleUser },
 ];
 
 function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
