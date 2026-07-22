@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import Button from "@/components/shared/Button";
 import FormRow from "@/components/shared/FormRow";
 import { useExamWizardContext } from "../hooks/useExamWizardContext";
+import ErrorMessage from "@/components/shared/ErrorMessage";
+import toast from "react-hot-toast";
 
 const OPTION_IDS = ["opt1", "opt2", "opt3", "opt4"];
 
@@ -32,9 +34,9 @@ function MCQForm() {
   const { questions, handleAddQuestion, editingQuestionId } =
     useExamWizardContext();
 
-  // const editingQuestion = editingQuestionId
-  //   ? questions.find((q) => q.id === editingQuestionId)
-  //   : null;
+  const editingQuestion = editingQuestionId
+    ? questions.find((q) => q.id === editingQuestionId)
+    : null;
 
   const {
     register,
@@ -42,7 +44,7 @@ function MCQForm() {
     reset,
     formState: { errors },
   } = useForm({
-    // values: questionToFormValues(editingQuestion),
+    values: questionToFormValues(editingQuestion),
   });
 
   function onSubmit(data) {
@@ -56,6 +58,9 @@ function MCQForm() {
       correct_answer: data.correctOption,
       marks: Number(data.marks),
     });
+    toast.success(
+      `Question ${editingQuestionId ? "updated" : "added"} successfully!`,
+    );
     reset(EMPTY_VALUES);
   }
 
@@ -94,7 +99,7 @@ function MCQForm() {
         {OPTION_IDS.map((id, i) => (
           <div
             key={id}
-            className="flex items-center gap-md rounded-lg border border-border bg-surface-2 p-lg"
+            className="flex items-center gap-lg rounded-lg border border-border bg-surface-2 p-lg transition-all hover:border-primary"
           >
             <input
               type="radio"
@@ -107,14 +112,19 @@ function MCQForm() {
             <input
               type="text"
               placeholder={`Option ${i + 1}`}
-              {...register(`option${i + 1}`, { required: "Required" })}
-              className="w-full bg-transparent text-text outline-none"
+              {...register(`option${i + 1}`, {
+                required: "Option is required",
+              })}
+              className="flex-1 bg-transparent text-text placeholder-text-faint outline-none"
             />
+            {errors[`option${i + 1}`] && (
+              <ErrorMessage message={errors[`option${i + 1}`]?.message} />
+            )}
           </div>
         ))}
 
         {errors.correctOption && (
-          <p className="text-sm text-danger">{errors.correctOption.message}</p>
+          <ErrorMessage message={errors.correctOption.message} />
         )}
       </div>
 
@@ -144,8 +154,7 @@ function MCQForm() {
       </FormRow>
 
       <Button variant="primary" size="lg" type="submit" fullWidth>
-        Add MCQ Question
-        {/* {editingQuestion ? "Save Changes" : "Add MCQ Question"} */}
+        {editingQuestion ? "Save Changes" : "Add MCQ Question"}
       </Button>
     </form>
   );

@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import Button from "@/components/shared/Button";
 import FormRow from "@/components/shared/FormRow";
 import { useExamWizardContext } from "../hooks/useExamWizardContext";
+import toast from "react-hot-toast";
 
 const TRUE_FALSE_OPTIONS = [
   { id: "true", text: "True" },
@@ -24,11 +25,12 @@ function questionToFormValues(question) {
 }
 
 function TrueFalseForm() {
-  const { questions, handleAddQuestion } = useExamWizardContext();
+  const { questions, handleAddQuestion, editingQuestionId } =
+    useExamWizardContext();
 
-  // const editingQuestion = editingQuestionId
-  //   ? questions.find((q) => q.id === editingQuestionId)
-  //   : null;
+  const editingQuestion = editingQuestionId
+    ? questions.find((q) => q.id === editingQuestionId)
+    : null;
 
   const {
     register,
@@ -36,7 +38,7 @@ function TrueFalseForm() {
     reset,
     formState: { errors },
   } = useForm({
-    // values: questionToFormValues(editingQuestion),
+    values: questionToFormValues(editingQuestion),
   });
 
   function onSubmit(data) {
@@ -47,6 +49,7 @@ function TrueFalseForm() {
       correct_answer: data.correctOption,
       marks: Number(data.marks),
     });
+    toast.success(`Question added successfully!`);
     reset(EMPTY_VALUES);
   }
 
@@ -128,9 +131,8 @@ function TrueFalseForm() {
         />
       </FormRow>
 
-      <Button variation="primary" size="md" type="submit" fullWidth>
-        Add True/False Question
-        {/* {editingQuestion ? "Save Changes" : "Add True/False Question"} */}
+      <Button variant="primary" size="lg" type="submit" fullWidth>
+        {editingQuestion ? "Save Changes" : "Add True/False Question"}
       </Button>
     </form>
   );

@@ -2,9 +2,14 @@ import Button from "@/components/shared/Button";
 import { useExamWizardContext } from "../hooks/useExamWizardContext";
 import MCQForm from "./MCQForm";
 import TrueFalseForm from "./TrueFalseForm";
+import QuestionPreviewCard from "./QuestionPreviewCard";
 
 function QuestionBuilderStep({ onBack, onNext }) {
   const { questions, questionType, setQuestionType } = useExamWizardContext();
+  const totalPoints = questions.reduce(
+    (sum, q) => sum + (Number(q.marks) || 0),
+    0,
+  );
 
   function switchType(type) {
     setQuestionType(type);
@@ -34,6 +39,35 @@ function QuestionBuilderStep({ onBack, onNext }) {
         </div>
 
         {questionType === "mcq" ? <MCQForm /> : <TrueFalseForm />}
+
+        <div className="flex justify-between">
+          <Button variant="secondary" size="md" onClick={onBack}>
+            ← Back
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={onNext}
+            disabled={questions.length === 0}
+          >
+            Next (Review &amp; Publish) →
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold text-text">
+          Questions Added ({questions.length})
+        </h3>
+        <span className="text-sm text-text-muted">
+          Total: {totalPoints} points
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-md">
+        {questions.map((q, i) => (
+          <QuestionPreviewCard key={q.id} question={q} index={i} />
+        ))}
       </div>
     </div>
   );
