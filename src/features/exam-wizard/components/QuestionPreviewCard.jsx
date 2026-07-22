@@ -13,7 +13,7 @@ function QuestionPreviewCard({ question, index, readOnly = false }) {
 
   return (
     <div
-      className="flex flex-col gap-4 rounded-md border border-border bg-surface p-lg sm:flex-row sm:items-start sm:justify-between"
+      className="flex flex-col gap-md rounded-md border border-border bg-surface p-lg sm:flex-row sm:items-start sm:justify-between"
       style={{ opacity: isBeingEdited ? 0.6 : 1 }}
     >
       <div className="flex-1">

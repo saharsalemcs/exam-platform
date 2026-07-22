@@ -22,6 +22,7 @@ function QuestionBuilderStep({ onBack, onNext }) {
           <h3 className="text-sm font-bold tracking-wider text-text uppercase">
             Add New Question
           </h3>
+
           <div className="flex gap-2">
             <button
               onClick={() => switchType("mcq")}

@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import toast from "react-hot-toast";
 
 export const ExamWizardContext = createContext();
 
@@ -10,18 +11,30 @@ function ExamWizardProvider({
   const [questions, setQuestions] = useState(initialQuestions);
   const [examDetails, setExamDetails] = useState(initialExam);
   const [questionType, setQuestionType] = useState("mcq");
+  const [editingQuestionId, setEditingQuestionId] = useState(null);
+
+  const isEditMode = Boolean(initialExam?.id);
 
   // Question Actions
   function handleAddQuestion(questionData) {
-    setQuestions((prev) => [
-      ...prev,
-      { ...questionData, id: crypto.randomUUID() },
-    ]);
+    if (editingQuestionId) {
+      setQuestions((prev) =>
+        prev.map((q) =>
+          q.id === editingQuestionId ? { ...questionData, id: q.id } : q,
+        ),
+      );
+      setEditingQuestionId(null);
+    } else {
+      setQuestions((prev) => [
+        ...prev,
+        { ...questionData, id: crypto.randomUUID() },
+      ]);
+    }
   }
 
-  function handleDeleteQuestion(id) {
+  function handleDelete(id) {
     setQuestions((prev) => prev.filter((q) => q.id !== id));
-    // toast.success("Question deleted successfully!");
+    toast.success("Question deleted successfully!");
   }
 
   // Exam Actions
@@ -34,6 +47,20 @@ function ExamWizardProvider({
     setExamDetails({});
   }
 
+  function handleEdit(id) {
+    const questionToEdit = questions.find((q) => q.id === id);
+    if (questionToEdit) {
+      setQuestionType(questionToEdit.type);
+      setEditingQuestionId(id);
+      setTimeout(() => {
+        const element = document.getElementById("main-content");
+        if (element) {
+          element.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }, 10);
+    }
+  }
+
   return (
     <ExamWizardContext.Provider
       value={{
@@ -41,10 +68,14 @@ function ExamWizardProvider({
         handleAddQuestion,
         clearExamData,
         examDetails,
-        handleDeleteQuestion,
+        handleDelete,
         handleExamDetails,
         questionType,
         setQuestionType,
+        handleEdit,
+        isEditMode,
+        editingQuestionId,
+        setEditingQuestionId,
       }}
     >
       {children}

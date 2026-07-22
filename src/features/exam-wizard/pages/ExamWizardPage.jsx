@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { useExamWizardContext } from "../hooks/useExamWizardContext";
 import ExamDetailsStep from "../components/ExamDetailsStep";
 import QuestionBuilderStep from "../components/QuestionBuilderStep";
+import ReviewStep from "../components/ReviewStep";
 
 const VALID_STEPS = [1, 2, 3];
 
@@ -60,6 +61,7 @@ function ExamWizardContent() {
           onNext={() => goToStep(3)}
         />
       )}
+      {step === 3 && <ReviewStep onEditQuestions={() => goToStep(2)} />}
     </div>
   );
 }
