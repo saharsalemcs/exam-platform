@@ -138,7 +138,7 @@ function App() {
                 />
                 <Route path="/instructor/students" element={<StudentsPage />} />
                 <Route
-                  path="/instructor/exams/:examId/edit"
+                  path="/instructor/exams/:examId"
                   element={<ExamsManagementPage />}
                 />
                 {/* <Route

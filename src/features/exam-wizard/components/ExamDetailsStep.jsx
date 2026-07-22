@@ -118,7 +118,7 @@ function ExamDetailsStep({ onNext }) {
             >
               <option value=""></option>
               {DIFFICULTIES.map((d) => (
-                <option key={d} value={d}>
+                <option key={d} value={d.value}>
                   {d.label}
                 </option>
               ))}

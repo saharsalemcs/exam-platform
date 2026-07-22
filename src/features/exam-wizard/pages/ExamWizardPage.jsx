@@ -32,14 +32,15 @@ function ExamWizardContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // useEffect(() => {
-  //   if (step === 2 && !examDetails?.title) {
-  //     goToStep(1);
-  //   } else if (step === 3 && questions.length === 0) {
-  //     goToStep(examDetails?.title ? 2 : 1);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [step, examDetails?.title, questions.length]);
+
+  useEffect(() => {
+    if (step === 2 && !examDetails?.title) {
+      goToStep(1);
+    } else if (step === 3 && questions.length === 0) {
+      goToStep(examDetails?.title ? 2 : 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, examDetails?.title, questions.length]);
 
   return (
     // page header
