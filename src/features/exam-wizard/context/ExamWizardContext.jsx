@@ -9,6 +9,7 @@ function ExamWizardProvider({
 }) {
   const [questions, setQuestions] = useState(initialQuestions);
   const [examDetails, setExamDetails] = useState(initialExam);
+  const [questionType, setQuestionType] = useState("mcq");
 
   // Question Actions
   function handleAddQuestion(questionData) {
@@ -42,6 +43,8 @@ function ExamWizardProvider({
         examDetails,
         handleDeleteQuestion,
         handleExamDetails,
+        questionType,
+        setQuestionType,
       }}
     >
       {children}

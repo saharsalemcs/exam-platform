@@ -1,16 +1,17 @@
 import { cloneElement, isValidElement } from "react";
 
-function FormRow({ label, children, error, id, required = false }) {
+function FormRow({ label, children, error, id, required = false, style }) {
   const child =
     id && isValidElement(children)
       ? cloneElement(children, { id: children.props.id ?? id })
       : children;
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-sm">
       <label
         htmlFor={id}
-        className="text-xs font-bold tracking-wider text-text-muted uppercase"
+        className={`text-xs font-semibold tracking-wider text-text-muted uppercase`}
+        style={style}
       >
         {label} {required && <span className="text-danger">*</span>}
       </label>
@@ -18,7 +19,7 @@ function FormRow({ label, children, error, id, required = false }) {
       {child}
 
       {error && (
-        <p role="alert" className="text-xs text-danger">
+        <p role="alert" className="text-sm text-danger">
           {error}
         </p>
       )}

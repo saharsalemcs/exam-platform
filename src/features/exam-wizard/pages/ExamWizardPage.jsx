@@ -4,6 +4,7 @@ import StepIndicator from "@/components/shared/StepIndicator";
 import { useSearchParams } from "react-router-dom";
 import { useExamWizardContext } from "../hooks/useExamWizardContext";
 import ExamDetailsStep from "../components/ExamDetailsStep";
+import QuestionBuilderStep from "../components/QuestionBuilderStep";
 
 const VALID_STEPS = [1, 2, 3];
 
@@ -30,14 +31,14 @@ function ExamWizardContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  useEffect(() => {
-    if (step === 2 && !examDetails?.title) {
-      goToStep(1);
-    } else if (step === 3 && questions.length === 0) {
-      goToStep(examDetails?.title ? 2 : 1);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, examDetails?.title, questions.length]);
+  // useEffect(() => {
+  //   if (step === 2 && !examDetails?.title) {
+  //     goToStep(1);
+  //   } else if (step === 3 && questions.length === 0) {
+  //     goToStep(examDetails?.title ? 2 : 1);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [step, examDetails?.title, questions.length]);
 
   return (
     // page header
@@ -53,6 +54,12 @@ function ExamWizardContent() {
       <StepIndicator currentStep={step} />
 
       {step === 1 && <ExamDetailsStep onNext={() => goToStep(2)} />}
+      {step === 2 && (
+        <QuestionBuilderStep
+          onBack={() => goToStep(1)}
+          onNext={() => goToStep(3)}
+        />
+      )}
     </div>
   );
 }
