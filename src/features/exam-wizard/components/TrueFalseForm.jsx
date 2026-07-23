@@ -49,7 +49,9 @@ function TrueFalseForm() {
       correct_answer: data.correctOption,
       marks: Number(data.marks),
     });
-    toast.success(`Question added successfully!`);
+    toast.success(
+      `Question ${editingQuestionId ? "updated" : "added"} successfully!`,
+    );
     reset(EMPTY_VALUES);
   }
 

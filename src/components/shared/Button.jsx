@@ -22,7 +22,7 @@ function Button({
     primary: "bg-[var(--color-primary)] text-[#0d1117] hover:opacity-85",
     secondary:
       "border border-[var(--color-border)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)]",
-    danger: "bg-[var(--color-danger)] text-[#0d1117] hover:opacity-85",
+    danger: "bg-danger/20 text-danger border border-danger/30 hover:opacity-85",
     outline:
       "border border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary-glow)]",
     ghost:

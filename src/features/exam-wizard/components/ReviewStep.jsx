@@ -100,7 +100,7 @@ function ReviewStep({ onEditQuestions }) {
           onClick={handleConfirm}
           disabled={isPending}
         >
-          {isPending ? "Publishing…" : "✓ Confirm & Publish"}
+          {isEditMode ? "✓ Save Changes" : "✓ Confirm & Publish"}
         </Button>
       </div>
     </div>

@@ -1,10 +1,14 @@
 import Button from "@/components/shared/Button";
 import { useExamWizardContext } from "../hooks/useExamWizardContext";
 import { Edit2Icon, TrashIcon } from "lucide-react";
+import { useState } from "react";
+import SubmitDeleteModal from "./SubmitDeleteModal";
 
 const LETTERS = ["A", "B", "C", "D"];
 
 function QuestionPreviewCard({ question, index, readOnly = false }) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const { handleEdit, handleDelete, editingQuestionId } =
     useExamWizardContext();
   const { id, body, type, options, correct_answer, marks } = question;
@@ -94,7 +98,9 @@ function QuestionPreviewCard({ question, index, readOnly = false }) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => handleDelete(id)}
+              // onClick={() => handleDelete(id)}
+              onClick={() => setIsDeleteModalOpen(true)}
+              disabled={editingQuestionId !== null}
               className="text-danger hover:hover:text-danger"
             >
               <TrashIcon size={20} />
@@ -102,6 +108,12 @@ function QuestionPreviewCard({ question, index, readOnly = false }) {
           </div>
         )}
       </div>
+
+      <SubmitDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={() => handleDelete(id)}
+      />
     </div>
   );
 }
