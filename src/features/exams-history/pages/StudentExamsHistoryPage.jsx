@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useUser } from "@/features/auth/hooks/useUser";
 import { useStudentExamsHistory } from "../hooks/useStudentExamsHistory";
 import { AlertTriangle, FileX2, Search, X } from "lucide-react";
@@ -8,10 +7,10 @@ import { DIFFICULTIES } from "@/utils/constants";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmptyState from "@/components/shared/EmptyState";
 import Button from "@/components/shared/Button";
-import FilterSelect from "@/components/shared/FilterSelect";
 import Table from "@/components/shared/Table";
 import { studentHistoryColumns } from "../components/studentHistoryColumns";
 import SearchFilterBar from "@/components/shared/SearchFilterBar";
+import { useFilteredExams } from "@/hooks/useFilteredExams";
 
 function StudentExamsHistoryPage() {
   const { data } = useUser();
@@ -30,16 +29,15 @@ function StudentExamsHistoryPage() {
     debouncedSearch,
   } = useExamSearch();
 
-  const filteredExams = useMemo(() => {
-    const query = debouncedSearch.trim().toLowerCase();
-    return studentExams.filter((attempt) => {
-      const title = attempt.exams?.title?.toLowerCase() ?? "";
-      const matchesSearch = !query || title.includes(query);
-      const matchesDifficulty =
-        !difficulty || attempt.exams?.difficulty === difficulty;
-      return matchesSearch && matchesDifficulty;
-    });
-  }, [studentExams, debouncedSearch, difficulty]);
+  const filteredExams = useFilteredExams(
+    studentExams,
+    debouncedSearch,
+    difficulty,
+    (attempt) => ({
+      title: attempt.exams?.title,
+      difficulty: attempt.exams?.difficulty,
+    }),
+  );
 
   const hasNoSubmissionsAtAll = studentExams.length === 0;
   const hasNoFilterResults =

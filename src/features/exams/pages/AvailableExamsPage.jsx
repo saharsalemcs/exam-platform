@@ -5,11 +5,11 @@ import { useExamSearch } from "../hooks/useExamSearch";
 import { useExamCategories } from "../hooks/useExamCategories";
 import { useStudentExamStatus } from "../hooks/useStudentExamStatus";
 import { DIFFICULTIES } from "@/utils/constants";
-import FilterSelect from "@/components/shared/FilterSelect";
 import EmptyState from "@/components/shared/EmptyState";
 import EmptyStateAction from "@/components/shared/EmptyStateAction";
 import ExamCard from "../components/ExamCard";
 import SearchFilterBar from "@/components/shared/SearchFilterBar";
+import { useFilteredExams } from "@/hooks/useFilteredExams";
 
 function AvailableExamsPage() {
   const {
@@ -31,6 +31,7 @@ function AvailableExamsPage() {
   });
   const { categories } = useExamCategories();
   const { attemptStatus } = useStudentExamStatus();
+  const filteredExams = useFilteredExams(exams, debouncedSearch, difficulty);
 
   return (
     <div className="flex animate-[fade-up_0.4s_ease_both] flex-col gap-5 sm:gap-6">
