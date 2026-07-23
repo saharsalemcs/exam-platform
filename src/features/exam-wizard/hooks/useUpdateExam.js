@@ -14,7 +14,7 @@ export function useUpdateExam() {
       updateExam(examId, examDetails, questions, instructorId),
     onSuccess: () => {
       toast.success("Exam updated successfully!");
-      navigate(`/instructor/exams`, { replace: true });
+      navigate(`/instructor/exams-management`, { replace: true });
     },
   });
 }

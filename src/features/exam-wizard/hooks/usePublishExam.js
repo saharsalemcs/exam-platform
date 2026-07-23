@@ -14,7 +14,7 @@ export function usePublishExam() {
       publishExam(examDetails, questions, instructorId),
     onSuccess: () => {
       toast.success("Exam published successfully!");
-      navigate(`/instructor/exams`, { replace: true });
+      navigate(`/instructor/exams-management`, { replace: true });
     },
   });
 }
