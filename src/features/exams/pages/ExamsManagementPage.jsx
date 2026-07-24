@@ -13,6 +13,8 @@ import { useFilteredExams } from "@/hooks/useFilteredExams";
 import { DIFFICULTIES } from "@/utils/constants";
 import { useUpdateExamStatus } from "../hooks/useUpdateExamStatus";
 import { useState } from "react";
+import { useDeleteExam } from "../hooks/useDeleteExam";
+import ConfirmDeleteExamModal from "../components/ConfirmDeleteExamModal";
 
 function ExamManagementPage() {
   const navigate = useNavigate();
@@ -26,6 +28,8 @@ function ExamManagementPage() {
     instructorId,
   });
   const { updateStatus, isUpdatingStatus, statusVars } = useUpdateExamStatus();
+  const { removeExam, isDeletingExam } = useDeleteExam();
+  const [examToDelete, setExamToDelete] = useState(null);
 
   const {
     search,
@@ -43,15 +47,23 @@ function ExamManagementPage() {
     difficulty,
   );
 
-  async function handleEdit(exam) {
+  function handleEdit(exam) {
     navigate(`/instructor/exam-wizard/${exam.id}?step=1`);
+  }
+
+  function handleConfirmDelete() {
+    if (!examToDelete) return;
+    removeExam(examToDelete.id, {
+      onSuccess: () => setExamToDelete(null),
+    });
   }
 
   const columns = buildExamManagementColumns({
     onStatusChange: (examId, status) => updateStatus({ examId, status }),
     onEdit: handleEdit,
-    // onDelete: setExamToDelete,
+    onDelete: setExamToDelete,
     updatingExamId: isUpdatingStatus ? statusVars?.examId : null,
+    // بتعطل الصف ال بيتعدل او ال بيتمسح بس
   });
 
   if (isFetchingExams) return <LoadingSpinner />;
@@ -140,6 +152,14 @@ function ExamManagementPage() {
       ) : (
         <Table columns={columns} rows={filteredExams} />
       )}
+
+      <ConfirmDeleteExamModal
+        isOpen={!!examToDelete}
+        onClose={() => setExamToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        examTitle={examToDelete?.title}
+        isDeleting={isDeletingExam}
+      />
     </div>
   );
 }
