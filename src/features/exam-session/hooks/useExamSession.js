@@ -141,8 +141,6 @@ export function useExamSession(exam) {
   );
 
   // -------------- Anti-cheat --------------
-  // بنبعت toast فوري لكل مخالفة (imperative، مش state) — نفس فلسفة
-  // الهوك نفسه: مفيش داعي لـ re-render عشان نعرض تحذير بيختفي لوحده
   const handleViolation = useCallback((type, count) => {
     const message = VIOLATION_MESSAGES[type] ?? "Violation detected";
     toast.error(`${message} (warning ${count} of ${MAX_VIOLATIONS})`, {
@@ -150,19 +148,11 @@ export function useExamSession(exam) {
     });
   }, []);
 
-  // ref بتحمل آخر نسخة من handleSubmit. السبب: handleSubmit بيتغيّر كل
-  // ثانية (لإن timeLeft من ضمن الـ deps بتاعته)، فلو استخدمناه مباشرة
-  // في deps بتاعة handleAutoSubmit، useAntiCheat هيعيد تسجيل كل
-  // event listeners بتاعته كل ثانية من غير داعي. الـ ref هنا بتخلي
-  // handleAutoSubmit ثابتة، وبرضو دايمًا بتنادي أحدث نسخة من handleSubmit
   const handleSubmitRef = useRef(handleSubmit);
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
   }, [handleSubmit]);
 
-  // لما نوصل للحد الأقصى: بنوقف التايمر فورًا (عشان الطالب ميتلخبطش
-  // بعدّاد شغال وهو بيقرا رسالة السحب)، بنعرض التحذير الأخير، وبعدها
-  // بمهلة بسيطة بننفذ التسليم فعليًا كـ "violated"
   const handleAutoSubmit = useCallback(() => {
     pauseTimer();
     toast.error(
@@ -175,7 +165,7 @@ export function useExamSession(exam) {
   }, [pauseTimer]);
 
   useAntiCheat({
-    enabled: status === "active",
+    enabled: status === "active" && timeLeft > 0,
     onViolation: handleViolation,
     maxViolations: MAX_VIOLATIONS,
     onAutoSubmit: handleAutoSubmit,
@@ -238,7 +228,7 @@ export function useExamSession(exam) {
 
       if (remaining <= 0) {
         timeExpiredRef.current = true;
-        setStatus("active");
+        setStatus("timed_out");
         setShowTimesUp(true);
         return;
       }
@@ -248,7 +238,7 @@ export function useExamSession(exam) {
     } catch (err) {
       console.error("[useExamSession] startSession:", err.message);
       setError(err.message);
-      setStatus("idle");
+      setStatus("error");
     } finally {
       startingRef.current = false;
     }

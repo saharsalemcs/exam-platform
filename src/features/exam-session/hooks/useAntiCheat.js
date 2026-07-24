@@ -2,10 +2,6 @@ import { useEffect, useRef, useCallback } from "react";
 
 /**
  * useAntiCheat
- * ─────────────────────────────────────────────────────────────────
- * Callback-based (مش state-based) — كل مخالفة بتنادي onViolation
- * مباشرة، فمفيش مشكلة "نفس القيمة مش بتعمل re-render" اللي كانت
- * موجودة في النسخة القديمة المعتمدة على lastWarning state.
  *
  * @param {object}   options
  * @param {boolean}  options.enabled          - يراقب بس لما تكون true
@@ -13,18 +9,6 @@ import { useEffect, useRef, useCallback } from "react";
  * @param {number}   [options.maxViolations]   - افتراضي 3
  * @param {function} [options.onAutoSubmit]    - بتتنادى لما نوصل maxViolations
  *
- * Detections:
- *   1. Tab switch / window blur
- *   2. Right-click
- *   3. Keyboard shortcuts خطيرة (F12, Ctrl+Shift+I/J/C, Ctrl+U, إلخ)
- *   4. محاولة نسخ (selection + copy)
- *   5. منع زرار الرجوع/التقدم — بس من غير ما تتحسب مخالفة (بقرار)
- *
- * ⚠️ ملحوظ عمداً من نسخة المرجع:
- *   - DevTools detection (resize + debugger timing) — شيلناها خالص
- *   - Split-screen detection (نفس منطق الـ resize) — شيلناها
- *   - beforeunload كمخالفة — شيلناها، الـ autosave-only handler
- *     الموجود في useExamSession يفضل هو المسؤول عن ده لوحده
  */
 export function useAntiCheat({
   enabled,
