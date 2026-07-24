@@ -37,7 +37,7 @@ const DIFFICULTY = {
  *
  * index -> for stagger animation
  * attemptInfo -> { [examId]: { status, attemptId } }
- * 'in-progress' | 'submitted' | 'timed-out
+  // submitStatus: 'submitted' | 'timed_out' | 'violated'
  */
 function ExamCard({ exam, index = 0, attemptInfo }) {
   const navigate = useNavigate();
@@ -45,14 +45,15 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
   const difficulty = DIFFICULTY[exam.difficulty] ?? DIFFICULTY.medium;
   const isCompleted =
     attemptInfo?.status === "submitted" || attemptInfo?.status === "timed_out";
-  const isInterrupted = attemptInfo?.status === "in_progress";
+  const isViolated = attemptInfo?.status === "violated";
 
   function handleAction(e) {
     e.preventDefault();
-    if (isCompleted) navigate(`/student/results/${attemptInfo.attemptId}`);
+    if (isCompleted || isViolated)
+      navigate(`/student/results/${attemptInfo.attemptId}`);
     else navigate(`/student/exams/${exam.id}`);
   }
-  const cardBorderColor = isInterrupted
+  const cardBorderColor = isViolated
     ? "rgba(200,93,106,0.3)"
     : isCompleted
       ? "rgba(45,212,191,0.2)"
@@ -70,12 +71,12 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-2px)";
-        e.currentTarget.style.boxShadow = isInterrupted
+        e.currentTarget.style.boxShadow = isViolated
           ? "0 0 20px rgba(200,93,106,0.12)"
           : isCompleted
             ? "0 0 20px rgba(45,212,191,0.1)"
             : "var(--shadow-glow)";
-        e.currentTarget.style.borderColor = isInterrupted
+        e.currentTarget.style.borderColor = isViolated
           ? "rgba(200,93,106,0.45)"
           : isCompleted
             ? "rgba(45,212,191,0.35)"
@@ -121,7 +122,7 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
           {/* Completed badge */}
           {isCompleted && <ExamStatusBadge status="completed" />}
           {/* In-Progress badge */}
-          {isInterrupted && <ExamStatusBadge status="in-progress" />}
+          {isViolated && <ExamStatusBadge status="violated" />}
         </div>
 
         {/* Title + description */}
@@ -142,7 +143,7 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
           )}
         </div>
         {/* Interrupted warning */}
-        {/* {isInterrupted && (
+        {/* {isViolated && (
           <div
             className="flex items-start gap-3 rounded-[var(--radius-md)] p-4"
             style={{
@@ -229,9 +230,7 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
       {/* Action button */}
       <div className="px-5 pb-5">
         <Button
-          variant={
-            isCompleted ? "success" : isInterrupted ? "danger" : "primary"
-          }
+          variant={isCompleted ? "success" : isViolated ? "danger" : "primary"}
           onClick={handleAction}
           className="flex w-full"
         >
@@ -239,10 +238,9 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
             <>
               <CheckCircle2 size={17} /> View Results
             </>
-          ) : isInterrupted ? (
+          ) : isViolated ? (
             <>
-              {" "}
-              <AlertTriangle size={17} /> Resume Exam
+              <AlertTriangle size={17} /> View Results
             </>
           ) : (
             <>

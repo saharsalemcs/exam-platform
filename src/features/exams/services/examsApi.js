@@ -127,6 +127,25 @@ export async function examHasSubmissions(examId) {
   return (count ?? 0) > 0;
 }
 
+// بنجيب عدد الـ submissions لكل الامتحانات بتاعة المدرّس دفعة واحدة
+// بدل ما نسأل عن كل امتحان لوحده (N+1 queries)
+export async function getSubmissionCountsByExamIds(examIds) {
+  if (!examIds?.length) return {};
+
+  const { data, error } = await supabase
+    .from("exam_attempts")
+    .select("exam_id")
+    .in("exam_id", examIds);
+
+  if (error) throw new Error(error.message);
+
+  const counts = {};
+  for (const row of data) {
+    counts[row.exam_id] = (counts[row.exam_id] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export async function deleteExam(examId, instructorId) {
   const { error } = await supabase.rpc("delete_exam", {
     p_exam_id: examId,

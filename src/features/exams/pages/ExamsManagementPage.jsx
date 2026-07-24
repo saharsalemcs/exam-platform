@@ -11,6 +11,8 @@ import Table from "@/components/shared/Table";
 import { useExamSearch } from "../hooks/useExamSearch";
 import { useFilteredExams } from "@/hooks/useFilteredExams";
 import { DIFFICULTIES } from "@/utils/constants";
+import { useUpdateExamStatus } from "../hooks/useUpdateExamStatus";
+import { useState } from "react";
 
 function ExamManagementPage() {
   const navigate = useNavigate();
@@ -23,6 +25,8 @@ function ExamManagementPage() {
   } = useExamsManagement({
     instructorId,
   });
+  const { updateStatus, isUpdatingStatus, statusVars } = useUpdateExamStatus();
+
   const {
     search,
     difficulty,
@@ -39,11 +43,15 @@ function ExamManagementPage() {
     difficulty,
   );
 
+  async function handleEdit(exam) {
+    navigate(`/instructor/exam-wizard/${exam.id}?step=1`);
+  }
+
   const columns = buildExamManagementColumns({
-    // onStatusChange: (examId, status) => updateStatus({ examId, status }),
-    // onEdit: handleEdit,
+    onStatusChange: (examId, status) => updateStatus({ examId, status }),
+    onEdit: handleEdit,
     // onDelete: setExamToDelete,
-    // updatingExamId: isUpdatingStatus ? statusVars?.examId : checkingEditId,
+    updatingExamId: isUpdatingStatus ? statusVars?.examId : null,
   });
 
   if (isFetchingExams) return <LoadingSpinner />;

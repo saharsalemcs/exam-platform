@@ -1,6 +1,6 @@
 import { formatDateTime } from "@/utils/formatDateForInput";
 import { getEffectiveStatus } from "../helpers/getEffectiveStatus";
-import { PencilIcon, Trash2 } from "lucide-react";
+import { Lock, Pencil, Trash2 } from "lucide-react";
 import StatusDropdown from "./StatusDropdown";
 import Tag from "@/components/shared/Tag";
 
@@ -69,24 +69,41 @@ export function buildExamManagementColumns({
     {
       key: "actions",
       label: "Actions",
-      render: (exam) => (
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => onDelete(exam)}
-            aria-label="Delete exam"
-            className="text-text-muted hover:text-danger"
-          >
-            <Trash2 size={18} />
-          </button>
-          <button
-            onClick={() => onEdit(exam)}
-            aria-label="Edit exam"
-            className="text-text-muted hover:text-primary"
-          >
-            <PencilIcon size={18} />
-          </button>
-        </div>
-      ),
+      render: (exam) => {
+        if (exam.has_submissions) {
+          return (
+            <span
+              role="status"
+              aria-label="Locked: exam has student submissions"
+              className="flex items-center gap-1.5 text-sm text-text-muted"
+            >
+              <Lock size={14} />
+              (submissions)
+            </span>
+          );
+        }
+
+        return (
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => onDelete(exam)}
+              aria-label="Delete exam"
+              disabled={updatingExamId === exam.id}
+              className="cursor-pointer text-text-muted hover:text-danger disabled:opacity-50"
+            >
+              <Trash2 size={18} />
+            </button>
+            <button
+              onClick={() => onEdit(exam)}
+              aria-label="Edit exam"
+              disabled={updatingExamId === exam.id}
+              className="cursor-pointer text-text-muted hover:text-primary disabled:opacity-50"
+            >
+              <Pencil size={18} />
+            </button>
+          </div>
+        );
+      },
     },
   ];
 }
