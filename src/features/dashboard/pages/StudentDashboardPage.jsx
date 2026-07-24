@@ -49,7 +49,7 @@ function StudentDashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-lg p-4">
+    <div className="flex flex-col gap-lg">
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>

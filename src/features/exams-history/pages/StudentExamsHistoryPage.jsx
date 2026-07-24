@@ -1,6 +1,6 @@
 import { useUser } from "@/features/auth/hooks/useUser";
 import { useStudentExamsHistory } from "../hooks/useStudentExamsHistory";
-import { AlertTriangle, FileX2, Search, X } from "lucide-react";
+import { AlertTriangle, FileX2, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useExamSearch } from "@/features/exams/hooks/useExamSearch";
 import { DIFFICULTIES } from "@/utils/constants";
@@ -14,7 +14,7 @@ import { useFilteredExams } from "@/hooks/useFilteredExams";
 
 function StudentExamsHistoryPage() {
   const { data } = useUser();
-  const studentId = data?.user?.id;
+  const studentId = data?.profile?.id;
   const { studentExams, isFetchingStudentExams, studentExamsError } =
     useStudentExamsHistory({ studentId });
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ function StudentExamsHistoryPage() {
     !hasNoSubmissionsAtAll && filteredExams.length === 0;
 
   return (
-    <div className="flex flex-col gap-lg p-4">
+    <div className="flex flex-col gap-lg">
       {/* Page header */}
       <div className="flex flex-col gap-1">
         <h2
@@ -79,7 +79,6 @@ function StudentExamsHistoryPage() {
       />
 
       {/* content */}
-
       {isFetchingStudentExams && <LoadingSpinner />}
 
       {!isFetchingStudentExams && studentExamsError && (

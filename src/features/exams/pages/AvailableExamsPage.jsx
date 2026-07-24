@@ -36,7 +36,7 @@ function AvailableExamsPage() {
   return (
     <div className="flex animate-[fade-up_0.4s_ease_both] flex-col gap-5 sm:gap-6">
       {/* Page header */}
-      <div className="flex flex-col gap-1 p-4">
+      <div className="flex flex-col gap-1">
         <h2
           className="text-2xl font-bold tracking-tight"
           style={{ color: "var(--color-text)" }}

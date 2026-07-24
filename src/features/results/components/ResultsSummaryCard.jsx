@@ -2,19 +2,6 @@ import CircularProgress from "@/components/shared/CircularProgress";
 import { formatTime } from "@/lib/utils";
 import StatItem from "./StatItem";
 
-function formatSubmittedAt(isoString) {
-  const date = new Date(isoString);
-  const datePart = date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-  });
-  const timePart = date.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-  return `${datePart}, ${timePart}`;
-}
 function getSubmitReasonConfig(reason) {
   switch (reason) {
     case "cheat":
@@ -135,4 +122,3 @@ function ResultsSummaryCard({ result }) {
 }
 
 export default ResultsSummaryCard;
-export { formatSubmittedAt };

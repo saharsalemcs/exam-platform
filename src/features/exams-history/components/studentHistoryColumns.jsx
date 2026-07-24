@@ -1,12 +1,8 @@
 import Tag from "@/components/shared/Tag";
-import { formatTime } from "@/lib/utils";
+import { calculatePercentage, formatTime } from "@/lib/utils";
 import { Link } from "react-router-dom";
-import {
-  DIFFICULTY_COLOR,
-  getPercentage,
-  isPassed,
-  formatSubmittedAt,
-} from "../hooks/examHistoryHelpers";
+import { DIFFICULTY_COLOR, isPassed } from "../hooks/examHistoryHelpers";
+import { formatDateTime } from "@/utils/formatDateForInput";
 
 export const studentHistoryColumns = [
   {
@@ -47,7 +43,7 @@ export const studentHistoryColumns = [
     label: "Score",
     render: (attempt) => (
       <span className="font-medium" style={{ color: "var(--color-text)" }}>
-        {getPercentage(attempt.score, attempt.total_marks)}%
+        {calculatePercentage(attempt.score, attempt.total_marks)}%
       </span>
     ),
   },
@@ -79,7 +75,7 @@ export const studentHistoryColumns = [
     label: "Submitted At",
     render: (attempt) => (
       <span style={{ color: "var(--color-text-muted)" }}>
-        {formatSubmittedAt(attempt.submitted_at)}
+        {formatDateTime(attempt.submitted_at)}
       </span>
     ),
   },
