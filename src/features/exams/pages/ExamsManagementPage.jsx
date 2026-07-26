@@ -1,20 +1,29 @@
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/shared/Button";
 import SearchFilterBar from "@/components/shared/SearchFilterBar";
+import FilterModal from "@/components/shared/FilterModal";
 import { useExamsManagement } from "../hooks/useExamsManagement";
 import { useUser } from "@/features/auth/hooks/useUser";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmptyState from "@/components/shared/EmptyState";
-import { AlertTriangle, Search } from "lucide-react";
+import { AlertTriangle, Funnel, Search, SlidersHorizontal } from "lucide-react";
 import { buildExamManagementColumns } from "../components/ExamManagementColumns";
 import Table from "@/components/shared/Table";
 import { useExamSearch } from "../hooks/useExamSearch";
-import { useFilteredExams } from "@/hooks/useFilteredExams";
+import { useFilteredItems } from "@/hooks/useFilteredItems";
 import { DIFFICULTIES } from "@/utils/constants";
 import { useUpdateExamStatus } from "../hooks/useUpdateExamStatus";
-import { useState } from "react";
 import { useDeleteExam } from "../hooks/useDeleteExam";
 import ConfirmDeleteExamModal from "../components/ConfirmDeleteExamModal";
+import ClearButton from "@/components/shared/ClearButton";
+import { getEffectiveStatus } from "../helpers/getEffectiveStatus";
+
+const STATUS_OPTIONS = [
+  { value: "draft", label: "Draft" },
+  { value: "active", label: "Active" },
+  { value: "closed", label: "Closed" },
+];
 
 function ExamManagementPage() {
   const navigate = useNavigate();
@@ -37,14 +46,41 @@ function ExamManagementPage() {
     setSearch,
     setDifficulty,
     clearFilters,
-    hasActiveFilters,
     debouncedSearch,
   } = useExamSearch();
 
-  const filteredExams = useFilteredExams(
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [subject, setSubject] = useState("");
+  const [status, setStatus] = useState("");
+
+  const subjectOptions = useMemo(
+    () =>
+      [...new Set(instructorExams.map((e) => e.category).filter(Boolean))]
+        .sort()
+        .map((s) => ({ value: s, label: s })),
+    [instructorExams],
+  );
+
+  const hasActiveFilters = Boolean(search || difficulty || subject || status);
+
+  const clearAllFilters = () => {
+    clearFilters(); // بيمسح search + difficulty من useExamSearch
+    setSubject("");
+    setStatus("");
+  };
+
+  const filterValues = { difficulty, subject, status };
+
+  const filteredExams = useFilteredItems(
     instructorExams,
     debouncedSearch,
-    difficulty,
+    filterValues,
+    (exam) => ({
+      title: exam.title,
+      difficulty: exam.difficulty,
+      subject: exam.category,
+      status: getEffectiveStatus(exam),
+    }),
   );
 
   function handleEdit(exam) {
@@ -102,22 +138,56 @@ function ExamManagementPage() {
         </Button>
       </div>
 
-      {/* Search and filter */}
-      <SearchFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Search exams..."
-        filters={[
+      {/* Search + Filters trigger */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <SearchFilterBar
+          className="flex-1"
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search exams..."
+          filters={[]}
+          hasActiveFilters={false}
+          onClearFilters={() => {}}
+        />
+
+        <button
+          title="Filter By"
+          onClick={() => setIsFilterModalOpen(true)}
+          className="flex w-fit cursor-pointer items-center rounded-md bg-surface p-md text-base font-medium text-text-muted"
+        >
+          <Funnel />
+        </button>
+
+        {hasActiveFilters && <ClearButton onClick={clearAllFilters} />}
+      </div>
+
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onClearAll={clearAllFilters}
+        sections={[
           {
             key: "difficulty",
+            label: "Difficulty",
             options: DIFFICULTIES,
             value: difficulty,
             onChange: setDifficulty,
-            placeholder: "All Levels",
+          },
+          {
+            key: "subject",
+            label: "Subject",
+            options: subjectOptions,
+            value: subject,
+            onChange: setSubject,
+          },
+          {
+            key: "status",
+            label: "Status",
+            options: STATUS_OPTIONS,
+            value: status,
+            onChange: setStatus,
           },
         ]}
-        hasActiveFilters={hasActiveFilters}
-        onClearFilters={clearFilters}
       />
 
       {/* content */}
@@ -143,11 +213,7 @@ function ExamManagementPage() {
           title="No results match your filters"
           description="Try a different search term or clear the filters."
           size="lg"
-          action={
-            <Button variant="secondary" onClick={clearFilters}>
-              Clear Filters
-            </Button>
-          }
+          action={<ClearButton onClick={clearAllFilters} />}
         />
       ) : (
         <Table columns={columns} rows={filteredExams} />

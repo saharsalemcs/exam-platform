@@ -11,10 +11,19 @@ const PAGE_META = {
   "/student/results": { title: "My Results", breadcrumb: "Results" },
   "/student/profile": { title: "Profile", breadcrumb: "Profile" },
 
-  "/teacher/dashboard": { title: "Dashboard", breadcrumb: null },
-  "/teacher/exams": { title: "Exam Management", breadcrumb: "Exams" },
-  "/teacher/results": { title: "Result Monitoring", breadcrumb: "Results" },
-  "/teacher/profile": { title: "Profile", breadcrumb: "Profile" },
+  "/instructor/dashboard": { title: "Dashboard", breadcrumb: null },
+  "/instructor/exam-wizard": {
+    title: "Exam Wizard",
+    breadcrumb: "Exam",
+  },
+  "/instructor/exams-management": {
+    title: "Exam Management",
+    breadcrumb: "Exams",
+  },
+  "/instructor/exams-history": { title: "Exams History", breadcrumb: "Exams" },
+  "/instructor/students": { title: "Students List", breadcrumb: "Students" },
+  "/instructor/results": { title: "Result Monitoring", breadcrumb: "Results" },
+  "/instructor/profile": { title: "Profile", breadcrumb: "Profile" },
 };
 
 function Header({ sidebarWidth, onMenuClick }) {

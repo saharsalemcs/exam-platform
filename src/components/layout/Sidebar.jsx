@@ -28,7 +28,11 @@ const STUDENT_NAV = [
 const TEACHER_NAV = [
   { label: "Dashboard", to: "/instructor/dashboard", icon: LayoutDashboard },
   { label: "Create Exam", to: "/instructor/exam-wizard", icon: CirclePlus },
-  { label: "Exams Management", to: "/instructor/exams", icon: BookOpen },
+  {
+    label: "Exams Management",
+    to: "/instructor/exams-management",
+    icon: BookOpen,
+  },
   { label: "Exams History", to: "/instructor/exams-history", icon: History },
   { label: "Students", to: "/instructor/students", icon: UsersRound },
   { label: "Profile", to: "/instructor/profile", icon: CircleUser },

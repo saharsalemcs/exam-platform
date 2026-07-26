@@ -1,4 +1,4 @@
-import { BookOpen, Search, X } from "lucide-react";
+import { BookOpen, Funnel, Search, X } from "lucide-react";
 import { RippleLoader } from "react-loadly";
 import { useExams } from "../hooks/useExams";
 import { useExamSearch } from "../hooks/useExamSearch";
@@ -6,10 +6,11 @@ import { useExamCategories } from "../hooks/useExamCategories";
 import { useStudentExamStatus } from "../hooks/useStudentExamStatus";
 import { DIFFICULTIES } from "@/utils/constants";
 import EmptyState from "@/components/shared/EmptyState";
-import EmptyStateAction from "@/components/shared/EmptyStateAction";
 import ExamCard from "../components/ExamCard";
 import SearchFilterBar from "@/components/shared/SearchFilterBar";
-import { useFilteredExams } from "@/hooks/useFilteredExams";
+import { useMemo, useState } from "react";
+import ClearButton from "@/components/shared/ClearButton";
+import FilterModal from "@/components/shared/FilterModal";
 
 function AvailableExamsPage() {
   const {
@@ -20,18 +21,51 @@ function AvailableExamsPage() {
     setCategory,
     setDifficulty,
     clearFilters,
-    hasActiveFilters,
     debouncedSearch,
   } = useExamSearch();
+  const { categories } = useExamCategories();
 
-  const { exams, isLoading, error } = useExams({
+  const {
+    exams: fetchedExams,
+    isLoading,
+    error,
+  } = useExams({
     search: debouncedSearch,
     category,
     difficulty,
   });
-  const { categories } = useExamCategories();
+
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [instructor, setInstructor] = useState("");
+
+  const instructorOptions = useMemo(
+    () =>
+      [
+        ...new Set(
+          fetchedExams.map((e) => e.profiles?.full_name).filter(Boolean),
+        ),
+      ]
+        .sort()
+        .map((name) => ({ value: name, label: name })),
+    [fetchedExams],
+  );
+  const exams = useMemo(
+    () =>
+      instructor
+        ? fetchedExams.filter((e) => e.profiles?.full_name === instructor)
+        : fetchedExams,
+    [fetchedExams, instructor],
+  );
+
   const { attemptStatus } = useStudentExamStatus();
-  const filteredExams = useFilteredExams(exams, debouncedSearch, difficulty);
+
+  const hasActiveFilters = Boolean(
+    search || category || difficulty || instructor,
+  );
+  const clearAllFilters = () => {
+    clearFilters(); // بيمسح search + category + difficulty
+    setInstructor("");
+  };
 
   return (
     <div className="flex animate-[fade-up_0.4s_ease_both] flex-col gap-5 sm:gap-6">
@@ -50,29 +84,56 @@ function AvailableExamsPage() {
         </p>
       </div>
 
-      {/* Search +  Filters */}
-      <SearchFilterBar
-        search={search}
-        onSearchChange={setSearch}
-        searchPlaceholder="Search exams..."
-        filters={[
-          categories.length > 0 && {
-            key: "category",
-            options: categories.map((c) => ({ value: c, label: c })),
-            value: category,
-            onChange: setCategory,
-            placeholder: "All Categories",
-          },
+      {/* Search + Filters trigger */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <SearchFilterBar
+          className="flex-1"
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search exams..."
+          filters={[]}
+          hasActiveFilters={false}
+          onClearFilters={() => {}}
+        />
+
+        <button
+          title="Filter By"
+          onClick={() => setIsFilterModalOpen(true)}
+          className="flex w-fit cursor-pointer items-center rounded-md bg-surface p-md text-base font-medium text-text-muted"
+        >
+          <Funnel />
+        </button>
+
+        {hasActiveFilters && <ClearButton onClick={clearAllFilters} />}
+      </div>
+
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onClearAll={clearAllFilters}
+        sections={[
           {
             key: "difficulty",
+            label: "Difficulty",
             options: DIFFICULTIES,
             value: difficulty,
             onChange: setDifficulty,
-            placeholder: "All Levels",
           },
-        ].filter(Boolean)}
-        hasActiveFilters={hasActiveFilters}
-        onClearFilters={clearFilters}
+          {
+            key: "subject",
+            label: "Subject",
+            options: categories.map((c) => ({ value: c, label: c })),
+            value: category,
+            onChange: setCategory,
+          },
+          {
+            key: "instructor",
+            label: "Instructor",
+            options: instructorOptions,
+            value: instructor,
+            onChange: setInstructor,
+          },
+        ]}
       />
 
       {/* Content */}
@@ -107,14 +168,8 @@ function AvailableExamsPage() {
               : "Check back later, your teacher will publish exams here."
           }
           variant={hasActiveFilters ? "search" : "default"}
-          size="md"
-          action={
-            hasActiveFilters && (
-              <EmptyStateAction icon={X} variant="ghost" onClick={clearFilters}>
-                Clear
-              </EmptyStateAction>
-            )
-          }
+          size="lg"
+          action={<ClearButton onClick={clearAllFilters} />}
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -6,7 +6,7 @@ function AvatarMenu({ profile }) {
   const navigate = useNavigate();
 
   const profilePath =
-    profile?.role === "teacher" ? "/teacher/profile" : "/student/profile";
+    profile?.role === "teacher" ? "/instructor/profile" : "/student/profile";
 
   return (
     <button
