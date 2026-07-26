@@ -8,6 +8,7 @@ import { instructorStudentsColumns } from "../components/instructorStudentsColum
 import Table from "@/components/shared/Table";
 import SearchFilterBar from "@/components/shared/SearchFilterBar";
 import Button from "@/components/shared/Button";
+import ClearButton from "@/components/shared/ClearButton";
 
 function StudentsListPage() {
   const { data: userData } = useUser();
@@ -107,13 +108,7 @@ function StudentsListPage() {
           size="lg"
           action={
             hasActiveFilters ? (
-              <Button
-                variant="secondary"
-                className="mt-8"
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </Button>
+              <ClearButton onClick={clearFilters} />
             ) : undefined
           }
         />

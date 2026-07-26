@@ -103,7 +103,7 @@ export const instructorHistoryColumns = [
     render: (row) => (
       <Link
         to={`/instructor/results/${row.id}`}
-        className="text-sm font-bold tracking-wide text-primary"
+        className="rounded-full bg-primary/10 px-3 py-1.5 text-sm font-bold tracking-wide text-primary"
       >
         REVIEW
       </Link>
