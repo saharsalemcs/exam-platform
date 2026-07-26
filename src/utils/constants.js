@@ -11,6 +11,11 @@ export const ROLES = {
 
 export const GRADES = ["Grade 1", "Grade 2", "Grade 3", "Grade 4"];
 
+export const STATUS_OPTIONS = [
+  { value: "passed", label: "Passed" },
+  { value: "failed", label: "Failed" },
+];
+
 export const DEPARTMENTS = [
   "General",
   "computer science",
