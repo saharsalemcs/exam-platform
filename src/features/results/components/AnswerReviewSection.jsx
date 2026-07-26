@@ -36,7 +36,7 @@ function FilterTab({ label, count, onClick, className }) {
   );
 }
 
-function AnswerReviewSection({ questions }) {
+function AnswerReviewSection({ questions, showNotes = true }) {
   const [activeFilter, setActiveFilter] = useState("all");
 
   const counts = {
@@ -62,7 +62,7 @@ function AnswerReviewSection({ questions }) {
         </h2>
         <p className="text-[15px]" style={{ color: "var(--color-text-muted)" }}>
           {questions.length} question{questions.length !== 1 ? "s" : ""} ·
-          Review your answers below
+          Review answers below
         </p>
       </div>
 
@@ -84,6 +84,7 @@ function AnswerReviewSection({ questions }) {
             key={q.id}
             question={q}
             index={questions.indexOf(q)}
+            showNote={showNotes}
           />
         ))}
       </div>

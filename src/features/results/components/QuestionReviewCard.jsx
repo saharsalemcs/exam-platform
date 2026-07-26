@@ -1,4 +1,5 @@
 import OptionButton from "./OptionButton";
+import ReviewNote from "./ReviewNote";
 
 function getOptionLetter(index) {
   return String.fromCharCode(65 + index);
@@ -19,63 +20,7 @@ const STATUS_BADGE = {
   },
 };
 
-function ReviewNote({
-  status,
-  correctLetter,
-  correctText,
-  selectedLetter,
-  selectedText,
-}) {
-  if (status === "correct") {
-    return (
-      <p
-        className="rounded-lg border border-border px-3 py-2 text-center text-sm text-accent"
-        style={{ backgroundColor: "rgba(59,130,246,0.06)" }}
-      >
-        Correct! Well done.
-      </p>
-    );
-  }
-
-  if (status === "skipped") {
-    return (
-      <p
-        className="rounded-lg border border-border px-3 py-2 text-center text-sm"
-        style={{
-          backgroundColor: "var(--color-surface-2)",
-          color: "var(--color-text-muted)",
-        }}
-      >
-        You skipped this question — correct answer was{" "}
-        <span className="font-bold text-accent">
-          {correctLetter}. {correctText}
-        </span>
-      </p>
-    );
-  }
-
-  // wrong
-  return (
-    <p
-      className="rounded-lg border border-border px-3 py-2 text-center text-sm"
-      style={{
-        backgroundColor: "var(--color-surface-2)",
-        color: "var(--color-text-muted)",
-      }}
-    >
-      You answered{" "}
-      <span className="font-semibold text-danger">
-        {selectedLetter}. {selectedText}
-      </span>{" "}
-      — correct answer was{" "}
-      <span className="font-semibold text-accent">
-        {correctLetter}. {correctText}
-      </span>
-    </p>
-  );
-}
-
-function QuestionReviewCard({ question, index }) {
+function QuestionReviewCard({ question, index, showNote = true }) {
   const {
     body,
     options,
@@ -160,13 +105,15 @@ function QuestionReviewCard({ question, index }) {
         </div>
 
         {/* Note */}
-        <ReviewNote
-          status={status}
-          correctLetter={getOptionLetter(correctIndex)}
-          correctText={options[correctIndex]?.text}
-          selectedLetter={getOptionLetter(selectedIndex)}
-          selectedText={options[selectedIndex]?.text}
-        />
+        {showNote && (
+          <ReviewNote
+            status={status}
+            correctLetter={getOptionLetter(correctIndex)}
+            correctText={options[correctIndex]?.text}
+            selectedLetter={getOptionLetter(selectedIndex)}
+            selectedText={options[selectedIndex]?.text}
+          />
+        )}
       </div>
     </div>
   );

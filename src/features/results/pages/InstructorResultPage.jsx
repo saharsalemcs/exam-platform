@@ -1,21 +1,21 @@
 import { useParams } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
 import { useUser } from "@/features/auth/hooks/useUser";
-import { useStudentResult } from "../hooks/useStudentResult";
+import { useInstructorResult } from "../hooks/useInstructorResult";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import EmptyState from "@/components/shared/EmptyState";
 import ResultsSummaryCard from "../components/ResultsSummaryCard";
 import AnswerReviewSection from "../components/AnswerReviewSection";
 import { formatDateTime } from "@/utils/formatDateForInput";
 
-function StudentResultPage() {
+function InstructorResultPage() {
   const { attemptId } = useParams();
   const { data: userData } = useUser();
-  const studentId = userData?.profile?.id;
+  const instructorId = userData?.profile?.id;
 
-  const { result, isFetchingResult, resultError } = useStudentResult({
+  const { result, isFetchingResult, resultError } = useInstructorResult({
     attemptId,
-    studentId,
+    instructorId,
   });
 
   if (isFetchingResult) return <LoadingSpinner />;
@@ -33,26 +33,25 @@ function StudentResultPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col gap-8">
-      {/* Page header */}
+    <div className="flex min-h-screen flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1
-          className="text-2xl font-bold tracking-tight"
-          style={{ color: "var(--color-text)" }}
-        >
+        <p className="font-bold tracking-wide text-primary uppercase">
+          {result.studentName}'S
+        </p>
+
+        <h1 className="text-2xl font-bold tracking-tight text-text">
           Results & Analytics
         </h1>
-        <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-          {result.exam.title} · {result.exam.instructorName} ·{" "}
-          {formatDateTime(result.submittedAt)}
+        <p className="text-sm text-text-muted">
+          {result.exam.title} · {formatDateTime(result.submittedAt)}
         </p>
       </div>
 
       <ResultsSummaryCard result={result} />
 
-      <AnswerReviewSection questions={result.questions} />
+      <AnswerReviewSection questions={result.questions} showNotes={false} />
     </div>
   );
 }
 
-export default StudentResultPage;
+export default InstructorResultPage;

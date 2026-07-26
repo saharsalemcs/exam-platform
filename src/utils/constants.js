@@ -10,6 +10,7 @@ export const ROLES = {
 };
 
 export const GRADES = ["Grade 1", "Grade 2", "Grade 3", "Grade 4"];
+
 export const DEPARTMENTS = [
   "General",
   "computer science",

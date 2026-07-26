@@ -82,6 +82,14 @@ export async function getExamResultForInstructor(attemptId, instructorId) {
     ? Math.round((attempt.score / totalMarks) * 100)
     : 0;
   const passed = attempt.score >= (attempt.exams?.pass_marks ?? 0);
+  const getSubmitReason = () => {
+    let reason;
+    if (attempt.status === "violated") reason = "cheat";
+    else if (attempt.status === "timed_out") reason = "timed_out";
+    else reason = "auto";
+
+    return reason;
+  };
 
   return {
     studentName: attempt.student?.full_name ?? "—",
@@ -100,5 +108,6 @@ export async function getExamResultForInstructor(attemptId, instructorId) {
     wrongCount,
     skippedCount,
     questions: questionResults,
+    getSubmitReason,
   };
 }
