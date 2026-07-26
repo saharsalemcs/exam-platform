@@ -50,13 +50,13 @@ const ExamsManagementPage = lazy(
   () => import("./features/exams/pages/ExamsManagementPage"),
 );
 const InstructorExamHistoryPage = lazy(
-  () => import("./features/exams/pages/ExamsManagementPage"),
+  () => import("./features/exams-history/pages/InstructorExamHistoryPage"),
 );
-const StudentsPage = lazy(
-  () => import("./features/students/pages/StudentsPage"),
+const StudentsListPage = lazy(
+  () => import("./features/students/pages/StudentsListPage"),
 );
-const TeacherResultsPage = lazy(
-  () => import("./features/results/pages/TeacherResultsPage"),
+const InstructorResultPage = lazy(
+  () => import("./features/results/pages/InstructorResultPage"),
 );
 
 // Shared
@@ -129,26 +129,29 @@ function App() {
                   element={<ExamWizardPage />}
                 />
                 <Route
-                  path="/instructor/exams"
+                  path="/instructor/exam-wizard/:examId"
+                  element={<ExamWizardPage />}
+                />
+                <Route
+                  path="/instructor/exams-management"
                   element={<ExamsManagementPage />}
                 />
                 <Route
                   path="/instructor/exams-history"
                   element={<InstructorExamHistoryPage />}
                 />
-                <Route path="/instructor/students" element={<StudentsPage />} />
                 <Route
-                  path="/instructor/exams/:examId"
-                  element={<ExamsManagementPage />}
+                  path="/instructor/students"
+                  element={<StudentsListPage />}
                 />
                 {/* <Route
                   path="/teacher/results"
                   element={<TeacherResultsPage />}
-                />
+                />*/}
                 <Route
-                  path="/teacher/results/:examId"
-                  element={<TeacherResultsPage />}
-                /> */}
+                  path="/instructor/results/:attemptId"
+                  element={<InstructorResultPage />}
+                />
                 <Route path="/instructor/profile" element={<ProfilePage />} />
               </Route>
             </Route>
