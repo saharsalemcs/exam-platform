@@ -18,7 +18,7 @@ export const STATUS_OPTIONS = [
 
 export const DEPARTMENTS = [
   "General",
-  "computer science",
-  "information systems",
-  "information technology",
+  "Computer Science",
+  "Information Systems",
+  "Information Technology",
 ];
