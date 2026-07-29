@@ -135,6 +135,12 @@ function LoginForm() {
               })}
             />
           </div>
+          <Link
+            to="/forgot-password"
+            className="text-right text-xs text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
 
           <Button type="submit" disabled={isLoggingIn}>
             {isLoggingIn ? "Signing In..." : "Sign In"}

@@ -18,6 +18,12 @@ const queryClient = new QueryClient({
 const HomePage = lazy(() => import("./pages/HomePage"));
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
+const ForgotPasswordPage = lazy(
+  () => import("./features/auth/pages/ForgotPasswordPage"),
+);
+const ResetPasswordPage = lazy(
+  () => import("./features/auth/pages/ResetPasswordPage"),
+);
 
 // student
 const CompleteProfilePage = lazy(
@@ -90,6 +96,8 @@ function App() {
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
 
               {/* Student Routes */}
               <Route element={<ProtectedRoute allowedRole="student" />}>
