@@ -31,7 +31,7 @@ const FormInput = forwardRef(function FormInput(
                 : "1px solid var(--color-border)",
             backgroundColor: "var(--color-surface-2)",
             color: "var(--color-text)",
-            fontSize: 14,
+            fontSize: 15,
             outline: "none",
             transition: "border-color 0.15s ease",
           }}

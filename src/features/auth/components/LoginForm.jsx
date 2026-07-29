@@ -6,10 +6,13 @@ import { GraduationCap, Lock, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useLogin } from "../hooks/useLogin";
 import FormInput from "@/components/shared/FormInput";
+import Button from "@/components/shared/Button";
+import { useSignInWithGoogle } from "../hooks/useSignInWithGoogle";
 
 function LoginForm() {
   const { data: userData, isLoading: isFetchingUser } = useUser();
   const { login, isLoggingIn } = useLogin();
+  const { singInWithGoogle, isSigningIn } = useSignInWithGoogle();
   const navigate = useNavigate();
 
   const {
@@ -25,11 +28,18 @@ function LoginForm() {
 
   useEffect(() => {
     if (userData?.profile && !isFetchingUser) {
-      const dest =
-        userData.profile.role === "teacher"
-          ? "/instructor/dashboard"
-          : "/student/dashboard";
-      navigate(dest, { replace: true });
+      const { profile } = userData;
+
+      if (profile.role === "teacher") {
+        navigate("/instructor/dashboard", { replace: true });
+        return;
+      }
+
+      // Student: check profile completeness
+      const isProfileComplete = profile.grade && profile.department;
+      navigate(isProfileComplete ? "/student/dashboard" : "/complete-profile", {
+        replace: true,
+      });
     }
   }, [isFetchingUser, navigate, userData]);
 
@@ -40,36 +50,26 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-bg px-4 py-12">
       <div
-        className="w-full max-w-[400px] rounded-[var(--radius-lg)] p-10"
+        className="w-full max-w-[400px] rounded-lg border border-border bg-surface p-10"
         style={{
-          backgroundColor: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
           boxShadow: "var(--shadow-md)",
         }}
       >
         {/* Logo */}
         <div className="mb-6 flex flex-col items-center gap-3">
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] border-1 border-solid border-[var(--color-border)] bg-[var(--color-surface-2)] text-lg font-bold text-[var(--color-primary)]"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-lg font-bold text-primary"
             style={{ boxShadow: "var(--shadow-glow)" }}
           >
             <GraduationCap strokeWidth={2.5} size={22} />
           </div>
           <div className="text-center">
-            <h1
-              className="text-lg font-bold tracking-tight"
-              style={{ color: "var(--color-text)" }}
-            >
+            <h1 className="text-lg font-bold tracking-tight text-text">
               Welcome Back to EduTest
             </h1>
-            <p
-              className="mt-1 text-sm"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              Sign in to continue
-            </p>
+            <p className="mt-1 text-sm text-text-muted">Sign in to continue</p>
           </div>
         </div>
 
@@ -129,42 +129,42 @@ function LoginForm() {
               {...register("password", {
                 required: "Password is required",
                 minLength: {
-                  value: 8,
-                  message: "Password needs to be at least 8 characters",
+                  value: 6,
+                  message: "Password needs to be at least 6 characters",
                 },
               })}
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoggingIn}
-            style={{
-              width: "100%",
-              height: 42,
-              borderRadius: "var(--radius-md)",
-              background: "var(--color-primary)",
-              color: "var(--color-bg)",
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: isLoggingIn ? "not-allowed" : "pointer",
-              opacity: isLoggingIn ? 0.7 : 1,
-              border: "none",
-              transition: "opacity 0.15s ease",
-            }}
-          >
+          <Button type="submit" disabled={isLoggingIn}>
             {isLoggingIn ? "Signing In..." : "Sign In"}
-          </button>
+          </Button>
+
+          {/* Divider */}
+          <div className="flex items-center">
+            <div className="h-0.25 flex-1 bg-border" />
+            <span className="mx-3 my-0 text-sm text-text-muted">or</span>
+            <div className="h-0.25 flex-1 bg-border" />
+          </div>
+
+          {/* Google Button */}
+          <Button
+            type="button"
+            disabled={isSigningIn}
+            onClick={singInWithGoogle}
+            variant="secondary"
+            style={{ fontWeight: "normal", fontSize: 14 }}
+          >
+            <span className="text-sm font-bold text-primary">G</span>
+            {isSigningIn ? "Redirecting…" : "Sign in with Google"}
+          </Button>
 
           <p
             className="mt-4 text-center text-xs"
             style={{ color: "var(--color-text-muted)" }}
           >
             Don't have an account?{" "}
-            <Link
-              to="/register"
-              style={{ color: "var(--color-accent)", fontWeight: 600 }}
-            >
+            <Link to="/register" className="font-semibold text-accent">
               Sign up
             </Link>
           </p>

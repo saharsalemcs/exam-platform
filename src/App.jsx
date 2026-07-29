@@ -20,6 +20,9 @@ const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 
 // student
+const CompleteProfilePage = lazy(
+  () => import("./features/profile/pages/CompleteProfilePage"),
+);
 const StudentDashboardPage = lazy(
   () => import("./features/dashboard/pages/StudentDashboardPage"),
 );
@@ -79,85 +82,89 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
         <BrowserRouter>
-          <Suspense fallback={<PageLoader />} />
-          <Routes>
-            {/* Root */}
-            <Route path="/" element={<HomePage />} />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* Root */}
+              <Route path="/" element={<HomePage />} />
 
-            {/* Public Routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+              {/* Public Routes */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
-            {/* Student Routes */}
-            <Route element={<ProtectedRoute allowedRole="student" />}>
-              <Route element={<AppLayout />}>
+              {/* Student Routes */}
+              <Route element={<ProtectedRoute allowedRole="student" />}>
                 <Route
-                  path="/student/dashboard"
-                  element={<StudentDashboardPage />}
+                  path="/complete-profile"
+                  element={<CompleteProfilePage />}
                 />
-                <Route path="/student/exams" element={<AvailableExamsPage />} />
+                <Route element={<AppLayout />}>
+                  <Route
+                    path="/student/dashboard"
+                    element={<StudentDashboardPage />}
+                  />
+                  <Route
+                    path="/student/exams"
+                    element={<AvailableExamsPage />}
+                  />
+                  <Route
+                    path="/student/exams/:examId"
+                    element={<ExamDetailsPage />}
+                  />
+                  <Route
+                    path="/student/exams-history"
+                    element={<StudentExamsHistoryPage />}
+                  />
+                  <Route
+                    path="/student/results/:attemptId"
+                    element={<StudentResultPage />}
+                  />
+                  <Route path="/student/profile" element={<ProfilePage />} />
+                </Route>
+                {/* Fullscreen - no sidebar/header */}
                 <Route
-                  path="/student/exams/:examId"
-                  element={<ExamDetailsPage />}
+                  path="/student/exam/:examId/session"
+                  element={<ExamSessionPage />}
                 />
-                <Route
-                  path="/student/exams-history"
-                  element={<StudentExamsHistoryPage />}
-                />
-                <Route
-                  path="/student/results/:attemptId"
-                  element={<StudentResultPage />}
-                />
-                <Route path="/student/profile" element={<ProfilePage />} />
               </Route>
-              {/* Fullscreen - no sidebar/header */}
-              <Route
-                path="/student/exam/:examId/session"
-                element={<ExamSessionPage />}
-              />
-            </Route>
 
-            {/* Instructor Routes */}
-            <Route element={<ProtectedRoute allowedRole="teacher" />}>
-              <Route element={<AppLayout />}>
-                <Route
-                  path="/instructor/dashboard"
-                  element={<InstructorDashboard />}
-                />
-                <Route
-                  path="/instructor/exam-wizard"
-                  element={<ExamWizardPage />}
-                />
-                <Route
-                  path="/instructor/exam-wizard/:examId"
-                  element={<ExamWizardPage />}
-                />
-                <Route
-                  path="/instructor/exams-management"
-                  element={<ExamsManagementPage />}
-                />
-                <Route
-                  path="/instructor/exams-history"
-                  element={<InstructorExamHistoryPage />}
-                />
-                <Route
-                  path="/instructor/students"
-                  element={<StudentsListPage />}
-                />
-                {/* <Route
-                  path="/teacher/results"
-                  element={<TeacherResultsPage />}
-                />*/}
-                <Route
-                  path="/instructor/results/:attemptId"
-                  element={<InstructorResultPage />}
-                />
-                <Route path="/instructor/profile" element={<ProfilePage />} />
+              {/* Instructor Routes */}
+              <Route element={<ProtectedRoute allowedRole="teacher" />}>
+                <Route element={<AppLayout />}>
+                  <Route
+                    path="/instructor/dashboard"
+                    element={<InstructorDashboard />}
+                  />
+                  <Route
+                    path="/instructor/exam-wizard"
+                    element={<ExamWizardPage />}
+                  />
+                  <Route
+                    path="/instructor/exam-wizard/:examId"
+                    element={<ExamWizardPage />}
+                  />
+                  <Route
+                    path="/instructor/exams-management"
+                    element={<ExamsManagementPage />}
+                  />
+                  <Route
+                    path="/instructor/exams-history"
+                    element={<InstructorExamHistoryPage />}
+                  />
+                  <Route
+                    path="/instructor/students"
+                    element={<StudentsListPage />}
+                  />
+                  <Route
+                    path="/instructor/results/:attemptId"
+                    element={<InstructorResultPage />}
+                  />
+                  <Route path="/instructor/profile" element={<ProfilePage />} />
+                </Route>
               </Route>
-            </Route>
 
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </QueryClientProvider>
 
