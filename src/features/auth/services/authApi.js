@@ -13,7 +13,7 @@ export async function getCurrentUser() {
   // fetch profile
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("id, full_name, role, avatar_url")
+    .select("id, full_name, role, avatar_url, grade, department")
     .eq("id", session.user.id)
     .single();
 
@@ -22,19 +22,23 @@ export async function getCurrentUser() {
   return { user: session.user, profile };
 }
 
-export async function register(fullName, email, password, role) {
+export async function register(fullName, email, password) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         full_name: fullName.trim(),
-        role,
+        role: "student",
       },
     },
   });
 
   if (error) throw new Error(error.message);
+
+  if (data?.user && data.user.identities?.length === 0) {
+    throw new Error("Email already registered");
+  }
 
   return data;
 }
@@ -48,6 +52,16 @@ export async function login(email, password) {
   if (error) throw new Error(error.message);
 
   return data;
+}
+export async function signInWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin + "/student/dashboard",
+    },
+  });
+
+  if (error) throw new Error(error.message);
 }
 
 export async function logout() {

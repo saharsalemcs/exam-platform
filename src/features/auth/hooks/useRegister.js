@@ -4,8 +4,8 @@ import { register as registerApi } from "@/features/auth/services/authApi";
 
 export function useRegister() {
   const { mutate: register, isPending: isRegistering } = useMutation({
-    mutationFn: ({ fullName, email, password, role }) =>
-      registerApi(fullName, email, password, role),
+    mutationFn: ({ fullName, email, password }) =>
+      registerApi(fullName, email, password),
 
     onSuccess: () => {
       toast.success("Check your inbox to confirm your email.");
