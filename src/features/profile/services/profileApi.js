@@ -40,8 +40,6 @@ export async function uploadAvatar(userId, file) {
 }
 
 export async function updatePassword({ email, currentPassword, newPassword }) {
-  // ⚠️ Supabase مفيهاش endpoint مباشر لـ "تحقق من الباسورد الحالي".
-  // الطريقة القياسية: نحاول نعمل sign-in فعلي بيه — لو نجح، يبقى صح.
   const { error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password: currentPassword,
@@ -53,4 +51,20 @@ export async function updatePassword({ email, currentPassword, newPassword }) {
     password: newPassword,
   });
   if (updateError) throw new Error(updateError.message);
+}
+
+export async function setPassword(newPassword) {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.updateUser({ password: newPassword });
+
+  if (error) throw new Error(error.message);
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({ has_password: true })
+    .eq("id", user.id);
+
+  if (profileError) throw new Error(profileError.message);
 }

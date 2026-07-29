@@ -26,7 +26,10 @@ function ProfilePage() {
           email={userData?.user?.email}
           role={userData?.profile?.role}
         />
-        <ChangePasswordCard email={userData?.user?.email} />
+        <ChangePasswordCard
+          email={userData?.user?.email}
+          hasPassword={userData?.profile?.has_password}
+        />
       </div>
     </div>
   );
