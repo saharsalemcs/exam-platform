@@ -8,8 +8,11 @@ import PerformanceChart from "../components/PerformanceChart";
 import AnswersBreakdownChart from "../components/AnswersBreakdownChart";
 import Table from "@/components/shared/Table";
 import { recentExamsColumns } from "../components/recentExamsColumns";
+import { STUDENT_STATS_CONFIG } from "../constants/studentStatsConfig";
+import Button from "@/components/shared/Button";
+import { useNavigate } from "react-router-dom";
 
-const TODAY_LABEL = new Date().toLocaleDateString("en-US", {
+export const TODAY_LABEL = new Date().toLocaleDateString("en-US", {
   month: "short",
   day: "numeric",
   year: "numeric",
@@ -18,6 +21,7 @@ const TODAY_LABEL = new Date().toLocaleDateString("en-US", {
 function StudentDashboardPage() {
   const { data: userData } = useUser();
   const studentId = userData?.profile?.id;
+  const navigate = useNavigate();
 
   const { stats, isFetchingStats, statsError } = useStudentDashboardStats({
     studentId,
@@ -44,6 +48,11 @@ function StudentDashboardPage() {
         title="No exams yet"
         description="Take your first exam to start seeing your stats here."
         size="lg"
+        action={
+          <Button className="mt-8" onClick={() => navigate("/student/exams")}>
+            Take an Exam
+          </Button>
+        }
       />
     );
   }
@@ -53,16 +62,10 @@ function StudentDashboardPage() {
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1
-            className="font-display text-2xl font-bold tracking-tight"
-            style={{ color: "var(--color-text)" }}
-          >
+          <h1 className="font-display text-2xl font-bold tracking-tight text-text">
             Dashboard
           </h1>
-          <p
-            className="mt-1 text-sm"
-            style={{ color: "var(--color-text-muted)" }}
-          >
+          <p className="mt-1 text-sm text-text-muted">
             Track your performance and progress
           </p>
         </div>
@@ -74,6 +77,7 @@ function StudentDashboardPage() {
 
       {/* Stat cards */}
       <StatCardsGrid
+        config={STUDENT_STATS_CONFIG}
         stats={{
           totalExams: stats.totalExams,
           averageScore: stats.averageScore,
