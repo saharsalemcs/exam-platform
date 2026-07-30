@@ -1,7 +1,6 @@
-import { STUDENT_STATS_CONFIG } from "@/features/dashboard/constants/studentStatsConfig";
 import StatCard from "./StatCard";
 
-function StatCardsGrid({ stats }) {
+function StatCardsGrid({ config, stats }) {
   return (
     <>
       <style>{`
@@ -10,14 +9,10 @@ function StatCardsGrid({ stats }) {
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {STUDENT_STATS_CONFIG.map((config, index) => (
-          <StatCard
-            key={config.key}
-            config={config}
-            value={stats?.[config.key]}
-            index={index}
-          />
+        {config.map((c, index) => (
+          <StatCard key={c.key} config={c} value={stats[c.key]} index={index} />
         ))}
       </div>
     </>

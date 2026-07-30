@@ -46,7 +46,7 @@ function ResetPasswordPage() {
     try {
       await resetPassword(data.newPassword);
       toast.success("Password updated! You can sign in now.");
-      logout();
+      await supabase.auth.signOut();
     } catch (error) {
       toast.error(error.message);
     }
