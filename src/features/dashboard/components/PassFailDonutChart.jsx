@@ -1,19 +1,13 @@
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 const SEGMENTS = [
-  { key: "correct", label: "Correct", color: "var(--color-accent)" },
-  { key: "wrong", label: "Wrong", color: "var(--color-danger)" },
-  {
-    key: "skipped",
-    label: "Skipped",
-    color: "var(--color-text-faint, #6b7280)",
-  },
+  { key: "passed", label: "Passed", color: "var(--color-accent)" },
+  { key: "failed", label: "Failed", color: "var(--color-danger)" },
 ];
 
-function CustomPieTooltip({ active, payload }) {
+function CustomTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const { label, value } = payload[0].payload;
-
   return (
     <div
       className="z-50 rounded-[var(--radius-sm)] px-4 py-2.5 text-center"
@@ -25,19 +19,15 @@ function CustomPieTooltip({ active, payload }) {
       <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
         {label}
       </p>
-      <p
-        className="font-display text-lg font-bold"
-        style={{ color: "var(--color-text)" }}
-      >
+      <p className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
         {value}
       </p>
     </div>
   );
 }
 
-function AnswersBreakdownChart({ breakdown }) {
-  const { correct, wrong, skipped, total } = breakdown;
-
+function PassFailDonutChart({ breakdown }) {
+  const { passed, failed, total } = breakdown;
   const data = SEGMENTS.map((s) => ({ ...s, value: breakdown[s.key] }));
   const isEmpty = total === 0;
 
@@ -60,16 +50,15 @@ function AnswersBreakdownChart({ breakdown }) {
               ),
             )}
           </Pie>
-
           {!isEmpty && (
             <Tooltip
-              content={<CustomPieTooltip />}
+              content={<CustomTooltip />}
               wrapperStyle={{ zIndex: 100 }}
             />
           )}
         </PieChart>
 
-        <div className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
           <span
             className="text-2xl font-extrabold"
             style={{ color: "var(--color-text)" }}
@@ -115,7 +104,6 @@ function AnswersBreakdownChart({ breakdown }) {
                   {pct}%
                 </span>
               </div>
-
               <div
                 className="h-1.5 w-full overflow-hidden rounded-full"
                 style={{ backgroundColor: "var(--color-surface-2)" }}
@@ -133,4 +121,4 @@ function AnswersBreakdownChart({ breakdown }) {
   );
 }
 
-export default AnswersBreakdownChart;
+export default PassFailDonutChart;

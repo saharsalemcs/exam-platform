@@ -8,6 +8,10 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/shared/Button";
 import StatCardsGrid from "../components/StatCardsGrid";
 import { INSTRUCTOR_STATS_CONFIG } from "../constants/instructorStatsConfig";
+import Table from "@/components/shared/Table";
+import { instructorRecentSubmissionsColumns } from "../components/instructorRecentSubmissionsColumns";
+import PassFailDonutChart from "../components/PassFailDonutChart";
+import PerformanceChart from "../components/PerformanceChart";
 
 function InstructorDashboard() {
   const { data: userData } = useUser();
@@ -79,6 +83,40 @@ function InstructorDashboard() {
           totalStudents: stats.totalStudents,
         }}
       />
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_360px]">
+        <div className="rounded-lg border border-border bg-surface p-lg">
+          <h3 className="text-lg font-bold text-text">
+            Exams Performance Over Time
+          </h3>
+          <p className="mb-4 text-sm text-text-muted">Average score per exam</p>
+          <PerformanceChart data={stats.performanceOverTime} />
+        </div>
+
+        <div className="rounded-lg border border-border bg-surface p-lg">
+          <h3 className="text-lg font-bold text-text">Submissions Breakdown</h3>
+          <p className="mb-4 text-sm text-text-muted">Pass vs fail rate</p>
+          <PassFailDonutChart breakdown={stats.submissionsBreakdown} />
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-surface p-lg">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-text">Recent Submissions</h3>
+            <p className="text-sm text-text-muted">Latest student activity</p>
+          </div>
+          <span className="rounded-full border border-border px-3 py-1 text-xs text-text-muted">
+            {stats.recentSubmissions.length} submissions
+          </span>
+        </div>
+
+        <Table
+          columns={instructorRecentSubmissionsColumns}
+          rows={stats.recentSubmissions}
+        />
+      </div>
     </div>
   );
 }

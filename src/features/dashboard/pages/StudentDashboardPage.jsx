@@ -88,45 +88,21 @@ function StudentDashboardPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
-        <div
-          className="rounded-lg p-lg"
-          style={{
-            backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-          }}
-        >
-          <h3
-            className="font-display text-lg font-semibold"
-            style={{ color: "var(--color-text)" }}
-          >
+        <div className="rounded-lg border border-border bg-surface p-lg">
+          <h3 className="font-display text-lg font-semibold text-text">
             Performance Over Time
           </h3>
-          <p
-            className="mb-4 text-sm"
-            style={{ color: "var(--color-text-muted)" }}
-          >
+          <p className="mb-4 text-sm text-text-muted">
             Score trend across exam submissions
           </p>
           <PerformanceChart data={stats.performanceOverTime} />
         </div>
 
-        <div
-          className="h-full rounded-lg p-lg"
-          style={{
-            backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-          }}
-        >
-          <h3
-            className="font-display text-lg font-semibold"
-            style={{ color: "var(--color-text)" }}
-          >
+        <div className="h-full rounded-lg border border-border bg-surface p-lg">
+          <h3 className="font-display text-lg font-semibold text-text">
             Answers Breakdown
           </h3>
-          <p
-            className="mb-4 text-sm"
-            style={{ color: "var(--color-text-muted)" }}
-          >
+          <p className="mb-4 text-sm text-text-muted">
             Distribution by outcome
           </p>
           <AnswersBreakdownChart breakdown={stats.answersBreakdown} />
