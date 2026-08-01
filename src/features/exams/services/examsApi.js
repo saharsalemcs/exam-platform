@@ -43,12 +43,15 @@ export async function getExams({
   return data ?? [];
 }
 
-export async function getExamCategories() {
+export async function getExamCategories({ grade = "", department = "" } = {}) {
   let query = supabase
     .from("exams")
     .select("category")
     .not("category", "is", null);
   query = applyAvailabilityFilters(query);
+
+  if (grade) query = query.eq("grade", grade);
+  if (department) query = query.eq("department", department);
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
@@ -76,7 +79,10 @@ export async function getStudentExamAttempts(studentId) {
   return statusMap;
 }
 
-export async function getExamById(examId) {
+export async function getExamById(
+  examId,
+  { grade = "", department = "" } = {},
+) {
   let query = supabase
     .from("exams")
     .select(
@@ -93,6 +99,14 @@ export async function getExamById(examId) {
     .eq("id", examId);
 
   query = applyAvailabilityFilters(query);
+
+  // Same targeting rule as getExams: a student can't load an exam meant
+  // for a different grade/department, even by navigating straight to its
+  // URL. When it doesn't match, .single() below returns a "no rows" error,
+  // which the page already renders as the generic "Exam not found" state —
+  // deliberately not distinguishing "doesn't exist" from "not yours to see".
+  if (grade) query = query.eq("grade", grade);
+  if (department) query = query.eq("department", department);
 
   const { data, error } = await query
     .order("order_index", { referencedTable: "questions", ascending: true })
