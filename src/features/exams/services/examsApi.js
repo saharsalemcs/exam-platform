@@ -8,6 +8,8 @@ export async function getExams({
   search = "",
   category = "",
   difficulty = "",
+  grade = "",
+  department = "",
 } = {}) {
   let query = supabase
     .from("exams")
@@ -20,6 +22,12 @@ export async function getExams({
     .order("created_at", { ascending: false });
 
   query = applyAvailabilityFilters(query);
+
+  // Targeting: a student only sees exams published for their own
+  // grade & department. This is exact-match, not optional — grade/department
+  // aren't exposed as togglable filters in the UI.
+  if (grade) query = query.eq("grade", grade);
+  if (department) query = query.eq("department", department);
 
   if (search.trim()) {
     query = query.or(
