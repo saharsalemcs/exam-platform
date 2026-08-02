@@ -48,27 +48,51 @@ export default function HomePage() {
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
             {/* Left Content Column */}
-            <div className="animate-fade-up space-y-7 text-left">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary-glow px-3.5 py-1.5 text-sm font-medium text-primary">
+            <div className="space-y-7 text-left">
+              <div
+                className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-primary/30 bg-primary-glow px-3.5 py-1.5 text-sm font-medium text-primary"
+                style={{
+                  animationDelay: "0ms",
+                  animationFillMode: "backwards",
+                }}
+              >
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Smart Academic Assessment & Exam Platform</span>
               </div>
 
-              <h1 className="font-display text-4xl leading-[1.1] font-bold tracking-tight text-balance text-text sm:text-4xl md:text-[3.4rem]">
+              <h1
+                className="animate-fade-up font-display text-4xl leading-[1.1] font-bold tracking-tight text-balance text-text sm:text-4xl md:text-[3.4rem]"
+                style={{
+                  animationDelay: "100ms",
+                  animationFillMode: "backwards",
+                }}
+              >
                 Targeted, Accurate, and Secure Online Exams for Every{" "}
                 <span className="bg-gradient-to-r from-primary to-[#e8cd88] bg-clip-text text-transparent">
                   Academic Level
                 </span>
               </h1>
 
-              <p className="text-base leading-relaxed text-text-muted sm:text-lg">
+              <p
+                className="animate-fade-up text-base leading-relaxed text-text-muted sm:text-lg"
+                style={{
+                  animationDelay: "200ms",
+                  animationFillMode: "backwards",
+                }}
+              >
                 EduTest empowers students to take exams tailored specifically to
                 their academic year and department in a proctored environment,
                 while providing instructors with powerful tools to build
                 assessments and analyze results.
               </p>
 
-              <div className="flex flex-col items-center justify-start gap-3 pt-2 sm:flex-row">
+              <div
+                className="flex animate-fade-up flex-col items-center justify-start gap-3 pt-2 sm:flex-row"
+                style={{
+                  animationDelay: "300ms",
+                  animationFillMode: "backwards",
+                }}
+              >
                 <Link
                   to="/register"
                   className="group flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3.5 font-semibold text-bg shadow-lg shadow-primary-glow transition-all hover:-translate-y-0.5 hover:bg-[#c29f4b] hover:shadow-xl hover:shadow-primary-glow sm:w-auto"
@@ -85,7 +109,13 @@ export default function HomePage() {
               </div>
 
               {/* Stats highlights */}
-              <div className="grid grid-cols-3 divide-x divide-border border-t border-border pt-6">
+              <div
+                className="grid animate-fade-up grid-cols-3 divide-x divide-border border-t border-border pt-6"
+                style={{
+                  animationDelay: "400ms",
+                  animationFillMode: "backwards",
+                }}
+              >
                 <div className="pr-4">
                   <p className="font-display text-xl font-bold text-text sm:text-2xl">
                     100%
@@ -114,7 +144,13 @@ export default function HomePage() {
             </div>
 
             {/* Right Interactive Mockup Card Column */}
-            <div className="animate-fade-scale">
+            <div
+              className="animate-fade-scale"
+              style={{
+                animationDelay: "500ms",
+                animationFillMode: "backwards",
+              }}
+            >
               <div className="relative mx-auto max-w-md lg:max-w-none">
                 {/* Background Glow */}
                 <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-accent opacity-15 blur-xl" />
@@ -216,9 +252,18 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div
+            style={{
+              animationDelay: "500ms",
+              animationFillMode: "backwards",
+            }}
+            className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+          >
             {/* Feature 1 */}
-            <div className="group space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary">
+            <div
+              className="group animate-fade-up space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary"
+              style={{ animationDelay: "0ms", animationFillMode: "backwards" }}
+            >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-primary-glow text-primary transition-transform group-hover:scale-110">
                 <Target className="h-6 w-6" />
               </div>
@@ -232,7 +277,13 @@ export default function HomePage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="group space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary">
+            <div
+              className="group animate-fade-up space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary"
+              style={{
+                animationDelay: "100ms",
+                animationFillMode: "backwards",
+              }}
+            >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-primary-glow text-primary transition-transform group-hover:scale-110">
                 <Lock className="h-6 w-6" />
               </div>
@@ -246,7 +297,13 @@ export default function HomePage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="group space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary">
+            <div
+              className="group animate-fade-up space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary"
+              style={{
+                animationDelay: "200ms",
+                animationFillMode: "backwards",
+              }}
+            >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-primary-glow text-primary transition-transform group-hover:scale-110">
                 <FileText className="h-6 w-6" />
               </div>
@@ -260,7 +317,13 @@ export default function HomePage() {
             </div>
 
             {/* Feature 4 */}
-            <div className="group space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary">
+            <div
+              className="group animate-fade-up space-y-4 rounded-2xl border border-border bg-surface-2 p-6 transition-all hover:border-primary"
+              style={{
+                animationDelay: "300ms",
+                animationFillMode: "backwards",
+              }}
+            >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-primary-glow text-primary transition-transform group-hover:scale-110">
                 <BarChart3 className="h-6 w-6" />
               </div>
@@ -291,7 +354,10 @@ export default function HomePage() {
 
           <div className="grid gap-8 md:grid-cols-2">
             {/* Students Card */}
-            <div className="flex flex-col justify-between space-y-6 rounded-2xl border border-border bg-surface p-8">
+            <div
+              className="flex animate-fade-up flex-col justify-between space-y-6 rounded-2xl border border-border bg-surface p-8"
+              style={{ animationDelay: "0ms", animationFillMode: "backwards" }}
+            >
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-primary">
                   <BookOpen className="h-4 w-4" />
@@ -328,7 +394,13 @@ export default function HomePage() {
             </div>
 
             {/* Instructors Card */}
-            <div className="flex flex-col justify-between space-y-6 rounded-2xl border border-border bg-surface p-8">
+            <div
+              className="flex animate-fade-up flex-col justify-between space-y-6 rounded-2xl border border-border bg-surface p-8"
+              style={{
+                animationDelay: "150ms",
+                animationFillMode: "backwards",
+              }}
+            >
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-accent">
                   <Users className="h-4 w-4" />
