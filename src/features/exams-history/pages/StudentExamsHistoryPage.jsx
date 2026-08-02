@@ -67,7 +67,7 @@ function StudentExamsHistoryPage() {
     setInstructor("");
   };
 
-  const filterValues = { difficulty, subject, instructor, status };
+  const filterValues = { difficulty, subject, instructor };
 
   const filteredExams = useFilteredItems(
     studentExams,

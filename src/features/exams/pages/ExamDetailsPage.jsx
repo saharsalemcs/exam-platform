@@ -52,9 +52,10 @@ function ExamDetailsPage() {
   const isCompleted =
     attemptInfo?.status === "submitted" || attemptInfo?.status === "timed_out";
   const isInterrupted = attemptInfo?.status === "in_progress";
+  const isViolated = attemptInfo?.status === "violated";
 
   function handleActionClick() {
-    if (isCompleted) {
+    if (isCompleted || isViolated) {
       navigate(`/student/results/${attemptInfo.attemptId}`);
       return;
     }
@@ -108,7 +109,7 @@ function ExamDetailsPage() {
 
       {/* Card => Exam info */}
       <div
-        className="rounded-[var(--radius-lg)] p-6 sm:p-8"
+        className="rounded-lg p-6 sm:p-8"
         style={{
           background:
             "linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 100%)",
@@ -145,6 +146,7 @@ function ExamDetailsPage() {
           {/* Status badge — بيظهر بس لو في attempt */}
           {isCompleted && <ExamStatusBadge status="completed" />}
           {isInterrupted && <ExamStatusBadge status="in-progress" />}
+          {isViolated && <ExamStatusBadge status="violated" />}
         </div>
 
         {/* Title */}
@@ -218,44 +220,10 @@ function ExamDetailsPage() {
         />
       </div>
 
-      {/*  Interrupted warning  */}
-      {/* 
-        {isInterrupted && (
-          <div
-            className="flex items-start gap-3 rounded-[var(--radius-md)] p-4"
-            style={{
-              backgroundColor: "rgba(200,93,106,0.08)",
-              border: "1px solid rgba(200,93,106,0.2)",
-            }}
-          >
-            <AlertTriangle
-              size={16}
-              className="mt-0.5 shrink-0"
-              style={{ color: "var(--color-danger)" }}
-            />
-            <div>
-              <p
-                className="text-sm font-semibold"
-                style={{ color: "var(--color-danger)" }}
-              >
-                Exam Interrupted
-              </p>
-              <p
-                className="mt-0.5 text-xs leading-relaxed"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                Your previous session was interrupted. If you resume, the timer
-                will continue from where it stopped - no extra time is added.
-              </p>
-            </div>
-          </div>
-        )} */}
-
       {/*  No questions warning  */}
-
       {questionCount === 0 && (
         <div
-          className="flex items-start gap-3 rounded-[var(--radius-md)] p-4"
+          className="flex items-start gap-3 rounded-md p-4"
           style={{
             backgroundColor: "rgba(237,216,138,0.08)",
             border: "1px solid rgba(237,216,138,0.2)",
@@ -277,11 +245,23 @@ function ExamDetailsPage() {
       <Button
         onClick={handleActionClick}
         disabled={questionCount === 0}
-        variant={isCompleted ? "success" : isInterrupted ? "danger" : "primary"}
+        variant={
+          isCompleted
+            ? "success"
+            : isViolated
+              ? "danger"
+              : isInterrupted
+                ? "danger"
+                : "primary"
+        }
       >
         {isCompleted ? (
           <>
             <CheckCircle2 size={17} /> View Results
+          </>
+        ) : isViolated ? (
+          <>
+            <AlertTriangle size={17} /> View Results
           </>
         ) : isInterrupted ? (
           <>

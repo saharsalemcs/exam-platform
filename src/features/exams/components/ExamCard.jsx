@@ -61,7 +61,7 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
 
   return (
     <article
-      className="flex animate-[fade-up_0.4s_ease_both] flex-col overflow-hidden rounded-[var(--radius-md)] transition-all duration-200"
+      className="flex animate-[fade-up_0.4s_ease_both] flex-col overflow-hidden rounded-md transition-all duration-200"
       style={{
         border: isCompleted
           ? `1px solid ${cardBorderColor}`
@@ -142,37 +142,6 @@ function ExamCard({ exam, index = 0, attemptInfo }) {
             </p>
           )}
         </div>
-        {/* Interrupted warning */}
-        {/* {isViolated && (
-          <div
-            className="flex items-start gap-3 rounded-[var(--radius-md)] p-4"
-            style={{
-              backgroundColor: "rgba(200,93,106,0.08)",
-              border: "1px solid rgba(200,93,106,0.2)",
-            }}
-          >
-            <AlertTriangle
-              size={16}
-              className="mt-0.5 shrink-0"
-              style={{ color: "var(--color-danger)" }}
-            />
-            <div>
-              <p
-                className="text-sm font-semibold"
-                style={{ color: "var(--color-danger)" }}
-              >
-                Exam Interrupted
-              </p>
-              <p
-                className="mt-0.5 text-xs leading-relaxed"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                Your previous session was interrupted. If you resume, the timer
-                will continue from where it stopped - no extra time is added.
-              </p>
-            </div>
-          </div>
-        )} */}
 
         {/* Meta row */}
         <div

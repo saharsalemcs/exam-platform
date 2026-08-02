@@ -1,6 +1,5 @@
 import { useUser } from "@/features/auth/hooks/useUser";
-import { getInitials } from "@/lib/utils";
-import { Bell, ChevronRight, Menu, Search } from "lucide-react";
+import { ChevronRight, Menu } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import AvatarMenu from "../shared/AvatarMenu";
 
@@ -51,7 +50,7 @@ function Header({ sidebarWidth, onMenuClick }) {
         <button
           onClick={onMenuClick}
           aria-label="Open navigation menu"
-          className="flex cursor-pointer items-center justify-center rounded-[var(--radius-sm)] p-2 transition-all duration-150 md:hidden"
+          className="flex cursor-pointer items-center justify-center rounded-sm p-2 transition-all duration-150 md:hidden"
           style={{
             backgroundColor: "var(--color-surface)",
             border: "1px solid var(--color-border)",
@@ -107,38 +106,6 @@ function Header({ sidebarWidth, onMenuClick }) {
 
       {/* Right actions */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Notifications */}
-        <button
-          aria-label="Notifications"
-          className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] transition-all duration-150"
-          style={{
-            backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-            color: "var(--color-text-muted)",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(212,175,88,0.2)";
-            e.currentTarget.style.color = "var(--color-text)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "var(--color-border)";
-            e.currentTarget.style.color = "var(--color-text-muted)";
-          }}
-        >
-          <Bell size={15} />
-          {/* Notification dot */}
-          <span
-            className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full"
-            style={{ backgroundColor: "var(--color-primary)" }}
-          />
-        </button>
-
-        {/* Divider — hidden on mobile */}
-        <div
-          className="mx-1 hidden h-6 w-px sm:block"
-          style={{ backgroundColor: "var(--color-border)" }}
-        />
-
         {/* Avatar + name */}
         <AvatarMenu profile={profile} />
       </div>
