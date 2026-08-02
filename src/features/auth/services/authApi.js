@@ -31,6 +31,7 @@ export async function register(fullName, email, password) {
         full_name: fullName.trim(),
         role: "student",
       },
+      emailRedirectTo: window.location.origin + "/login",
     },
   });
 
