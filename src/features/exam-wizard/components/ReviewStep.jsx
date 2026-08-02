@@ -87,7 +87,7 @@ function ReviewStep({ onEditQuestions }) {
 
       <div className="flex justify-between">
         <Button
-          variation="secondary"
+          variant="secondary"
           size="md"
           onClick={onEditQuestions}
           disabled={isPending}
@@ -95,7 +95,7 @@ function ReviewStep({ onEditQuestions }) {
           ← Edit Questions
         </Button>
         <Button
-          variation="primary"
+          variant="primary"
           size="md"
           onClick={handleConfirm}
           disabled={isPending}
