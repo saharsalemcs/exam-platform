@@ -3,6 +3,8 @@
 > Generated from codebase exploration on 2026-07-31. This document reflects what exists in the repository today — not a roadmap.
 >
 > **Updated 2026-08-01** to reflect two implemented features (Exam Edit Wizard, Student Grade/Department Targeting) confirmed against the actual source files touched during that work. Sections not touched by this update still reflect the 2026-07-31 exploration and may be stale — see §10 "Recent Changes" for exactly what was verified.
+>
+> **Updated 2026-08-02 (continued session)** to reflect: the `ReviewStep.jsx` `variation`/`variant` fix, the `useLogin` incomplete-profile fix, a registration-flow audit (missing `emailRedirectTo` fixed; Google OAuth redirect reviewed and confirmed self-correcting via `ProtectedRoute`, no code change needed), and closing "no teacher registration UI" as an intentional product decision rather than a gap. See §12 "Recent Changes (Session — 2026-08-02, continued)" for detail. **The home page redesign was drafted (code shared in-chat) but has not been applied to the repo yet** — `HomePage.jsx` is still the stub described below.
 
 ---
 
@@ -417,39 +419,28 @@ Confirmed in `useExams`, `useExamDetails`, and `useExamCategories`: hooks that n
 
 > Resolved this session (2026-08-02) — see §11 for details: exam edit wizard (verified), grade/department targeting (verified end-to-end including the exam-session entry point), student exam-history filter crash (fixed), `ExamDetailsPage` violated-attempt handling (fixed), `useUser()` return shape (confirmed). Supabase-side items (missing RLS, RPC authorization) have moved to their own section — see §8.
 
-### Incomplete or broken features
-
-| Issue                          | Location                 | Detail                                                                      |
-| ------------------------------ | ------------------------ | --------------------------------------------------------------------------- |
-| **Home page is a stub**        | `src/pages/HomePage.jsx` | Only renders "Home Page" text                                               |
-| **No teacher registration UI** | `authApi.register`       | All sign-ups are `role: "student"`; teachers must be provisioned externally |
-
 ### Remaining minor gaps
 
-| Issue                                                                 | Location                                          | Detail                                                                                  |
-| --------------------------------------------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **Question-type selector doesn't follow loaded question on edit**     | `QuestionBuilderStep.jsx` (exam-wizard edit mode) | Defaults to "mcq" regardless of the edited exam's actual question types; cosmetic only. |
-| `ReviewStep.jsx` **`variation`**/**`variant`** prop bug still present | `ReviewStep.jsx`                                  | Same root cause as the "Button prop inconsistency" row below; not yet fixed.            |
+| Issue                                                             | Location                                          | Detail                                                                                  |
+| ----------------------------------------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Question-type selector doesn't follow loaded question on edit** | `QuestionBuilderStep.jsx` (exam-wizard edit mode) | Defaults to "mcq" regardless of the edited exam's actual question types; cosmetic only. |
 
 ### Technical debt & inconsistencies
 
 ### Technical debt & inconsistencies
 
-| Issue                                  | Detail                                                                                                                                                                                 |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `useLogin` **sets incomplete profile** | On success, caches `{ user, profile: data.user.user_metadata }` instead of full `profiles` row — missing `grade`, `department`, `has_password`, `avatar_url` until `useUser` refetches |
-| **Google OAuth redirect**              | Always redirects to `/student/dashboard` even for teachers (`authApi.signInWithGoogle`)                                                                                                |
-| **Duplicate result logic**             | `studentResultApi.js` and `instructorResultApi.js` share nearly identical question-grading mapping                                                                                     |
-| **Unused hook**                        | `src/hooks/useFilteredExams.js` is never imported                                                                                                                                      |
-| **Button prop inconsistency**          | `ReviewStep.jsx` uses `variation="primary"` but `Button.jsx` expects `variant` — styling may not apply                                                                                 |
-| **Mixed Button APIs**                  | Some components use `variant`, others `variation`                                                                                                                                      |
-| **Commented-out UI blocks**            | Large commented sections in `ExamSessionPage.jsx`, `ExamDetailsPage.jsx`, `ExamCard.jsx`, `Sidebar.jsx`                                                                                |
-| `ResetPasswordPage`                    | Imports `useLogout` but never uses it after manual `signOut`                                                                                                                           |
-| **Typo in hook export**                | `useSignInWithGoogle` exports `singInWithGoogle`                                                                                                                                       |
-| **Console logging**                    | `console.log(data)` left in `ChangePasswordCard.jsx`; `console.error` in exam session hooks (may be intentional for debugging)                                                         |
-| **Supabase keys in source**            | `src/services/supabase.js` contains project URL and publishable key inline                                                                                                             |
-| **README**                             | Default Vite template text; no project-specific docs                                                                                                                                   |
-| **NotFoundPage**                       | Minimal unstyled back button                                                                                                                                                           |
+| Issue                       | Detail                                                                                                                                                                                                                                                                      |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Duplicate result logic**  | `studentResultApi.js` and `instructorResultApi.js` share nearly identical question-grading mapping                                                                                                                                                                          |
+| **Unused hook**             | `src/hooks/useFilteredExams.js` is never imported                                                                                                                                                                                                                           |
+| **Mixed Button APIs**       | Some components use `variant`, others `variation`. The one confirmed live instance of the mismatch causing an actual bug (`ReviewStep.jsx`) was fixed 2026-08-02 — see §12; this row now tracks only the general inconsistency (no known remaining functional bug from it). |
+| **Commented-out UI blocks** | Large commented sections in `ExamSessionPage.jsx`, `ExamDetailsPage.jsx`, `ExamCard.jsx`, `Sidebar.jsx`                                                                                                                                                                     |
+| `ResetPasswordPage`         | Imports `useLogout` but never uses it after manual `signOut`                                                                                                                                                                                                                |
+| **Typo in hook export**     | `useSignInWithGoogle` exports `singInWithGoogle`                                                                                                                                                                                                                            |
+| **Console logging**         | `console.log(data)` left in `ChangePasswordCard.jsx`; `console.error` in exam session hooks (may be intentional for debugging)                                                                                                                                              |
+| **Supabase keys in source** | `src/services/supabase.js` contains project URL and publishable key inline                                                                                                                                                                                                  |
+| **README**                  | Default Vite template text; no project-specific docs                                                                                                                                                                                                                        |
+| **NotFoundPage**            | Minimal unstyled back button                                                                                                                                                                                                                                                |
 
 ### Missing error handling / edge cases
 
@@ -464,15 +455,19 @@ Confirmed in `useExams`, `useExamDetails`, and `useExamCategories`: hooks that n
 - Anti-cheat is client-side only — bypassable by determined users (inherent limitation).
 - Database-level scoping (RLS, RPC-level authorization) is out of scope for this React codebase — see §8 "Supabase-side Security Improvements."
 
-### Priority Ranking (Remaining Work) — updated 2026-08-02
+### Priority Ranking (Remaining Work) — updated 2026-08-02 (continued session)
 
-Ranked highest impact first, React-codebase items only (Supabase-side items in §8 are tracked separately and aren't ranked against these, since they need a different owner/skillset):
+> Former #1–#4 below were resolved or closed in the 2026-08-02 continued session — see §12. Kept here (struck through in spirit, not removed) so the ranking's history stays legible; only the items below the line are still open.
 
-1. **`ReviewStep.jsx` `variation`/`variant` prop bug** — a real functional bug (button styling likely not applying), and now higher-impact than before since it sits in the review step used by both the create _and_ edit wizard flows, both of which are actively used.
-2. **`useLogin` sets an incomplete profile on sign-in** — caches a partial profile (missing `grade`/`department`) until `useUser` refetches; worth prioritizing given how much now depends on `grade`/`department` being correct as soon as possible after login (exam targeting, session authorization).
-3. **No teacher registration UI** — larger scope than a bug fix (likely a product decision, not just a form), but blocks onboarding new teachers without direct DB access.
-4. **Google OAuth redirect hardcoded to student dashboard** — real but narrow impact; self-corrects on next navigation via `ProtectedRoute`.
-5. **Question-type selector edit-mode nit, duplicate result logic, unused hook, mixed Button APIs, commented-out code, console logging, README, home page stub** — cosmetic/cleanup, low urgency, no functional risk.
+1. ~~`ReviewStep.jsx` `variation`/`variant` prop bug~~ — **fixed** 2026-08-02.
+2. ~~`useLogin` sets an incomplete profile on sign-in~~ — **fixed** 2026-08-02.
+3. ~~No teacher registration UI~~ — **closed, not built**: confirmed as an intentional product decision (admin-provisioned teacher accounts), not a gap.
+4. ~~Google OAuth redirect hardcoded to student dashboard~~ — **reviewed, no change needed**: `ProtectedRoute` already redirects mismatched roles/incomplete profiles on the very next render, so this self-heals; left as-is with a clarifying comment.
+5. ~~Home page redesign not yet applied~~ — a full landing page (hero, student/instructor feature rows, CTAs) was drafted 2026-08-02, but `HomePage.jsx` in the repo is still the one-line stub. Applying the draft is the next concrete piece of work.
+
+**Remaining, current priority order:**
+
+1. **Question-type selector edit-mode nit, duplicate result logic, unused hook, mixed Button APIs (general), commented-out code, console logging, README** — cosmetic/cleanup, low urgency, no functional risk.
 
 ---
 
@@ -657,5 +652,36 @@ This session picked up directly from §10's "Still open" list, plus two addition
 - Split previously-mixed "known gap" and "needs Supabase-side change" items into separate sections (§7 vs. new §8), so unresolved React work isn't conflated with backend/infrastructure work this codebase can't fix on its own.
 - Removed resolved items (exam edit wizard, grade/department targeting, exam-session targeting gap) from §7 entirely, per the above.
 - Updated §2, §4, and §6 to state previously-inferred or session-dated information as verified, steady-state fact where this session confirmed it (edit-wizard route description, exam discovery targeting coverage, `useUser()` shape).
+
+---
+
+## 12. Recent Changes (Session — 2026-08-02, continued)
+
+This session picked up directly from §7's priority ranking as it stood after §11. Everything below reflects what was actually discussed and, where noted, fixed in this session — not a re-audit of the codebase.
+
+### 1. `ReviewStep.jsx` `variation`/`variant` prop bug — fixed
+
+Priority-ranking #1. User applied the fix directly (swapped `variation="primary"` for `variant="primary"` to match `Button.jsx`'s actual prop name). Confirmed fixed; no longer tracked as an open bug in §7.
+
+### 2. `useLogin` incomplete profile on sign-in — fixed
+
+Priority-ranking #2. `src/features/auth/hooks/useLogin.js` previously cached `{ user, profile: data.user.user_metadata }` on login success — a partial stand-in missing `grade`, `department`, `has_password`, `avatar_url`.
+
+**Fix:** `mutationFn` now calls `loginApi(email, password)` to sign in, then calls the existing `getCurrentUser()` (from `authApi.js`) to fetch the real `profiles` row, and returns that. `onSuccess` caches the result directly via `setQueryData(["user"], data)`, and reads `data.profile.role` (DB role) for the post-login redirect instead of `user_metadata.role`. This reuses the same helper `useUser.js` already trusts, so the cached shape now matches `{ user, profile }` exactly.
+
+**Trade-off noted and accepted:** adds one extra network round-trip on login (the profile fetch). Considered low-cost since `useUser.js`'s `onAuthStateChange` listener would fire `getCurrentUser()` again shortly after anyway (on the `SIGNED_IN` event) — this just moves that fetch earlier so `grade`/`department` are correct from the first render after login, which matters given how much targeting logic depends on them.
+
+### 3. Registration flow audit
+
+Reviewed `useRegister.js`, `RegisterForm.jsx`, and `authApi.js`'s `register`/`signInWithGoogle`. Two findings:
+
+- **Fixed — missing `emailRedirectTo` in `register()`:** `supabase.auth.signUp()` was called with no `emailRedirectTo`, unlike `forgotPassword()` which does set `redirectTo`. Without it, the confirmation-email link falls back to the Supabase project's default Site URL setting, which may not match this app's actual domain. Added `emailRedirectTo: window.location.origin + "/login"` (chosen to match `ConfirmationScreen`'s existing copy, which already tells the user to sign in after confirming).
+- **Reviewed, not changed — `signInWithGoogle` hardcoded redirect:** initially suspected this needed a dedicated `/auth/callback` route to redirect by role. On reading `ProtectedRoute.jsx`, confirmed it already redirects on role mismatch (`profile.role !== allowedRole` → other role's dashboard) and on incomplete student profile (→ `/complete-profile`) on the very next render. So `redirectTo: window.location.origin + "/student/dashboard"` is a safe landing pad, not a real routing bug — teachers and incomplete profiles self-correct immediately via existing logic. Left the code as-is; recommended adding a clarifying comment (not yet applied to the repo).
+
+No changes were needed in `ProtectedRoute.jsx` or `CompleteProfilePage.jsx` — both already handle this correctly.
+
+### 4. No teacher registration UI — closed as a product decision
+
+Priority-ranking #3. Confirmed with the project owner: teacher accounts are created manually by the system administrator; the public registration flow is intentionally restricted to students. This is not an incomplete feature — moved out of §7's "Incomplete or broken features" table entirely, since there is no work planned here.
 
 ---
