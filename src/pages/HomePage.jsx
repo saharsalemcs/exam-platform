@@ -9,8 +9,6 @@ import {
   FileText,
   CheckCircle2,
   ArrowRight,
-  Menu,
-  X,
   Sparkles,
   Users,
   Lock,
@@ -477,7 +475,7 @@ export default function HomePage() {
               EduTest Platform
             </span>
           </div>
-          <span className="text-text-muted">
+          <span className="text-sm text-text-muted">
             &copy; {new Date().getFullYear()} All rights reserved.
           </span>
         </div>

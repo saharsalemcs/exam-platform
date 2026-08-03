@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import Button from "@/components/shared/Button";
 import { useUpdatePassword } from "../hooks/useUpdatePassword";
-import supabase from "@/services/supabase";
 import PasswordField from "./PasswordField";
 import { useSetPassword } from "../hooks/useSetPassword";
 import { Info } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function ChangePasswordCard({ email, hasPassword = true }) {
   const { changePassword, isUpdatingPassword } = useUpdatePassword();
@@ -48,26 +47,18 @@ function ChangePasswordCard({ email, hasPassword = true }) {
     setNewPassword(data.newPassword, { onSuccess: () => reset() });
   }
 
-  async function handleForgotPassword() {
-    if (!email) return;
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) toast.error(error.message);
-    else toast.success("Password reset link sent to your email");
-  }
-
   return (
     <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-lg">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-text">
           {hasPassword ? "Change Password" : "Set Password"}
         </h2>
-        <button
-          type="button"
-          onClick={handleForgotPassword}
-          className="cursor-pointer text-sm font-semibold text-primary hover:underline"
+        <Link
+          to="/forgot-password"
+          className="text-right text-xs text-primary hover:underline"
         >
           Forgot password?
-        </button>
+        </Link>
       </div>
 
       {!hasPassword && (
