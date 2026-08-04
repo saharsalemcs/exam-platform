@@ -41,12 +41,14 @@ function AppLayout() {
           id="main-content"
           className="flex-1 overflow-y-auto"
           style={{
-            marginTop: "var(--header-height)",
             backgroundColor: "var(--color-bg)",
             minHeight: `calc(100vh - var(--header-height))`,
           }}
         >
-          <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
+          <div
+            style={{ marginTop: "var(--header-height)" }}
+            className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7"
+          >
             <Outlet />
           </div>
         </main>

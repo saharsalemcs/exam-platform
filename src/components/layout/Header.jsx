@@ -35,7 +35,7 @@ function Header({ sidebarWidth, onMenuClick }) {
 
   return (
     <header
-      className="fixed top-0 right-0 z-30 flex h-16 items-center justify-between px-4 transition-all duration-300 sm:px-6"
+      className="fixed top-0 right-0 z-30 flex h-16 items-center justify-between px-4 transition-all duration-300 sm:p-8"
       style={{
         backgroundColor: "var(--color-bg)",
         // height: "var(--header-height)",
@@ -67,41 +67,28 @@ function Header({ sidebarWidth, onMenuClick }) {
         </button>
         {/* Breadcrumb — hidden on mobile */}
         <div className="hidden items-center gap-1.5 sm:flex">
-          <span
-            className="text-sm"
-            style={{ color: "var(--color-text-faint)" }}
-          >
-            EduTest
-          </span>
+          <span className="text-[15px] text-text-faint">EduTest</span>
 
           {meta?.breadcrumb && (
             <>
               <ChevronRight
-                size={13}
+                size={16}
                 style={{ color: "var(--color-text-faint)" }}
               />
-              <span
-                className="text-sm"
-                style={{ color: "var(--color-text-muted)" }}
-              >
+              <span className="text-[17px] text-text-muted">
                 {meta.breadcrumb}
               </span>
             </>
           )}
 
           <ChevronRight
-            size={13}
+            size={16}
             style={{ color: "var(--color-text-faint)" }}
           />
         </div>
 
         {/* Page title */}
-        <h1
-          className="text-sm font-semibold"
-          style={{ color: "var(--color-text-muted)" }}
-        >
-          {title}
-        </h1>
+        <h1 className="text-base font-semibold text-text-muted">{title}</h1>
       </div>
 
       {/* Right actions */}

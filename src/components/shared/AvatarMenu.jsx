@@ -1,4 +1,3 @@
-import { getInitials } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 //  AvatarMenu
@@ -13,7 +12,7 @@ function AvatarMenu({ profile }) {
       title="Go to profile"
       onClick={() => navigate(profilePath)}
       aria-label={`Go to profile — ${profile?.full_name}`}
-      className="flex cursor-pointer items-center gap-2.5 rounded-[var(--radius-sm)] px-2 py-1.5 transition-all duration-150"
+      className="flex cursor-pointer items-center gap-3 rounded-sm px-2 py-1.5 transition-all duration-150"
       style={{
         backgroundColor: "transparent",
         border: "1px solid transparent",
@@ -28,30 +27,18 @@ function AvatarMenu({ profile }) {
       }}
     >
       {/* Avatar circle */}
-      <div
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
-        style={{
-          backgroundColor: "var(--color-primary)",
-          color: "var(--color-bg)",
-          boxShadow: "0 0 8px var(--shadow-glow)",
-        }}
-      >
-        {getInitials(profile?.full_name)}
+      <div className="flex shrink-0 items-center justify-center">
+        <img
+          src={profile?.avatar_url || "/default-avatar.jpg"}
+          alt={profile?.full_name}
+          className="h-8 w-8 rounded-full object-cover"
+        />
       </div>
 
       {/* Name — hidden on small screens */}
       <div className="hidden flex-col items-start leading-none sm:flex">
-        <span
-          className="text-[13px] font-semibold"
-          style={{ color: "var(--color-text)" }}
-        >
+        <span className="text-[16px] font-semibold text-text">
           {profile?.full_name?.split(" ")[0] ?? "User"}
-        </span>
-        <span
-          className="mt-0.5 text-[10px] capitalize"
-          style={{ color: "var(--color-text-faint)" }}
-        >
-          {profile?.role ?? ""}
         </span>
       </div>
     </button>

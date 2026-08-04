@@ -149,7 +149,7 @@ export default function HomePage() {
                 animationFillMode: "backwards",
               }}
             >
-              <div className="relative mx-auto max-w-md lg:max-w-none">
+              <div className="relative mx-auto max-w-6xl lg:max-w-none">
                 {/* Background Glow */}
                 <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary to-accent opacity-15 blur-xl" />
 

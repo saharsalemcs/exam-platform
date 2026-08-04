@@ -61,7 +61,7 @@ function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
       <aside
         role="navigation"
         aria-label="Main navigation"
-        className="fixed top-0 left-0 z-40 flex h-screen flex-col transition-all duration-300"
+        className="fixed top-0 left-0 z-40 flex h-screen flex-col py-2 transition-all duration-300"
         style={{
           backgroundColor: "var(--color-surface)",
           borderRight: "1px solid var(--color-border)",
@@ -77,28 +77,25 @@ function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
       >
         {/* Logo */}
 
-        <div
-          className="flex h-16 shrink-0 items-center gap-3 px-4"
-          style={{ borderBottom: "1px solid var(--color-border)" }}
-        >
+        <div className="flex h-16 shrink-0 items-center gap-3 px-4">
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] border-1 border-solid border-[var(--color-border)] bg-[var(--color-surface-2)] text-lg font-bold text-[var(--color-primary)]"
+            className="flex h-13 w-13 shrink-0 items-center justify-center rounded-md border border-solid border-border bg-surface-2 text-lg font-bold text-primary"
             style={{ boxShadow: "var(--shadow-glow)" }}
           >
-            <GraduationCap strokeWidth={2.5} />
+            <GraduationCap strokeWidth={3} />
           </div>
 
           {/* Brand name — hidden when collapsed */}
           {!isCollapsed && (
             <div className="flex min-w-0 flex-1 flex-col leading-none">
               <span
-                className="text-l font-bold tracking-tight"
-                style={{ color: "var(--color-text)" }}
+                className="text-xl font-bold tracking-tight text-primary"
+                // style={{ color: "var(--color-text)" }}
               >
                 EduTest
               </span>
               <span
-                className="mt-1 text-[11px] capitalize"
+                className="mt-1 text-sm capitalize"
                 style={{ color: "var(--color-text-faint)" }}
               >
                 {isTeacher ? "Teacher Portal" : "Student Portal"}
