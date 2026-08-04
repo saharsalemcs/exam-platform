@@ -37,9 +37,9 @@ function Button({
       type={type}
       disabled={disabled}
       className={cn(
-        "inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-sm)] font-semibold",
+        "inline-flex cursor-pointer items-center justify-center gap-2 rounded-sm font-semibold",
         "transition-all duration-150",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
         "disabled:cursor-not-allowed disabled:opacity-50",
         fullWidth && "w-full",
         SIZES[size],

@@ -30,7 +30,6 @@ function ChangePasswordCard({ email, hasPassword = true }) {
   }
 
   function onSubmitChange(data) {
-    console.log(data);
     changePassword(
       {
         email,
@@ -128,13 +127,7 @@ function ChangePasswordCard({ email, hasPassword = true }) {
             }}
           />
 
-          <Button
-            variation="primary"
-            size="md"
-            type="submit"
-            disabled={isPending}
-            className="mt-2"
-          >
+          <Button size="md" type="submit" disabled={isPending} className="mt-2">
             {isUpdatingPassword ? "Updating…" : "Update Password"}
           </Button>
         </form>

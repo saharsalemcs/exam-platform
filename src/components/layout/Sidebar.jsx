@@ -39,7 +39,7 @@ const TEACHER_NAV = [
   { label: "Profile", to: "/instructor/profile", icon: CircleUser },
 ];
 
-function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
+function Sidebar({ isOpen, isCollapsed, onClose }) {
   const { data } = useUser();
   const { logout, isLoggingOut } = useLogout();
   const profile = data?.profile;
@@ -194,7 +194,7 @@ function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
           ) : (
             // Expanded: full user card
             <div
-              className="mb-1 flex items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5"
+              className="mb-1 flex items-center gap-3 rounded-sm px-3 py-2.5"
               style={{
                 backgroundColor: "var(--color-surface-2)",
                 border: "1px solid var(--color-border)",
@@ -231,7 +231,7 @@ function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
           <button
             onClick={() => logout()}
             disabled={isLoggingOut}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex w-full cursor-pointer items-center gap-3 rounded-sm px-3 py-2.5 text-sm transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-40"
             style={{
               backgroundColor: "transparent",
               border: "1px solid transparent",

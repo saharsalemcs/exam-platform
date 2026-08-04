@@ -100,7 +100,7 @@ function Modal({
       <div
         ref={panelRef}
         tabIndex={-1}
-        className={`relative flex max-h-[85vh] w-full animate-[fade-scale-in_0.25s_ease_both] flex-col rounded-[var(--radius-lg)] outline-none ${panelClassName}`}
+        className={`relative flex max-h-[85vh] w-full animate-[fade-scale-in_0.25s_ease_both] flex-col rounded-lg outline-none ${panelClassName}`}
         style={{
           maxWidth,
           backgroundColor: "var(--color-surface)",

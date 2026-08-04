@@ -55,46 +55,6 @@ function ExamSessionPage() {
         onConfirm={() => session.handleSubmit("timed_out")}
       />
     </div>
-
-    // <div
-    //   className="flex min-h-screen flex-col font-sans"
-    //   style={{ backgroundColor: "var(--color-bg)" }}
-    // >
-    //   {/* التايمر عائم في الزاوية، برا أي grid أو flex بيأثر على باقي العناصر */}
-    //   <div className="fixed top-6 right-6 z-50">
-    //     <CountdownTimer timeLeft={session.timeLeft} />
-    //   </div>
-
-    //   <div className="flex flex-1 flex-col justify-center px-6 py-10">
-    //     <div className="mx-auto flex w-full max-w-165 flex-col">
-    //       <ExamHeader exam={exam} session={session} />
-
-    //       {/* الـ QuestionCard بقى ياخد العرض كله لوحده */}
-    //       <QuestionCard session={session} />
-
-    //       <Navigation session={session} />
-    //     </div>
-    //   </div>
-    // </div>
-
-    // <div
-    //   className="flex min-h-screen flex-col font-sans"
-    //   style={{ backgroundColor: "var(--color-bg)" }}
-    // >
-    //   <div className="flex flex-1 flex-col justify-center px-6 py-10">
-    //     <div className="mx-auto flex w-full max-w-165 flex-col">
-    //       {/* Header */}
-    //       <ExamHeader session={session} />
-
-    //       <div className="grid grid-cols-1 items-start gap-md sm:grid-cols-[1fr_220px]">
-    //         <QuestionCard session={session} />
-    //         <CountdownTimer timeLeft={session.timeLeft} />
-    //       </div>
-    //       {/* Navigation */}
-    //       <Navigation session={session} />
-    //     </div>
-    //   </div>
-    // </div>
   );
 }
 

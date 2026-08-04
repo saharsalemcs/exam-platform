@@ -24,7 +24,7 @@ function ConfirmationScreen({ email }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg px-4 py-12">
       <div
-        className="w-full max-w-[400px] rounded-[var(--radius-lg)] p-10 text-center"
+        className="w-full max-w-100 rounded-lg p-10 text-center"
         style={{
           backgroundColor: "var(--color-surface)",
           border: "1px solid var(--color-border)",
@@ -32,7 +32,7 @@ function ConfirmationScreen({ email }) {
         }}
       >
         <div
-          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-[var(--radius-md)]"
+          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-md"
           style={{
             backgroundColor: "rgba(45,212,191,0.1)",
             border: "1px solid rgba(45,212,191,0.2)",
@@ -121,7 +121,7 @@ function RegisterForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg px-4 py-12">
       <div
-        className="w-full max-w-[420px] rounded-[var(--radius-lg)] border border-border bg-surface p-10"
+        className="w-full max-w-105 rounded-lg border border-border bg-surface p-10"
         style={{
           boxShadow: "var(--shadow-md)",
         }}
@@ -222,9 +222,9 @@ function RegisterForm() {
 
           {/* Divider */}
           <div className="flex items-center">
-            <div className="h-0.25 flex-1 bg-border" />
+            <div className="h-px flex-1 bg-border" />
             <span className="mx-3 my-0 text-sm text-text-muted">or</span>
-            <div className="h-0.25 flex-1 bg-border" />
+            <div className="h-px flex-1 bg-border" />
           </div>
 
           {/* Google Button */}

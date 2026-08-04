@@ -17,7 +17,7 @@ export function buildExamManagementColumns({
       key: "title",
       label: "Exam Title",
       render: (exam) => (
-        <span className="block max-w-50 truncate" title={exam.title}>
+        <span className="block max-w-45 truncate" title={exam.title}>
           {exam.title}
         </span>
       ),

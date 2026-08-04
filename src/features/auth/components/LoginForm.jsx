@@ -52,7 +52,7 @@ function LoginForm() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg px-4 py-12">
       <div
-        className="w-full max-w-[400px] rounded-lg border border-border bg-surface p-10"
+        className="w-full max-w-100 rounded-lg border border-border bg-surface p-10"
         style={{
           boxShadow: "var(--shadow-md)",
         }}
@@ -148,9 +148,9 @@ function LoginForm() {
 
           {/* Divider */}
           <div className="flex items-center">
-            <div className="h-0.25 flex-1 bg-border" />
+            <div className="h-px flex-1 bg-border" />
             <span className="mx-3 my-0 text-sm text-text-muted">or</span>
-            <div className="h-0.25 flex-1 bg-border" />
+            <div className="h-px flex-1 bg-border" />
           </div>
 
           {/* Google Button */}

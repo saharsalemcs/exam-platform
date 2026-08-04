@@ -12,7 +12,7 @@ function SubmitDeleteModal({ isOpen, onClose, onConfirm }) {
     >
       <div className="flex flex-col gap-4 p-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-danger/10 text-danger">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-danger/10 text-danger">
             <TrashIcon size={20} />
           </div>
           <h2 id="confirm-title" className="text-lg font-bold text-text">

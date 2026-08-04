@@ -33,7 +33,7 @@ function QuestionCard({ session }) {
           variant="ghost"
           size="sm"
           onClick={() => toggleBookmark(currentQuestion?.id)}
-          className={`hover:bg-transparent hover:text-[var(--color-warning)] ${bookmarks[currentQuestion?.id] ? " text-[var(--color-warning)]" : ""} `}
+          className={`hover:bg-transparent hover:text-warning ${bookmarks[currentQuestion?.id] ? " text-warning" : ""} `}
         >
           {bookmarks[currentQuestion?.id] ? (
             <>
@@ -69,7 +69,7 @@ function QuestionCard({ session }) {
               key={option.id}
               type="button"
               onClick={() => selectAnswer(currentQuestion.id, option.id)}
-              className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-md)] p-4 text-left transition-colors"
+              className="flex cursor-pointer items-center gap-3 rounded-md p-4 text-left transition-colors"
               style={{
                 backgroundColor: isSelected
                   ? "var(--color-primary-glow)"

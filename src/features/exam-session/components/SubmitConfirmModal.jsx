@@ -13,7 +13,7 @@ function SubmitConfirmModal({ isOpen, onClose, onConfirm, isPending }) {
       <div className="flex flex-col gap-4 p-6">
         <div className="flex items-center gap-3">
           <div
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)]"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md"
             style={{
               backgroundColor: "rgba(237,216,138,0.1)",
               border: "1px solid rgba(237,216,138,0.2)",

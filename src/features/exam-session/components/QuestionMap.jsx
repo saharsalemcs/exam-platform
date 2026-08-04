@@ -32,7 +32,7 @@ function QuestionMap({ session }) {
               onClick={() => goToQuestion(i)}
               aria-current={isCurrent}
               aria-label={`Question ${i + 1}${isAnswered ? ", answered" : ""}${isFlagged ? ", flagged" : ""}`}
-              className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] text-sm font-semibold transition-all duration-150 outline-none"
+              className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-sm text-sm font-semibold transition-all duration-150 outline-none"
               style={{
                 backgroundColor: isAnswered
                   ? "var(--color-success)"
