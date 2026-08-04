@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { getEffectiveStatus } from "../helpers/getEffectiveStatus";
 import { formatDateTime } from "@/utils/formatDateForInput";
 
-const DIFFICULTY = {
+export const DIFFICULTY = {
   easy: {
     label: "Easy",
     bg: "rgba(45,212,191,0.1)",
@@ -38,7 +38,7 @@ const DIFFICULTY = {
   },
 };
 
-const STATUS_BADGE = {
+export const STATUS_BADGE = {
   active: {
     label: "Active",
     bg: "rgba(59,130,246,0.1)",

@@ -3,20 +3,11 @@ import Tag from "@/components/shared/Tag";
 function ExamHeader({ session }) {
   const { exam, questions } = session;
   return (
-    <div
-      className="mb-lg flex flex-wrap items-center justify-between rounded-lg p-lg"
-      style={{
-        backgroundColor: "var(--color-surface)",
-        border: "1px solid var(--color-border)",
-      }}
-    >
+    <div className="mb-lg flex flex-wrap items-center gap-md rounded-lg border border-border bg-surface p-lg">
       <div className="flex w-full flex-col justify-between sm:flex-row sm:items-center">
         <div className="flex flex-col">
           <h1 className="mb-1 text-lg font-bold">{exam?.title}</h1>
-          <p
-            style={{ color: "var(--color-text-muted)" }}
-            className="text-[14px]"
-          >
+          <p className="text-[14px] text-text-muted">
             {questions?.length} Questions&nbsp;·&nbsp;{exam?.duration_mins} min
           </p>
         </div>

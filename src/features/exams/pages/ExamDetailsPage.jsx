@@ -19,40 +19,22 @@ import ExamStatusBadge from "@/components/shared/ExamStatusBadge";
 import ExamStatCard from "../components/ExamStatCard";
 import Button from "@/components/shared/Button";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
-
-const DIFFICULTY = {
-  easy: {
-    label: "Easy",
-    bg: "rgba(45,212,191,0.1)",
-    border: "rgba(45,212,191,0.2)",
-    color: "var(--color-success)",
-  },
-  medium: {
-    label: "Medium",
-    bg: "rgba(237,216,138,0.1)",
-    border: "rgba(237,216,138,0.2)",
-    color: "var(--color-warning)",
-  },
-  hard: {
-    label: "Hard",
-    bg: "rgba(200,93,106,0.1)",
-    border: "rgba(200,93,106,0.2)",
-    color: "var(--color-danger)",
-  },
-};
+// import { getEffectiveStatus } from "../helpers/getEffectiveStatus";
+import { DIFFICULTY, STATUS_BADGE } from "../components/ExamCard";
 
 function ExamDetailsPage() {
   const { examId } = useParams();
   const navigate = useNavigate();
 
   const { exam, attemptInfo, isLoading, error } = useExamDetails(examId);
-
+  // const effectiveStatus = getEffectiveStatus(exam);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const statusBadge = STATUS_BADGE[effectiveStatus];
 
   const isCompleted =
     attemptInfo?.status === "submitted" || attemptInfo?.status === "timed_out";
-  const isInterrupted = attemptInfo?.status === "in_progress";
   const isViolated = attemptInfo?.status === "violated";
+  const isBlocked = !isCompleted && !isViolated;
 
   function handleActionClick() {
     if (isCompleted || isViolated) {
@@ -142,11 +124,6 @@ function ExamDetailsPage() {
           >
             {difficulty.label}
           </span>
-
-          {/* Status badge — بيظهر بس لو في attempt */}
-          {isCompleted && <ExamStatusBadge status="completed" />}
-          {isInterrupted && <ExamStatusBadge status="in-progress" />}
-          {isViolated && <ExamStatusBadge status="violated" />}
         </div>
 
         {/* Title */}
@@ -245,15 +222,7 @@ function ExamDetailsPage() {
       <Button
         onClick={handleActionClick}
         disabled={questionCount === 0}
-        variant={
-          isCompleted
-            ? "success"
-            : isViolated
-              ? "danger"
-              : isInterrupted
-                ? "danger"
-                : "primary"
-        }
+        variant={isCompleted ? "success" : isViolated ? "danger" : "primary"}
       >
         {isCompleted ? (
           <>
@@ -263,13 +232,9 @@ function ExamDetailsPage() {
           <>
             <AlertTriangle size={17} /> View Results
           </>
-        ) : isInterrupted ? (
-          <>
-            <AlertTriangle size={17} /> Resume Exam
-          </>
         ) : (
           <>
-            <PlayCircle size={17} /> Start Exam - {exam.duration_mins} min
+            <PlayCircle size={17} /> Start Exam
           </>
         )}
       </Button>

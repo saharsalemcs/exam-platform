@@ -38,22 +38,21 @@ function ExamSessionPage() {
   }
 
   return (
-    <div
-      className="mx-auto min-h-screen max-w-165 px-6 py-10 font-sans"
-      style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
-    >
-      <ExamHeader session={session} />
-      <div className="grid grid-cols-1 items-start gap-md sm:grid-cols-[1fr_220px]">
-        <QuestionCard session={session} />
-        <ExamSidebar session={session} />
-      </div>
-      <Navigation session={session} />
+    <div className="bg-bg">
+      <div className="mx-auto min-h-screen max-w-165 px-6 py-10 font-sans">
+        <ExamHeader session={session} />
+        <div className="grid grid-cols-1 items-start gap-md sm:grid-cols-[1fr_220px]">
+          <QuestionCard session={session} />
+          <ExamSidebar session={session} />
+        </div>
+        <Navigation session={session} />
 
-      <TimesUpModal
-        isOpen={session.showTimesUp}
-        isPending={session.status === "submitting"}
-        onConfirm={() => session.handleSubmit("timed_out")}
-      />
+        <TimesUpModal
+          isOpen={session.showTimesUp}
+          isPending={session.status === "submitting"}
+          onConfirm={() => session.handleSubmit("timed_out")}
+        />
+      </div>
     </div>
   );
 }

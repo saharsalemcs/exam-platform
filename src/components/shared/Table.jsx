@@ -2,7 +2,7 @@ function Table({ columns, rows, getRowKey = (row) => row.id }) {
   return (
     <div>
       {/* Desktop*/}
-      <div className="hidden rounded-md border border-border bg-surface lg:block">
+      <div className="hidden overflow-hidden rounded-md border border-border bg-surface lg:block">
         <div className="relative w-full">
           <table className="w-full table-auto border-collapse text-left">
             <thead>
@@ -46,7 +46,7 @@ function Table({ columns, rows, getRowKey = (row) => row.id }) {
             key={getRowKey(row)}
             className="rounded-md border border-border bg-surface p-4"
           >
-            {columns.map((col, i) => (
+            {columns.map((col) => (
               <div
                 key={col.key}
                 className="flex items-start justify-between border-b border-border py-2 text-sm last:border-0"
