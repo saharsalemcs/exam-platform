@@ -16,7 +16,7 @@ export async function getExams({
     .select(
       `id, title, description, category, difficulty,
       duration_mins, total_marks, pass_marks,
-      status, ends_at, created_at,
+      status,starts_at, ends_at, created_at,
       profiles:created_by(full_name)`,
     )
     .order("created_at", { ascending: false });

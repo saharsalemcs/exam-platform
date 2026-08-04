@@ -37,7 +37,7 @@ function AvatarMenu({ profile }) {
 
       {/* Name — hidden on small screens */}
       <div className="hidden flex-col items-start leading-none sm:flex">
-        <span className="text-[16px] font-semibold text-text">
+        <span className="text-lg font-medium text-text">
           {profile?.full_name?.split(" ")[0] ?? "User"}
         </span>
       </div>

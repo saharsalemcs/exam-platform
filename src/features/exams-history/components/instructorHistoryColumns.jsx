@@ -19,7 +19,12 @@ export const instructorHistoryColumns = [
     key: "examTitle",
     label: "Exam Title",
     render: (row) => (
-      <span className="text-text">{row.exams?.title ?? "—"}</span>
+      <span
+        className="block max-w-50 truncate text-text"
+        title={row.exams?.title}
+      >
+        {row.exams?.title ?? "—"}
+      </span>
     ),
   },
   {

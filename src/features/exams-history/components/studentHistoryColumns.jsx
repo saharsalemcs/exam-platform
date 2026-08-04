@@ -9,7 +9,10 @@ export const studentHistoryColumns = [
     key: "title",
     label: "Exam Title",
     render: (attempt) => (
-      <span className="font-medium" style={{ color: "var(--color-text)" }}>
+      <span
+        className="block max-w-50 truncate text-text"
+        title={attempt.exams?.title}
+      >
         {attempt.exams?.title ?? "—"}
       </span>
     ),

@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import NavItem from "../shared/NavItem";
+import AvatarMenu from "../shared/AvatarMenu";
 
 const STUDENT_NAV = [
   { label: "Dashboard", to: "/student/dashboard", icon: LayoutDashboard },
@@ -131,7 +132,7 @@ function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
           <button
             onClick={onClose}
             aria-label="Close navigation"
-            className="ml-auto flex cursor-pointer items-center justify-center rounded-[var(--radius-sm)] p-1.5 transition-all duration-150 md:hidden"
+            className="ml-auto flex cursor-pointer items-center justify-center rounded-sm p-1.5 transition-all duration-150 md:hidden"
             style={{
               color: "var(--color-text-faint)",
               backgroundColor: "transparent",
@@ -200,27 +201,24 @@ function Sidebar({ isOpen, isCollapsed, onClose, onToggleCollapse }) {
               }}
             >
               {/* Avatar */}
-              <div
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
-                style={{
-                  backgroundColor: "var(--color-primary)",
-                  color: "var(--color-bg)",
-                  boxShadow: "0 0 8px var(--shadow-glow)",
-                }}
-              >
-                {getInitials(profile?.full_name)}
+              <div className="flex shrink-0 items-center justify-center">
+                <img
+                  src={profile?.avatar_url || "/default-avatar.jpg"}
+                  alt={profile?.full_name}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
               </div>
 
               {/* Name + role */}
               <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
                 <span
-                  className="truncate text-[13px] leading-tight font-semibold"
+                  className="truncate leading-tight font-semibold"
                   style={{ color: "var(--color-text)" }}
                 >
                   {profile?.full_name ?? "User"}
                 </span>
                 <span
-                  className="mt-0.5 text-[11px] leading-tight capitalize"
+                  className="mt-0.5 text-sm leading-tight capitalize"
                   style={{ color: "var(--color-text-faint)" }}
                 >
                   {profile?.role ?? ""}

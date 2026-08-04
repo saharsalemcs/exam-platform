@@ -32,14 +32,14 @@ function AppLayout() {
       />
 
       <div
-        className="flex min-h-screen flex-1 flex-col"
+        className="flex min-h-screen min-w-0 flex-1 flex-col"
         style={{ marginLeft: sidebarWidth }}
       >
         <Header sidebarWidth={sidebarWidth} onMenuClick={toggleOpen} />
 
         <main
           id="main-content"
-          className="flex-1 overflow-y-auto"
+          className="min-w-0 flex-1 overflow-y-auto"
           style={{
             backgroundColor: "var(--color-bg)",
             minHeight: `calc(100vh - var(--header-height))`,
@@ -47,7 +47,7 @@ function AppLayout() {
         >
           <div
             style={{ marginTop: "var(--header-height)" }}
-            className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7"
+            className="mx-auto max-w-350 px-4 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7"
           >
             <Outlet />
           </div>

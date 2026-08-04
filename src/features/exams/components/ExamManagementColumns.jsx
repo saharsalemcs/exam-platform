@@ -16,7 +16,11 @@ export function buildExamManagementColumns({
     {
       key: "title",
       label: "Exam Title",
-      render: (exam) => <span className="font-medium">{exam.title}</span>,
+      render: (exam) => (
+        <span className="block max-w-50 truncate" title={exam.title}>
+          {exam.title}
+        </span>
+      ),
     },
     {
       key: "startDate",
