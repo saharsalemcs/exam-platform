@@ -1,18 +1,57 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { STATUS_OPTIONS, STATUS_STYLES } from "../helpers/getEffectiveStatus";
 
 function StatusDropdown({ effectiveStatus, onChange, disabled }) {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0, openUp: false });
+  const btnRef = useRef(null);
+  const menuRef = useRef(null);
 
+  // Close on outside click (checks both button and portal menu)
   useEffect(() => {
     function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) setIsOpen(false);
+      if (
+        btnRef.current &&
+        !btnRef.current.contains(e.target) &&
+        menuRef.current &&
+        !menuRef.current.contains(e.target)
+      ) {
+        setIsOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Reposition on open, scroll, resize
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+
+    function updatePosition() {
+      const btn = btnRef.current;
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const menuHeight = menuRef.current?.offsetHeight ?? 150;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUp = spaceBelow < menuHeight + 8;
+
+      setCoords({
+        top: openUp ? rect.top - menuHeight - 6 : rect.bottom + 6,
+        left: rect.right - 128, // 128 = w-32 (8rem)
+        openUp,
+      });
+    }
+
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [isOpen]);
 
   const current = STATUS_STYLES[effectiveStatus] ?? STATUS_STYLES.active;
 
@@ -23,8 +62,9 @@ function StatusDropdown({ effectiveStatus, onChange, disabled }) {
   }
 
   return (
-    <div className="relative inline-block" ref={ref}>
+    <div className="relative inline-block">
       <button
+        ref={btnRef}
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen((v) => !v)}
@@ -34,36 +74,41 @@ function StatusDropdown({ effectiveStatus, onChange, disabled }) {
         {isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
       </button>
 
-      {isOpen && (
-        <div
-          className="absolute top-full right-0 z-10 mt-1.5 flex w-32 flex-col overflow-hidden rounded-md border shadow-lg"
-          style={{
-            backgroundColor: "var(--color-surface-2)",
-            borderColor: "var(--color-border)",
-          }}
-        >
-          {STATUS_OPTIONS.map((status) => {
-            const style = STATUS_STYLES[status];
-            return (
-              <button
-                key={status}
-                type="button"
-                onClick={() => handleSelect(status)}
-                className="px-3 py-2 text-left text-sm font-semibold hover:bg-surface"
-                style={{
-                  color: style.className.includes("accent")
-                    ? "var(--color-accent)"
-                    : style.className.includes("warning")
-                      ? "var(--color-warning)"
-                      : "var(--color-danger)",
-                }}
-              >
-                {style.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {isOpen &&
+        createPortal(
+          <div
+            ref={menuRef}
+            className="fixed z-50 flex w-32 flex-col overflow-hidden rounded-md border shadow-lg"
+            style={{
+              top: coords.top,
+              left: coords.left,
+              backgroundColor: "var(--color-surface-2)",
+              borderColor: "var(--color-border)",
+            }}
+          >
+            {STATUS_OPTIONS.map((status) => {
+              const style = STATUS_STYLES[status];
+              return (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => handleSelect(status)}
+                  className="px-3 py-2 text-left text-sm font-semibold hover:bg-surface"
+                  style={{
+                    color: style.className.includes("accent")
+                      ? "var(--color-accent)"
+                      : style.className.includes("warning")
+                        ? "var(--color-warning)"
+                        : "var(--color-danger)",
+                  }}
+                >
+                  {style.label}
+                </button>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
