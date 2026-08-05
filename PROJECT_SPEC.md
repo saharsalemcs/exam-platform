@@ -8,7 +8,9 @@
 >
 > **Updated 2026-08-05** to reflect the pre-deploy hardening pass: the drafted home page redesign is now applied (`HomePage.jsx` is no longer a stub); Row Level Security policies and hardened RPC authorization (`create_exam_attempt`) were added via a new Supabase migration; and a batch of cosmetic/cleanup fixes landed (typo fix in `useSignInWithGoogle`, leftover `console.log` removed from `ChangePasswordCard.jsx`, `variation`→`variant` unified in `ChangePasswordCard.jsx`, project README written). See §13 "Recent Changes (Session — 2026-08-05)" for exactly what changed and what's still open.
 >
-> **Updated 2026-08-05 (continued session)** to close out the remaining pre-deploy checklist: Supabase credentials moved out of `src/services/supabase.js` into environment variables (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`), backed by a committed `.env.example` template; the previously hardcoded publishable key (confirmed present in git history, i.e. exposed) was rotated in the Supabase dashboard and the old key revoked; the two new question-fetch RPCs were wired into the frontend and the remaining ownership-checking RPCs were hardened (both reported done by the project owner this session — see caveat in §14); and a fixed demo instructor account (`instructor@edutest.demo`) was created directly in Supabase (Auth user + `profiles.role = 'teacher'`) so evaluators can reach the teacher portal without a real account. See §14 "Recent Changes (Session — 2026-08-05, continued)" for full detail. **Only the Vercel deploy itself and its post-deploy verification remain open** — see §14 "What's still open."
+> **Updated 2026-08-05 (continued session)** to close out the remaining pre-deploy checklist: Supabase credentials moved out of `src/services/supabase.js` into environment variables (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`), backed by a committed `.env.example` template; the previously hardcoded publishable key (confirmed present in git history, i.e. exposed) was rotated in the Supabase dashboard and the old key revoked; the two new question-fetch RPCs were wired into the frontend and the remaining ownership-checking RPCs were hardened (both reported done by the project owner this session — see caveat in §14); and a fixed demo instructor account (`instructor@edutest.demo`) was created directly in Supabase (Auth user + `profiles.role = 'teacher'`) so evaluators can reach the teacher portal without a real account. See §14 "Recent Changes (Session — 2026-08-05, continued)" for full detail.
+>
+> **Updated 2026-08-05 (cleanup pass)** to close out every remaining cosmetic / technical-debt item: the question-type selector edit-mode nit, the duplicated result-shaping logic between the student and instructor result APIs, the unused `useFilteredExams` hook, the full `variant`/`variation` audit (`MCQForm.jsx`, `Button.jsx`, and all other `Button` consumers), the commented-out UI blocks, and small polish passes on `ResetPasswordPage` and `NotFoundPage` are all now fixed. See §15 "Recent Changes (Session — 2026-08-05, cleanup pass)" for detail. **Only the Vercel deploy itself and its post-deploy verification remain open** — see §14/§15 "What's still open."
 
 ---
 
@@ -108,7 +110,7 @@ All routes are defined in `src/App.jsx`. Pages are lazy-loaded. `AppLayout` (sid
 | `/register`        | `RegisterPage`       | Student registration with email confirmation flow                                                              |
 | `/forgot-password` | `ForgotPasswordPage` | Sends Supabase password reset email                                                                            |
 | `/reset-password`  | `ResetPasswordPage`  | Sets new password after recovery token                                                                         |
-| `*`                | `NotFoundPage`       | 404 page with “Go Back” button                                                                                 |
+| `*`                | `NotFoundPage`       | 404 page — styled, on-brand (polished in the 2026-08-05 cleanup pass, see §15)                                 |
 
 ### Student (`ProtectedRoute allowedRole="student"`)
 
@@ -209,11 +211,10 @@ Confirmed end-to-end (call-graph trace + live testing) that `ExamSessionPage` us
 Both flows are complete and share the same three-step component.
 
 - **Step 1 — Exam Details:** title, category, duration, difficulty, start/end datetime, target grade & department, pass percentage, description.
-- **Step 2 — Question Builder:** MCQ (4 options) or True/False questions with marks; edit/delete in list.
+- **Step 2 — Question Builder:** MCQ (4 options) or True/False questions with marks; edit/delete in list. Question-type selector now correctly reflects each loaded question's actual type in edit mode (fixed in the 2026-08-05 cleanup pass, see §15).
 - **Step 3 — Review & Publish:** summary + confirm; calls `create_exam_with_questions` RPC (create) or `update_exam_with_questions` RPC (edit).
 - Wizard state in React context (`ExamWizardContext`); step navigation via `?step=1|2|3` query param.
 - **Edit mode:** `ExamWizardPage` fetches the exam via `getExamById(examId, instructorId)` (ownership-scoped), shows a loading state, then seeds `ExamWizardProvider` with `initialExam`/`initialQuestions` before it mounts.
-- **Remaining minor nit:** the question-type selector in Step 2 still defaults to "mcq" regardless of the loaded exam's questions; cosmetic only.
 
 ### Instructor Exam Management
 
@@ -231,7 +232,7 @@ Both flows are complete and share the same three-step component.
 
 - **Student result:** summary card (score, pass/fail, time, cheating/timed-out flags) + question-by-question review with correct answers shown.
 - **Instructor result:** same layout plus student name; `showNotes={false}` on review section.
-- Result shaping logic is duplicated between `studentResultApi.js` and `instructorResultApi.js` (deliberately left as-is, low priority).
+- **Result shaping logic** — previously duplicated between `studentResultApi.js` and `instructorResultApi.js`; the shared question-grading mapping was extracted into a common helper in the 2026-08-05 cleanup pass (see §15). Both APIs now call the shared helper and layer their own role-specific fields (e.g. student name for the instructor view, `showNotes` flag) on top.
 
 ### Student Management (Instructor)
 
@@ -399,13 +400,17 @@ Hooks that need the current user's `profile.grade`/`profile.department` pull the
 
 `src/services/supabase.js` no longer hardcodes the Supabase project URL or anon key. It reads `import.meta.env.VITE_SUPABASE_URL` and `import.meta.env.VITE_SUPABASE_ANON_KEY`, and throws a clear startup error if either is missing rather than silently failing later. A `.env.example` (committed) documents the expected variable names; the real `.env` is git-ignored. This is now the expected pattern for any future secret/config value — see §14.
 
+### Shared result-shaping helper — pattern, established 2026-08-05 (cleanup pass)
+
+The question-grading mapping previously duplicated between `studentResultApi.js` and `instructorResultApi.js` now lives in one shared helper, imported by both. Role-specific differences (student name inclusion, `showNotes`) are layered on top by each caller rather than re-implemented. See §15.
+
 ### Other conventions
 
 - **Plain JavaScript** — no TypeScript in `src/`.
 - **Path alias:** `@/` → `src/` (Vite).
 - **Theming:** Tailwind v4 `@theme` in `src/index.css` with `--color-`\* custom properties; dark theme by default.
 - **Forms:** `react-hook-form` throughout auth, profile, wizard.
-- **UI:** Primarily custom components in `components/shared/`; shadcn/ui minimally adopted (`components/ui/button.jsx` only).
+- **UI:** Primarily custom components in `components/shared/`; shadcn/ui minimally adopted (`components/ui/button.jsx` only). All `Button` consumers now consistently use the `variant` prop (see §15).
 - **Naming inconsistency:** UI routes say “instructor”; DB role is “teacher”; sidebar says “Teacher Portal”.
 
 ---
@@ -415,27 +420,26 @@ Hooks that need the current user's `profile.grade`/`profile.department` pull the
 > Resolved through 2026-08-02: exam edit wizard, grade/department targeting (incl. exam-session entry point), student exam-history filter crash, `ExamDetailsPage` violated-attempt handling, `useUser()` return shape.
 > Resolved 2026-08-05: home page redesign, RLS policies, `create_exam_attempt` hardening, README, several cosmetic fixes.
 > Resolved 2026-08-05 (continued session): Supabase keys moved to env vars (and the exposed key rotated); question-fetch RPCs wired into the frontend (reported); remaining ownership-checking RPCs hardened (reported) — see §14 for verification caveats on the last two.
+> Resolved 2026-08-05 (cleanup pass): question-type selector edit-mode nit, duplicate result logic, unused `useFilteredExams` hook, full `variant`/`variation` audit, commented-out UI blocks, `ResetPasswordPage` unused import, `NotFoundPage` styling — see §15.
 
 ### Remaining minor gaps
 
-| Issue                                                             | Location                                          | Detail                                                                                  |
-| ----------------------------------------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **Question-type selector doesn't follow loaded question on edit** | `QuestionBuilderStep.jsx` (exam-wizard edit mode) | Defaults to "mcq" regardless of the edited exam's actual question types; cosmetic only. |
+None remaining. The question-type selector edit-mode nit was fixed in the 2026-08-05 cleanup pass (see §15).
 
 ### Technical debt & inconsistencies
 
 | Issue                           | Detail                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Duplicate result logic**      | `studentResultApi.js` and `instructorResultApi.js` share nearly identical question-grading mapping. **Deliberately left as-is** — flagged for a future refactor.                                                                                                                                                                                                                                                  |
-| **Unused hook**                 | `src/hooks/useFilteredExams.js` is never imported. Still unused; kept in place pending a decision to wire it up or delete it.                                                                                                                                                                                                                                                                                     |
-| **Mixed Button APIs**           | Some components use `variant`, others `variation`. Fixed: `ReviewStep.jsx`, `ChangePasswordCard.jsx`. `QuestionBuilderStep.jsx` audited and found already consistent. Remaining components not yet audited: `MCQForm.jsx`, `Button.jsx` itself, and any other consumers of `Button`.                                                                                                                              |
-| **Commented-out UI blocks**     | Large commented sections in `ExamSessionPage.jsx`, `ExamDetailsPage.jsx`, `ExamCard.jsx`, `Sidebar.jsx`. **Deliberately left as-is** per explicit instruction.                                                                                                                                                                                                                                                    |
-| `ResetPasswordPage`             | Imports `useLogout` but never uses it after manual `signOut`. Not yet addressed.                                                                                                                                                                                                                                                                                                                                  |
+| ~~**Duplicate result logic**~~  | ~~`studentResultApi.js` and `instructorResultApi.js` share nearly identical question-grading mapping.~~ — **fixed 2026-08-05 (cleanup pass)**: extracted into a shared helper; both APIs now call it and layer role-specific fields on top. See §15.                                                                                                                                                              |
+| ~~**Unused hook**~~             | ~~`src/hooks/useFilteredExams.js` is never imported.~~ — **fixed 2026-08-05 (cleanup pass)**: removed from the codebase. See §15.                                                                                                                                                                                                                                                                                 |
+| ~~**Mixed Button APIs**~~       | ~~Some components use `variant`, others `variation`.~~ — **fixed 2026-08-05 (cleanup pass)**: full audit completed across all `Button` consumers, including `MCQForm.jsx` and `Button.jsx` itself; `variant` is now the only prop name used. See §15.                                                                                                                                                             |
+| ~~**Commented-out UI blocks**~~ | ~~Large commented sections in `ExamSessionPage.jsx`, `ExamDetailsPage.jsx`, `ExamCard.jsx`, `Sidebar.jsx`.~~ — **fixed 2026-08-05 (cleanup pass)**: removed. See §15.                                                                                                                                                                                                                                             |
+| ~~`ResetPasswordPage`~~         | ~~Imports `useLogout` but never uses it after manual `signOut`.~~ — **fixed 2026-08-05 (cleanup pass)**: unused import removed. See §15.                                                                                                                                                                                                                                                                          |
 | ~~**Typo in hook export**~~     | ~~`useSignInWithGoogle` exports `singInWithGoogle`~~ — **fixed**: now exports `signInWithGoogle`.                                                                                                                                                                                                                                                                                                                 |
 | ~~**Console logging**~~         | ~~`console.log(data)` left in `ChangePasswordCard.jsx`~~ — **fixed**, removed.                                                                                                                                                                                                                                                                                                                                    |
 | ~~**Supabase keys in source**~~ | ~~`src/services/supabase.js` contained the project URL and publishable key inline~~ — **fixed 2026-08-05 (continued session)**: moved to `import.meta.env.VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`, with a startup error if unset. `.env.example` committed; `.env` git-ignored. The previously-exposed key (present in git history) was rotated in the Supabase dashboard and the old key revoked. See §14. |
 | ~~**README**~~                  | ~~Default Vite template text; no project-specific docs~~ — **fixed**: full project README written.                                                                                                                                                                                                                                                                                                                |
-| **NotFoundPage**                | Minimal unstyled back button. Not yet addressed.                                                                                                                                                                                                                                                                                                                                                                  |
+| ~~**NotFoundPage**~~            | ~~Minimal unstyled back button.~~ — **fixed 2026-08-05 (cleanup pass)**: styled to match the app's visual language. See §15.                                                                                                                                                                                                                                                                                      |
 
 ### Missing error handling / edge cases
 
@@ -452,15 +456,14 @@ Hooks that need the current user's `profile.grade`/`profile.department` pull the
 - Ownership-checking RPCs (`update_exam_with_questions`, `update_exam_status`, `delete_exam`, `submit_exam_attempt`) — **reportedly hardened to use `auth.uid()` 2026-08-05 (continued session)**, closing the gap flagged in the original hardening pass. Reported done by the project owner directly in the Supabase dashboard (function bodies aren't in this repo); not independently re-verified against source in this pass. Recommended: a quick manual test — e.g. confirm a teacher still can't edit/delete another teacher's exam, and that `submit_exam_attempt` rejects a mismatched `student_id`.
 - Supabase credentials are no longer hardcoded in source (§14); the exposed key was rotated and the old key revoked in the Supabase dashboard.
 
-### Priority Ranking (Remaining Work) — updated 2026-08-05 (continued session)
+### Priority Ranking (Remaining Work) — updated 2026-08-05 (cleanup pass)
 
-> Everything below the line that was previously the "remaining, current priority order" (question-fetch RPC wiring, ownership-RPC hardening, env-var migration) has now been addressed this session. What's left is **deployment itself**, plus long-standing low-priority cosmetic items.
+> Every cosmetic/technical-debt item previously listed here has now been resolved (see §15). What's left is **deployment itself** and its post-deploy verification.
 
 **Remaining, current priority order:**
 
 1. **Deploy to Vercel** and configure `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` as environment variables in the Vercel project settings (the `.env` file itself is git-ignored and won't ship). See §14 for the pre-deploy checklist.
-2. **Post-deploy smoke test**: register a new student, sign in as the demo instructor (`instructor@edutest.demo`), create an exam, take it as a student, submit, and view results on both sides — to confirm the RPC-wiring and RLS changes reported this session actually hold up against the deployed build.
-3. **Question-type selector edit-mode nit, duplicate result logic, unused hook, remaining `variant`/`variation` audit (`MCQForm.jsx`, `Button.jsx`, others), commented-out code, `ResetPasswordPage` unused import, `NotFoundPage` styling** — cosmetic/cleanup, low urgency, no functional risk, safe to defer past initial deploy.
+2. **Post-deploy smoke test**: register a new student, sign in as the demo instructor (`instructor@edutest.demo`), create an exam, take it as a student, submit, and view results on both sides — to confirm the RPC-wiring and RLS changes reported in §14 actually hold up against the deployed build.
 
 ---
 
@@ -554,9 +557,9 @@ exam-platform/
 │   │   ├── exams/
 │   │   ├── exams-history/
 │   │   ├── profile/
-│   │   ├── results/
+│   │   ├── results/            # includes shared result-shaping helper (see §15)
 │   │   └── students/
-│   ├── hooks/                  # Shared hooks
+│   ├── hooks/                  # Shared hooks (useFilteredExams removed, see §15)
 │   ├── pages/                  # HomePage, NotFoundPage
 │   ├── services/supabase.js    # Reads Supabase URL/key from env vars (see §14)
 │   ├── utils/constants.js
@@ -663,12 +666,25 @@ Since these RPC function bodies live in Supabase and aren't tracked in this repo
 
 **Note for the README / handoff notes:** if these demo credentials are shared publicly (e.g. printed in the README for evaluators), anyone with them can create/edit/delete exams under this identity. This is expected for a demo account, but worth a one-line callout in the README so evaluators know it's a shared demo identity, not a personal account. Rotating this password periodically, or recreating the account if it gets misused, is a reasonable low-effort safeguard — no urgent action needed before deploy.
 
+---
+
+## 15. Recent Changes (Session — 2026-08-05, cleanup pass)
+
+This session closed out every remaining item in the "cosmetic/cleanup" bucket that had been deliberately deferred past initial deploy in §13/§14. Reported done by the project owner.
+
+- **Question-type selector edit-mode nit** (`QuestionBuilderStep.jsx`) — fixed. The selector now reflects each loaded question's actual `type` (`mcq` / `true_false`) instead of always defaulting to "mcq" when editing an existing exam.
+- **Duplicate result logic** — fixed. The question-grading mapping previously duplicated between `studentResultApi.js` and `instructorResultApi.js` was extracted into a single shared helper; both APIs now call it and layer their own role-specific fields (student name, `showNotes`) on top. See §4 "Results" and §6 "Shared result-shaping helper."
+- **Unused hook** — fixed. `src/hooks/useFilteredExams.js` was removed from the codebase rather than wired up, since nothing used it.
+- **Full `variant`/`variation` audit** — fixed. The remaining `Button` consumers flagged in §13 (`MCQForm.jsx`, `Button.jsx` itself, and any other consumers) were audited and standardized on `variant`; `variation` no longer appears anywhere in the codebase.
+- **Commented-out UI blocks** — fixed. The large commented-out sections in `ExamSessionPage.jsx`, `ExamDetailsPage.jsx`, `ExamCard.jsx`, and `Sidebar.jsx` (previously left in place per explicit instruction) were removed.
+- **`ResetPasswordPage`** — fixed. The unused `useLogout` import (never called after the manual `signOut`) was removed.
+- **`NotFoundPage`** — fixed. Styled to match the app's visual language, replacing the previous minimal unstyled back button.
+
 ### What's still open
 
-Per §7's updated priority list, only the following remain:
+Only deployment itself remains:
 
 1. **Deploy to Vercel**, including setting `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in the Vercel project's environment variables (not just the local `.env`, which won't be picked up by Vercel automatically).
-2. **Post-deploy smoke test** covering: student registration, demo-instructor login, exam creation, taking an exam as a student, and viewing results on both sides — primarily to confirm items 3 and 4 above (RPC wiring and RPC hardening) hold up in the deployed environment, since they weren't independently re-verified against source this session.
-3. Long-standing low-priority cosmetic items (question-type selector nit, duplicate result logic, unused hook, remaining `variant`/`variation` audit, commented-out code, `ResetPasswordPage`/`NotFoundPage` polish) — safe to defer past initial deploy.
+2. **Post-deploy smoke test** covering: student registration, demo-instructor login, exam creation, taking an exam as a student, and viewing results on both sides — primarily to confirm the RPC wiring and RPC hardening reported in §14 hold up in the deployed environment, since they weren't independently re-verified against source.
 
 ---
