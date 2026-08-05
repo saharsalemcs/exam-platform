@@ -29,7 +29,7 @@ function AvatarMenu({ profile }) {
       {/* Avatar circle */}
       <div className="flex shrink-0 items-center justify-center">
         <img
-          src={profile?.avatar_url || "/default-avatar.jpg"}
+          src={profile?.avatar_url || "/default-avatar.png"}
           alt={profile?.full_name}
           className="h-8 w-8 rounded-full object-cover"
         />

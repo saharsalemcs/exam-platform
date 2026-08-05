@@ -56,7 +56,7 @@ function PersonalInformationCard({ userId, profile, email, role }) {
           className="group relative flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary/20"
         >
           <img
-            src={profile?.avatar_url || "/default-avatar.jpg"}
+            src={profile?.avatar_url || "/default-avatar.png"}
             alt={profile?.full_name}
             className="h-16 w-16 rounded-full object-cover"
           />
