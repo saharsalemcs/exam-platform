@@ -1,24 +1,13 @@
-# 📝 EduTest
+<div align="center">
 
-**A full-stack online examination platform with role-based access, real-time anti-cheat, and a 3-step exam wizard.**
+<h1>📝 EduTest</h1>
 
-React
-Vite
-Supabase
-Tailwind
-React Query
-Deployed on Vercel
+**A full-stack, role-based online exam platform** built as a React SPA on top of Supabase — students discover and take proctored, timed exams; instructors build exams through a wizard, publish them, and review results and analytics.
+<br>
 
 🚀 **[View Live Demo →](https://exam-platform-beryl.vercel.app)**
 
-EduTest takes an exam from **creation → discovery → proctored session → server-side scoring → results & analytics**, through two dedicated portals:
-
-- 🎓 **Students** — discover exams targeted to their grade/department, take timed sessions with anti-cheat protections, and review results & performance analytics.
-- 🧑‍🏫 **Teachers (Instructors)** — build exams with a multi-step wizard, manage their exam lifecycle, and review student submissions and stats.
-
-> 🔑 A fixed demo instructor account is available for evaluators: `instructor-edutest@gmail.com`. See [Getting Started](#-getting-started) for the password and an important note on how it's used.
-
----
+</div>
 
 ## 📋 Table of Contents
 
@@ -325,7 +314,7 @@ Vercel's default static handling 404s on client-side-only routes (e.g. a direct 
 Under **Supabase → Authentication → URL Configuration**, make sure:
 
 - **Site URL** points to your production domain (not `localhost`).
-- **Redirect URLs** includes your production domain with a wildcard (e.g. `https://your-app.vercel.app/`\*\*), alongside your local dev URL if you still want local OAuth to keep working.
+- **Redirect URLs** includes your production domain with a wildcard (e.g. `https://your-app.vercel.app/`), alongside your local dev URL if you still want local OAuth to keep working.
 
 ### ✅ Post-deploy smoke test
 
