@@ -4,7 +4,11 @@
 >
 > **Updated 2026-08-01** to reflect two implemented features (Exam Edit Wizard, Student Grade/Department Targeting) confirmed against the actual source files touched during that work. Sections not touched by this update still reflect the 2026-07-31 exploration and may be stale — see §10 "Recent Changes" for exactly what was verified.
 >
-> **Updated 2026-08-02 (continued session)** to reflect: the `ReviewStep.jsx` `variation`/`variant` fix, the `useLogin` incomplete-profile fix, a registration-flow audit (missing `emailRedirectTo` fixed; Google OAuth redirect reviewed and confirmed self-correcting via `ProtectedRoute`, no code change needed), and closing "no teacher registration UI" as an intentional product decision rather than a gap. See §12 "Recent Changes (Session — 2026-08-02, continued)" for detail. **The home page redesign was drafted (code shared in-chat) but has not been applied to the repo yet** — `HomePage.jsx` is still the stub described below.
+> **Updated 2026-08-02 (continued session)** to reflect: the `ReviewStep.jsx` `variation`/`variant` fix, the `useLogin` incomplete-profile fix, a registration-flow audit (missing `emailRedirectTo` fixed; Google OAuth redirect reviewed and confirmed self-correcting via `ProtectedRoute`, no code change needed), and closing "no teacher registration UI" as an intentional product decision rather than a gap. See §12 "Recent Changes (Session — 2026-08-02, continued)" for detail.
+>
+> **Updated 2026-08-05** to reflect the pre-deploy hardening pass: the drafted home page redesign is now applied (`HomePage.jsx` is no longer a stub); Row Level Security policies and hardened RPC authorization (`create_exam_attempt`) were added via a new Supabase migration; and a batch of cosmetic/cleanup fixes landed (typo fix in `useSignInWithGoogle`, leftover `console.log` removed from `ChangePasswordCard.jsx`, `variation`→`variant` unified in `ChangePasswordCard.jsx`, project README written). See §13 "Recent Changes (Session — 2026-08-05)" for exactly what changed and what's still open.
+>
+> **Updated 2026-08-05 (continued session)** to close out the remaining pre-deploy checklist: Supabase credentials moved out of `src/services/supabase.js` into environment variables (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`), backed by a committed `.env.example` template; the previously hardcoded publishable key (confirmed present in git history, i.e. exposed) was rotated in the Supabase dashboard and the old key revoked; the two new question-fetch RPCs were wired into the frontend and the remaining ownership-checking RPCs were hardened (both reported done by the project owner this session — see caveat in §14); and a fixed demo instructor account (`instructor@edutest.demo`) was created directly in Supabase (Auth user + `profiles.role = 'teacher'`) so evaluators can reach the teacher portal without a real account. See §14 "Recent Changes (Session — 2026-08-05, continued)" for full detail. **Only the Vercel deploy itself and its post-deploy verification remain open** — see §14 "What's still open."
 
 ---
 
@@ -73,6 +77,8 @@ Students **cannot** access any `/instructor/`\* route (blocked by `ProtectedRout
 
 Teachers **cannot** access student exam session routes or `/student/`\* routes.
 
+**Demo access (added 2026-08-05, continued session):** a fixed demo instructor account exists for evaluators — `instructor@edutest.demo` (created directly via Supabase Auth, with `profiles.role` manually set to `'teacher'`, since teachers can't self-register). See §14 for how it was created and how to rotate/replace it. This is separate from real teacher accounts, which the project owner still provisions manually per the "no teacher registration UI" product decision (§12).
+
 ### Shared
 
 - **Profile page** (`ProfilePage`) is reused at `/student/profile` and `/instructor/profile` inside each role’s `ProtectedRoute`.
@@ -80,10 +86,12 @@ Teachers **cannot** access student exam session routes or `/student/`\* routes.
 
 ### Data-layer scoping (beyond route protection) — **confirmed, expanded 2026-08-01**
 
-`ProtectedRoute` only controls which _routes_ a role can reach; it says nothing about which _rows_ a query returns once there. Two scoping rules exist at the query layer, both enforced client-side (no RLS policies visible in this repo — see Security notes in §7):
+`ProtectedRoute` only controls which _routes_ a role can reach; it says nothing about which _rows_ a query returns once there. Two scoping rules exist at the query layer:
 
-- **Instructor ownership:** exam mutation/lookup RPCs and queries that touch a specific instructor's exams take `p_instructor_id` / `.eq("created_by", instructorId)` and are scoped server-side by that value (`update_exam_with_questions`, `delete_exam`, `update_exam_status`, and the new edit-mode fetch `getExamById` in `examWizardApi.js`). A teacher cannot load or mutate another teacher's exam through these paths.
-- **Student grade/department targeting:** confirmed enforced and, as of 2026-08-02, verified through direct testing to cover every entry point a student could use to reach an exam's content — list, details page, and the live exam session itself. See §4 "Exam Discovery (Student)" and "Exam Session Authorization" for detail. This governs _which exams a student's queries can return at all_, not just which routes they can visit.
+- **Instructor ownership:** exam mutation/lookup RPCs and queries that touch a specific instructor's exams take `p_instructor_id` / `.eq("created_by", instructorId)` and are scoped server-side by that value (`update_exam_with_questions`, `delete_exam`, `update_exam_status`, and the edit-mode fetch `getExamById` in `examWizardApi.js`). A teacher cannot load or mutate another teacher's exam through these paths. **As of 2026-08-05 (continued session), this is reportedly backed by `auth.uid()`-based checks server-side rather than trusting the client-supplied id — see §14 for the verification caveat.**
+- **Student grade/department targeting:** confirmed enforced and, as of 2026-08-02, verified through direct testing to cover every entry point a student could use to reach an exam's content — list, details page, and the live exam session itself. See §4 "Exam Discovery (Student)" and "Exam Session Authorization" for detail.
+
+As of 2026-08-05, this scoping is also backed by database-level RLS policies (see §8), not just the application query layer.
 
 ---
 
@@ -93,14 +101,14 @@ All routes are defined in `src/App.jsx`. Pages are lazy-loaded. `AppLayout` (sid
 
 ### Public
 
-| Path               | Component            | Purpose                                                             |
-| ------------------ | -------------------- | ------------------------------------------------------------------- |
-| `/`                | `HomePage`           | Placeholder landing page (“Home Page” text only)                    |
-| `/login`           | `LoginPage`          | Email/password + Google sign-in; redirects if already authenticated |
-| `/register`        | `RegisterPage`       | Student registration with email confirmation flow                   |
-| `/forgot-password` | `ForgotPasswordPage` | Sends Supabase password reset email                                 |
-| `/reset-password`  | `ResetPasswordPage`  | Sets new password after recovery token                              |
-| `*`                | `NotFoundPage`       | 404 page with “Go Back” button                                      |
+| Path               | Component            | Purpose                                                                                                        |
+| ------------------ | -------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `/`                | `HomePage`           | Landing page — hero, student/instructor feature rows, CTAs (applied 2026-08-05; previously a placeholder stub) |
+| `/login`           | `LoginPage`          | Email/password + Google sign-in; redirects if already authenticated                                            |
+| `/register`        | `RegisterPage`       | Student registration with email confirmation flow                                                              |
+| `/forgot-password` | `ForgotPasswordPage` | Sends Supabase password reset email                                                                            |
+| `/reset-password`  | `ResetPasswordPage`  | Sets new password after recovery token                                                                         |
+| `*`                | `NotFoundPage`       | 404 page with “Go Back” button                                                                                 |
 
 ### Student (`ProtectedRoute allowedRole="student"`)
 
@@ -167,22 +175,17 @@ All routes are defined in `src/App.jsx`. Pages are lazy-loaded. `AppLayout` (sid
 
 ### Exam Discovery (Student)
 
-- Lists exams where `status = 'active'` AND `ends_at > now()` (server-side query filter via `applyAvailabilityFilters` in `examsApi.js`, not client-side as previously documented — corrected 2026-08-01).
-- **Grade/department targeting — implemented and fully verified.** A student only ever sees exams where `exam.grade === profile.grade AND exam.department === profile.department` (exact match, not a togglable filter). This is enforced in the data query layer, not as a UI-level filter the student can see or toggle — `grade`/`department` never appear as options in `AvailableExamsPage`'s search/filter UI; they're baked into every relevant query in `examsApi.js` before results ever reach a component. Applied consistently across every path a student can use to reach exam content:
-  - `getExams` (`AvailableExamsPage` list) — filters via `.eq("grade", …).eq("department", …)` whenever the student's profile values are known.
-  - `getExamById` (`ExamDetailsPage`, via `useExamDetails`) — same filter, so **direct URL access to an exam outside a student's targeting is also blocked**, not just hidden from the list. A mismatch surfaces as `.single()`'s "no rows" error, which the page renders as its existing generic "Exam not found" state — deliberately not distinguishing "doesn't exist" from "not targeted at you."
-  - `getExamCategories` (category filter dropdown, via `useExamCategories`) — same filter, so the dropdown never offers a category with zero results for that student.
-  - All corresponding hooks (`useExams`, `useExamDetails`, `useExamCategories`) pull `grade`/`department` from `useUser()`'s cached profile and gate their queries (`enabled`) until both values are present, so a query never fires unfiltered while the profile is still loading.
-  - **Exam-session entry point — audited and confirmed 2026-08-02.** `ExamSessionPage` (`/student/exam/:examId/session`) fetches its exam data through this same `useExamDetails`/`getExamById` path — there is no separate, unfiltered fetch for the live session. Confirmed via full call-graph trace and live testing with a deliberately mismatched student/exam pair: the exam is hidden from `AvailableExamsPage`, and pasting the session URL directly renders the page's error `EmptyState` instead of starting a session. See "Exam Session Authorization" below for the full trace.
+- Lists exams where `status = 'active'` AND `ends_at > now()` (server-side query filter via `applyAvailabilityFilters` in `examsApi.js`).
+- **Grade/department targeting — implemented and fully verified.** A student only ever sees exams where `exam.grade === profile.grade AND exam.department === profile.department` (exact match, not a togglable filter). Applied consistently across every path a student can use to reach exam content: `getExams`, `getExamById`, `getExamCategories`, and the exam-session entry point itself (verified 2026-08-02, see "Exam Session Authorization" below).
 - Search by title/description; filter by category, difficulty, instructor name (client-side for instructor).
 - `ExamCard` shows attempt state: start, view results (completed), or violated styling.
 
 ### Exam Details & Rules
 
-- Fetches single exam with questions (without `correct_answer` exposed to student queries).
+- Fetches single exam with questions (without `correct_answer` exposed to student queries — **as of 2026-08-05 this is backed by RLS + dedicated RPCs, not just query-level omission; see §8**).
 - Shows duration, question count, marks, pass mark, instructor name.
 - `ExamRulesModal` displays integrity/time/submission rules from `src/constants/examRules.js`.
-- Actions: Start Exam, Resume (in_progress), View Results (submitted/timed_out/violated). Fixed 2026-08-02 — see §11; previously `violated` attempts fell through to "Start Exam," inconsistent with `ExamCard`'s handling of the same status.
+- Actions: Start Exam, Resume (in_progress), View Results (submitted/timed_out/violated).
 
 ### Exam Session & Anti-Cheat
 
@@ -195,33 +198,22 @@ All routes are defined in `src/App.jsx`. Pages are lazy-loaded. `AppLayout` (sid
 - Text selection disabled during session; browser back button neutralized.
 - `beforeunload` warning + flush save on leave.
 - Scoring delegated to `submit_exam_attempt` RPC (client does not compute score/`is_correct`).
+- **Question fetching — reportedly updated 2026-08-05 (continued session)** to call the new `get_exam_questions_for_session` / `get_exam_questions_for_review` RPCs instead of reading `questions` directly, now that students have no direct SELECT policy on that table. Reported done by the project owner this session; not independently re-verified against source in this pass — see caveat in §14.
 
 #### Exam Session Authorization — audited and verified 2026-08-02
 
-A prior pass had flagged the exam-session route as a possible gap: grade/department targeting had been added to `getExams`/`getExamById`/`getExamCategories`, but nothing had confirmed whether `/student/exam/:examId/session` used that same filtered path or fetched exam data separately. This was traced end-to-end this session:
-
-- **Call graph:** `App.jsx` mounts `ExamSessionPage` directly under `ProtectedRoute allowedRole="student"` with no route loader — `ProtectedRoute` itself only checks auth/role/profile-completeness, not exam-specific authorization (see §2). `ExamSessionPage` gets its exam via `useExamDetails(examId)`, the identical hook `ExamDetailsPage` uses, which calls `getExamById(examId, { grade, department })` — the same targeting-filtered query documented in "Exam Discovery" above. `useExamSession(exam)`'s `startSession()` is only invoked once `exam` is truthy, so a filtered-out (undefined) exam never reaches attempt creation.
-- **Ruled out:** `getExistingAttempt` (resume path) re-validated separately — confirmed it does not bypass targeting, since it only ever returns an `in_progress` attempt already belonging to that student for that exam.
-- **Live verification:** tested with a student whose profile `grade`/`department` genuinely did not match a target exam. Result: the exam does not appear in `AvailableExamsPage`, and navigating directly to its session URL (`/student/exam/:examId/session`) renders `ExamSessionPage`'s error `EmptyState` rather than starting a session or creating an `exam_attempts` row.
-- **Conclusion:** no separate/unfiltered fetch path exists for the session route in this codebase. The feature works as designed.
-- **Residual, out-of-scope caveat:** this is still a client-side/query-layer check, not a database-enforced one. `create_exam_attempt` (the RPC `createAttempt` calls) accepts only `p_exam_id`/`p_student_id` and performs no server-side grade/department validation, so a direct RPC call (e.g. from browser devtools, bypassing the React app entirely) would not be stopped by anything in this repo. This is tracked separately — see §8 "Supabase-side Security Improvements" — since it requires a change inside the RPC or an RLS policy, not a React code change.
+Confirmed end-to-end (call-graph trace + live testing) that `ExamSessionPage` uses the same grade/department-filtered fetch path as the exam list and details page — no separate unfiltered path exists in the React codebase. The one residual gap (the `create_exam_attempt` RPC not validating grade/department server-side) was closed in the 2026-08-05 RLS/RPC hardening migration (§8).
 
 ### Exam Wizard (Create & Edit) — fully implemented
 
-Both flows are complete and share the same three-step component. Teachers can create a new exam from scratch, or edit an existing one — in edit mode the wizard loads the exam's existing data and all of its existing questions and pre-populates every step before the teacher sees it, rather than starting from an empty form.
+Both flows are complete and share the same three-step component.
 
 - **Step 1 — Exam Details:** title, category, duration, difficulty, start/end datetime, target grade & department, pass percentage, description.
 - **Step 2 — Question Builder:** MCQ (4 options) or True/False questions with marks; edit/delete in list.
 - **Step 3 — Review & Publish:** summary + confirm; calls `create_exam_with_questions` RPC (create) or `update_exam_with_questions` RPC (edit).
 - Wizard state in React context (`ExamWizardContext`); step navigation via `?step=1|2|3` query param.
-- `pass_marks` and `total_marks` computed client-side before RPC.
-- **Edit mode:** `ExamWizardPage` reads `:examId` from the route:
-  - No `examId` → mounts `ExamWizardProvider` empty (create mode).
-  - `examId` present → fetches the exam via `getExamById(examId, instructorId)` in `examWizardApi.js` (scoped by `created_by`, so a teacher can't load another teacher's exam this way), shows a loading state, then seeds `ExamWizardProvider` with `initialExam`/`initialQuestions` — including every existing question — mapped from the DB row **before** the provider mounts. This matters because `ExamWizardProvider`'s `isEditMode` and initial state are set once via `useState(initialExam)` at mount — the fetch has to complete first, not fill in after.
-  - `pass_marks`/`total_marks` are converted back to the wizard's `passPercentage` field on load; `exam.id` is carried on `examDetails` so `ReviewStep`'s `isEditMode` branch correctly calls `useUpdateExam` instead of `usePublishExam`.
-  - Page header switches between "Create Exam" / "Edit Exam" copy based on `isEditMode`.
-  - A failed or unauthorized fetch (exam not found, or not owned by this instructor) renders an inline error instead of silently falling through to create mode.
-  - **Remaining minor nit (see §7):** the question-type selector in Step 2 still defaults to "mcq" regardless of what the loaded exam's questions are; cosmetic only, not a correctness issue.
+- **Edit mode:** `ExamWizardPage` fetches the exam via `getExamById(examId, instructorId)` (ownership-scoped), shows a loading state, then seeds `ExamWizardProvider` with `initialExam`/`initialQuestions` before it mounts.
+- **Remaining minor nit:** the question-type selector in Step 2 still defaults to "mcq" regardless of the loaded exam's questions; cosmetic only.
 
 ### Instructor Exam Management
 
@@ -239,7 +231,7 @@ Both flows are complete and share the same three-step component. Teachers can cr
 
 - **Student result:** summary card (score, pass/fail, time, cheating/timed-out flags) + question-by-question review with correct answers shown.
 - **Instructor result:** same layout plus student name; `showNotes={false}` on review section.
-- Result shaping logic is duplicated between `studentResultApi.js` and `instructorResultApi.js`.
+- Result shaping logic is duplicated between `studentResultApi.js` and `instructorResultApi.js` (deliberately left as-is, low priority).
 
 ### Student Management (Instructor)
 
@@ -250,18 +242,18 @@ Both flows are complete and share the same three-step component. Teachers can cr
 
 ## 5. Database Schema (Inferred)
 
-> **Inferred from code usage — not verified against the live database.**  
-> No `schema.sql` or migrations exist in this repo. RPC function bodies are not visible; parameters and return shapes are inferred from client calls.
+> **Inferred from code usage — not verified against the live database.**
+> No `schema.sql` exists in this repo; a migration file exists for the 2026-08-05 RLS/RPC hardening pass (`001_security_rls_and_rpc_hardening.sql`), but RPC function bodies otherwise remain server-side and not visible in-repo.
 
 ### Table: `profiles`
 
 Likely extends Supabase `auth.users` (same `id`).
 
 | Column         | Inferred type              | Notes                              |
-| -------------- | -------------------------- | ---------------------------------- | ----------- |
+| -------------- | -------------------------- | ---------------------------------- |
 | `id`           | uuid (PK, FK → auth.users) | Used everywhere as user identifier |
 | `full_name`    | text                       |                                    |
-| `role`         | text                       | `'student'`                        | `'teacher'` |
+| `role`         | text                       | `'student'` \| `'teacher'`         |
 | `avatar_url`   | text                       | Public URL from Storage            |
 | `grade`        | text                       | Student only; e.g. `"Grade 1"`     |
 | `department`   | text                       | From `DEPARTMENTS` constant        |
@@ -269,54 +261,52 @@ Likely extends Supabase `auth.users` (same `id`).
 
 ### Table: `exams`
 
-| Column          | Inferred type           | Notes                         |
-| --------------- | ----------------------- | ----------------------------- | ---------- | ---------- |
-| `id`            | uuid (PK)               |                               |
-| `title`         | text                    |                               |
-| `description`   | text                    | nullable                      |
-| `category`      | text                    | Subject/category              |
-| `difficulty`    | text                    | `'easy'`                      | `'medium'` | `'hard'`   |
-| `duration_mins` | integer                 |                               |
-| `total_marks`   | integer                 | Sum of question marks         |
-| `pass_marks`    | integer                 | Computed from pass percentage |
-| `grade`         | text                    | Target grade for exam         |
-| `department`    | text                    | Target department             |
-| `starts_at`     | timestamptz             |                               |
-| `ends_at`       | timestamptz             |                               |
-| `status`        | text                    | `'draft'`                     | `'active'` | `'closed'` |
-| `created_by`    | uuid (FK → profiles.id) | Instructor                    |
-| `created_at`    | timestamptz             | Used for ordering             |
-
-`grade`_,_ `department`_,_ `pass_marks`_, and_ `total_marks` _are now read/written from more call sites than before this session (_`examWizardApi.getExamById`_,_ `examsApi.getExams`_/_`getExamById`_/_`getExamCategories`_), which corroborates the inferred types above — but this is still inference from client code, not a verified schema (no migrations/_`schema.sql` _in this repo, as noted at the top of §5)._
+| Column          | Inferred type           | Notes                                 |
+| --------------- | ----------------------- | ------------------------------------- |
+| `id`            | uuid (PK)               |                                       |
+| `title`         | text                    |                                       |
+| `description`   | text                    | nullable                              |
+| `category`      | text                    | Subject/category                      |
+| `difficulty`    | text                    | `'easy'` \| `'medium'` \| `'hard'`    |
+| `duration_mins` | integer                 |                                       |
+| `total_marks`   | integer                 | Sum of question marks                 |
+| `pass_marks`    | integer                 | Computed from pass percentage         |
+| `grade`         | text                    | Target grade for exam                 |
+| `department`    | text                    | Target department                     |
+| `starts_at`     | timestamptz             |                                       |
+| `ends_at`       | timestamptz             |                                       |
+| `status`        | text                    | `'draft'` \| `'active'` \| `'closed'` |
+| `created_by`    | uuid (FK → profiles.id) | Instructor                            |
+| `created_at`    | timestamptz             | Used for ordering                     |
 
 ### Table: `questions`
 
 | Column           | Inferred type        | Notes                               |
-| ---------------- | -------------------- | ----------------------------------- | -------------- |
+| ---------------- | -------------------- | ----------------------------------- |
 | `id`             | uuid (PK)            |                                     |
 | `exam_id`        | uuid (FK → exams.id) |                                     |
 | `body`           | text                 | Question text                       |
-| `type`           | text                 | `'mcq'`                             | `'true_false'` |
+| `type`           | text                 | `'mcq'` \| `'true_false'`           |
 | `options`        | jsonb                | Array of `{ id, text }`             |
 | `correct_answer` | text                 | Option id (e.g. `"opt1"`, `"true"`) |
 | `marks`          | integer              |                                     |
 | `order_index`    | integer              | Display order                       |
 
+**As of 2026-08-05, students have no direct SELECT policy on this table** — reads go through `get_exam_questions_for_session` (never returns `correct_answer`) and `get_exam_questions_for_review` (returns it only after the student's own attempt is finished). See §8.
+
 ### Table: `exam_attempts`
 
-| Column         | Inferred type           | Notes                        |
-| -------------- | ----------------------- | ---------------------------- | ------------- | ------------- | ------------ |
-| `id`           | uuid (PK)               |                              |
-| `exam_id`      | uuid (FK → exams.id)    |                              |
-| `student_id`   | uuid (FK → profiles.id) |                              |
-| `started_at`   | timestamptz             | Set by `create_exam_attempt` |
-| `submitted_at` | timestamptz             | nullable until finished      |
-| `status`       | text                    | `'in_progress'`              | `'submitted'` | `'timed_out'` | `'violated'` |
-| `score`        | integer                 | Set server-side on submit    |
-| `total_marks`  | integer                 | Snapshot at submit           |
-| `time_taken`   | integer                 | Seconds                      |
-
-_Code references_ `remaining_seconds` _on attempt object in_ `useExamSession` _but it is not selected in_ `getExistingAttempt` _— may come from RPC or is unused fallback._
+| Column         | Inferred type           | Notes                                                             |
+| -------------- | ----------------------- | ----------------------------------------------------------------- |
+| `id`           | uuid (PK)               |                                                                   |
+| `exam_id`      | uuid (FK → exams.id)    |                                                                   |
+| `student_id`   | uuid (FK → profiles.id) |                                                                   |
+| `started_at`   | timestamptz             | Set by `create_exam_attempt`                                      |
+| `submitted_at` | timestamptz             | nullable until finished                                           |
+| `status`       | text                    | `'in_progress'` \| `'submitted'` \| `'timed_out'` \| `'violated'` |
+| `score`        | integer                 | Set server-side on submit                                         |
+| `total_marks`  | integer                 | Snapshot at submit                                                |
+| `time_taken`   | integer                 | Seconds                                                           |
 
 ### Table: `answers`
 
@@ -336,18 +326,21 @@ _Code references_ `remaining_seconds` _on attempt object in_ `useExamSession` _b
 - Path pattern: `{userId}/avatar.{ext}`
 - Public URL stored on `profiles.avatar_url`
 - Upload with `upsert: true`
+- RLS-backed storage policies (public-read / own-folder-write) added 2026-08-05.
 
 ### Supabase RPC functions (inferred)
 
-| Function                                                                      | Called from                         | Inferred purpose                                                                                                                      |
-| ----------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `create_exam_with_questions(p_exam, p_questions, p_created_by)`               | `examWizardApi.publishExam`         | Insert exam + questions atomically; returns exam id                                                                                   |
-| `update_exam_with_questions(p_exam_id, p_exam, p_questions, p_instructor_id)` | `examWizardApi.updateExam`          | Update exam + replace questions                                                                                                       |
-| `update_exam_status(p_exam_id, p_status, p_instructor_id)`                    | `examsApi.updateExamStatus`         | Change exam status with ownership check                                                                                               |
-| `delete_exam(p_exam_id, p_instructor_id)`                                     | `examsApi.deleteExam`               | Delete exam with ownership check                                                                                                      |
-| `create_exam_attempt(p_exam_id, p_student_id)`                                | `examSessionApi.createAttempt`      | Create attempt; returns `{ id, started_at }`                                                                                          |
-| `submit_exam_attempt(p_attempt_id, p_answers, p_time_taken, p_status)`        | `examSessionApi.submitAttempt`      | Score answers, finalize attempt; returns `{ score, totalMarks }`                                                                      |
-| `get_instructor_students(p_instructor_id)`                                    | `studentsApi.getInstructorStudents` | Returns rows with `full_name`, `email`, `grade`, `department`, `exams_count`, `avg_score`, `highest_score`, `pass_rate`, `student_id` |
+| Function                                                                      | Called from                                                          | Inferred purpose                                                                                                                                                                                     |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `create_exam_with_questions(p_exam, p_questions, p_created_by)`               | `examWizardApi.publishExam`                                          | Insert exam + questions atomically; returns exam id                                                                                                                                                  |
+| `update_exam_with_questions(p_exam_id, p_exam, p_questions, p_instructor_id)` | `examWizardApi.updateExam`                                           | Update exam + replace questions. **Reportedly hardened to use `auth.uid()` 2026-08-05 (continued session) — not independently re-verified.**                                                         |
+| `update_exam_status(p_exam_id, p_status, p_instructor_id)`                    | `examsApi.updateExamStatus`                                          | Change exam status with ownership check. **Same hardening caveat as above.**                                                                                                                         |
+| `delete_exam(p_exam_id, p_instructor_id)`                                     | `examsApi.deleteExam`                                                | Delete exam with ownership check. **Same hardening caveat as above.**                                                                                                                                |
+| `create_exam_attempt(p_exam_id)`                                              | `examSessionApi.createAttempt`                                       | Create attempt; validates exam status/window/grade/department against `auth.uid()`'s own profile server-side. **Signature changed 2026-08-05 — drops the old client-supplied `p_student_id` param.** |
+| `submit_exam_attempt(p_attempt_id, p_answers, p_time_taken, p_status)`        | `examSessionApi.submitAttempt`                                       | Score answers, finalize attempt; returns `{ score, totalMarks }`. **Should be confirmed to check `student_id = auth.uid()` — same hardening caveat.**                                                |
+| `get_instructor_students(p_instructor_id)`                                    | `studentsApi.getInstructorStudents`                                  | Returns rows with `full_name`, `email`, `grade`, `department`, `exams_count`, `avg_score`, `highest_score`, `pass_rate`, `student_id`                                                                |
+| `get_exam_questions_for_session(p_exam_id)`                                   | `examSessionApi.js` (reportedly wired 2026-08-05, continued session) | SECURITY DEFINER; returns exam questions without `correct_answer`                                                                                                                                    |
+| `get_exam_questions_for_review(p_attempt_id)`                                 | Results-review flow (reportedly wired 2026-08-05, continued session) | SECURITY DEFINER; returns questions with `correct_answer`, only after the student's own attempt is finished                                                                                          |
 
 ### Foreign-key aliases used in Supabase joins
 
@@ -389,20 +382,22 @@ Shared code lives in `src/components/`, `src/hooks/`, `src/utils/`, `src/lib/`, 
 - `setQueryData` **used for:** auth session (`useUser`, `useLogin`, `useSetPassword`).
 - `invalidateQueries` **used for:** profile update, avatar upload, instructor exam list after status change/delete.
 
-The stated preference for `setQueryData` is **not consistently applied** outside auth.
-
 ### Route protection — **Confirmed**
 
 - `ProtectedRoute` with `allowedRole="student"` or `"teacher"`.
 - No admin role anywhere.
 
-### Profile-gated queries — **new pattern, observed 2026-08-01**
+### Profile-gated queries — pattern, observed 2026-08-01
 
-Confirmed in `useExams`, `useExamDetails`, and `useExamCategories`: hooks that need the current user's `profile.grade`/`profile.department` pull them from `useUser()`'s cached `["user"]` query and pass `enabled: hasTargetingInfo` (or equivalent) to their own `useQuery`, rather than letting the query fire with `undefined` filter values while the profile is still loading. This wasn't an existing documented convention — it emerged from implementing grade/department targeting and is now the pattern to follow for any future student-scoped query. _(Assumption embedded in this pattern, not verified:_ `useUser()` _returns_ `{ data: { profile }, isLoading }` _— the_ `isLoading` _field name specifically was inferred by analogy with standard React Query hook shape, not confirmed by reading_ `useUser.js` _itself.)_
+Hooks that need the current user's `profile.grade`/`profile.department` pull them from `useUser()`'s cached `["user"]` query and pass `enabled: hasTargetingInfo` to their own `useQuery`, rather than letting the query fire with `undefined` filter values while the profile is still loading.
 
-### Provider seeded before mount, not after — **new pattern, observed 2026-08-01**
+### Provider seeded before mount, not after — pattern, observed 2026-08-01
 
-`ExamWizardProvider` reads `initialExam`/`initialQuestions` once via `useState(initialExam)` at construction time — later prop changes don't refill it. The edit-wizard fix follows a "fetch first, mount second" shape as a result: `ExamWizardPage` shows a loading state and only renders `<ExamWizardProvider>` once the async fetch resolves, instead of mounting immediately and patching state in afterward. Any future feature that seeds context/state from an async source should follow the same shape rather than relying on a `useEffect` to backfill it.
+`ExamWizardProvider` reads `initialExam`/`initialQuestions` once via `useState(initialExam)` at construction time. The edit-wizard fix follows a "fetch first, mount second" shape: `ExamWizardPage` shows a loading state and only renders `<ExamWizardProvider>` once the async fetch resolves.
+
+### Credentials via environment variables — pattern, established 2026-08-05 (continued session)
+
+`src/services/supabase.js` no longer hardcodes the Supabase project URL or anon key. It reads `import.meta.env.VITE_SUPABASE_URL` and `import.meta.env.VITE_SUPABASE_ANON_KEY`, and throws a clear startup error if either is missing rather than silently failing later. A `.env.example` (committed) documents the expected variable names; the real `.env` is git-ignored. This is now the expected pattern for any future secret/config value — see §14.
 
 ### Other conventions
 
@@ -417,7 +412,9 @@ Confirmed in `useExams`, `useExamDetails`, and `useExamCategories`: hooks that n
 
 ## 7. Known Gaps / Incomplete Areas / TODOs
 
-> Resolved this session (2026-08-02) — see §11 for details: exam edit wizard (verified), grade/department targeting (verified end-to-end including the exam-session entry point), student exam-history filter crash (fixed), `ExamDetailsPage` violated-attempt handling (fixed), `useUser()` return shape (confirmed). Supabase-side items (missing RLS, RPC authorization) have moved to their own section — see §8.
+> Resolved through 2026-08-02: exam edit wizard, grade/department targeting (incl. exam-session entry point), student exam-history filter crash, `ExamDetailsPage` violated-attempt handling, `useUser()` return shape.
+> Resolved 2026-08-05: home page redesign, RLS policies, `create_exam_attempt` hardening, README, several cosmetic fixes.
+> Resolved 2026-08-05 (continued session): Supabase keys moved to env vars (and the exposed key rotated); question-fetch RPCs wired into the frontend (reported); remaining ownership-checking RPCs hardened (reported) — see §14 for verification caveats on the last two.
 
 ### Remaining minor gaps
 
@@ -427,20 +424,18 @@ Confirmed in `useExams`, `useExamDetails`, and `useExamCategories`: hooks that n
 
 ### Technical debt & inconsistencies
 
-### Technical debt & inconsistencies
-
-| Issue                       | Detail                                                                                                                                                                                                                                                                      |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Duplicate result logic**  | `studentResultApi.js` and `instructorResultApi.js` share nearly identical question-grading mapping                                                                                                                                                                          |
-| **Unused hook**             | `src/hooks/useFilteredExams.js` is never imported                                                                                                                                                                                                                           |
-| **Mixed Button APIs**       | Some components use `variant`, others `variation`. The one confirmed live instance of the mismatch causing an actual bug (`ReviewStep.jsx`) was fixed 2026-08-02 — see §12; this row now tracks only the general inconsistency (no known remaining functional bug from it). |
-| **Commented-out UI blocks** | Large commented sections in `ExamSessionPage.jsx`, `ExamDetailsPage.jsx`, `ExamCard.jsx`, `Sidebar.jsx`                                                                                                                                                                     |
-| `ResetPasswordPage`         | Imports `useLogout` but never uses it after manual `signOut`                                                                                                                                                                                                                |
-| **Typo in hook export**     | `useSignInWithGoogle` exports `singInWithGoogle`                                                                                                                                                                                                                            |
-| **Console logging**         | `console.log(data)` left in `ChangePasswordCard.jsx`; `console.error` in exam session hooks (may be intentional for debugging)                                                                                                                                              |
-| **Supabase keys in source** | `src/services/supabase.js` contains project URL and publishable key inline                                                                                                                                                                                                  |
-| **README**                  | Default Vite template text; no project-specific docs                                                                                                                                                                                                                        |
-| **NotFoundPage**            | Minimal unstyled back button                                                                                                                                                                                                                                                |
+| Issue                           | Detail                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Duplicate result logic**      | `studentResultApi.js` and `instructorResultApi.js` share nearly identical question-grading mapping. **Deliberately left as-is** — flagged for a future refactor.                                                                                                                                                                                                                                                  |
+| **Unused hook**                 | `src/hooks/useFilteredExams.js` is never imported. Still unused; kept in place pending a decision to wire it up or delete it.                                                                                                                                                                                                                                                                                     |
+| **Mixed Button APIs**           | Some components use `variant`, others `variation`. Fixed: `ReviewStep.jsx`, `ChangePasswordCard.jsx`. `QuestionBuilderStep.jsx` audited and found already consistent. Remaining components not yet audited: `MCQForm.jsx`, `Button.jsx` itself, and any other consumers of `Button`.                                                                                                                              |
+| **Commented-out UI blocks**     | Large commented sections in `ExamSessionPage.jsx`, `ExamDetailsPage.jsx`, `ExamCard.jsx`, `Sidebar.jsx`. **Deliberately left as-is** per explicit instruction.                                                                                                                                                                                                                                                    |
+| `ResetPasswordPage`             | Imports `useLogout` but never uses it after manual `signOut`. Not yet addressed.                                                                                                                                                                                                                                                                                                                                  |
+| ~~**Typo in hook export**~~     | ~~`useSignInWithGoogle` exports `singInWithGoogle`~~ — **fixed**: now exports `signInWithGoogle`.                                                                                                                                                                                                                                                                                                                 |
+| ~~**Console logging**~~         | ~~`console.log(data)` left in `ChangePasswordCard.jsx`~~ — **fixed**, removed.                                                                                                                                                                                                                                                                                                                                    |
+| ~~**Supabase keys in source**~~ | ~~`src/services/supabase.js` contained the project URL and publishable key inline~~ — **fixed 2026-08-05 (continued session)**: moved to `import.meta.env.VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`, with a startup error if unset. `.env.example` committed; `.env` git-ignored. The previously-exposed key (present in git history) was rotated in the Supabase dashboard and the old key revoked. See §14. |
+| ~~**README**~~                  | ~~Default Vite template text; no project-specific docs~~ — **fixed**: full project README written.                                                                                                                                                                                                                                                                                                                |
+| **NotFoundPage**                | Minimal unstyled back button. Not yet addressed.                                                                                                                                                                                                                                                                                                                                                                  |
 
 ### Missing error handling / edge cases
 
@@ -448,38 +443,55 @@ Confirmed in `useExams`, `useExamDetails`, and `useExamCategories`: hooks that n
 - Exam session submit failure restores timer but user may be stuck with limited feedback beyond `error` state (not prominently displayed in `ExamSessionPage`).
 - No email verification gate on login (relies on Supabase config).
 
-### Security notes (observed, not audited)
+### Security notes
 
-- Student-facing exam queries intentionally omit `correct_answer` on questions during exam flow.
+- Student-facing exam queries omit `correct_answer` on questions. **As of 2026-08-05**, this is backed by a database-level control: the `questions` table has no student-facing SELECT policy at all; students read questions exclusively through `get_exam_questions_for_session` and `get_exam_questions_for_review`. **As of 2026-08-05 (continued session), the frontend has reportedly been switched over to call these RPCs** (`examSessionApi.js` and the results-review question-fetch) — reported done by the project owner; not independently re-verified against source in this pass. Recommended: confirm with a live test that exam sessions and result review still load questions correctly post-switch, since this was previously flagged as a functional blocker if left unwired.
 - Correct answers are shown only on result pages after submission.
 - Anti-cheat is client-side only — bypassable by determined users (inherent limitation).
-- Database-level scoping (RLS, RPC-level authorization) is out of scope for this React codebase — see §8 "Supabase-side Security Improvements."
+- Database-level scoping (RLS, RPC-level authorization) — **implemented 2026-08-05**, see §8.
+- Ownership-checking RPCs (`update_exam_with_questions`, `update_exam_status`, `delete_exam`, `submit_exam_attempt`) — **reportedly hardened to use `auth.uid()` 2026-08-05 (continued session)**, closing the gap flagged in the original hardening pass. Reported done by the project owner directly in the Supabase dashboard (function bodies aren't in this repo); not independently re-verified against source in this pass. Recommended: a quick manual test — e.g. confirm a teacher still can't edit/delete another teacher's exam, and that `submit_exam_attempt` rejects a mismatched `student_id`.
+- Supabase credentials are no longer hardcoded in source (§14); the exposed key was rotated and the old key revoked in the Supabase dashboard.
 
-### Priority Ranking (Remaining Work) — updated 2026-08-02 (continued session)
+### Priority Ranking (Remaining Work) — updated 2026-08-05 (continued session)
 
-> Former #1–#4 below were resolved or closed in the 2026-08-02 continued session — see §12. Kept here (struck through in spirit, not removed) so the ranking's history stays legible; only the items below the line are still open.
-
-1. ~~`ReviewStep.jsx` `variation`/`variant` prop bug~~ — **fixed** 2026-08-02.
-2. ~~`useLogin` sets an incomplete profile on sign-in~~ — **fixed** 2026-08-02.
-3. ~~No teacher registration UI~~ — **closed, not built**: confirmed as an intentional product decision (admin-provisioned teacher accounts), not a gap.
-4. ~~Google OAuth redirect hardcoded to student dashboard~~ — **reviewed, no change needed**: `ProtectedRoute` already redirects mismatched roles/incomplete profiles on the very next render, so this self-heals; left as-is with a clarifying comment.
-5. ~~Home page redesign not yet applied~~ — a full landing page (hero, student/instructor feature rows, CTAs) was drafted 2026-08-02, but `HomePage.jsx` in the repo is still the one-line stub. Applying the draft is the next concrete piece of work.
+> Everything below the line that was previously the "remaining, current priority order" (question-fetch RPC wiring, ownership-RPC hardening, env-var migration) has now been addressed this session. What's left is **deployment itself**, plus long-standing low-priority cosmetic items.
 
 **Remaining, current priority order:**
 
-1. **Question-type selector edit-mode nit, duplicate result logic, unused hook, mixed Button APIs (general), commented-out code, console logging, README** — cosmetic/cleanup, low urgency, no functional risk.
+1. **Deploy to Vercel** and configure `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` as environment variables in the Vercel project settings (the `.env` file itself is git-ignored and won't ship). See §14 for the pre-deploy checklist.
+2. **Post-deploy smoke test**: register a new student, sign in as the demo instructor (`instructor@edutest.demo`), create an exam, take it as a student, submit, and view results on both sides — to confirm the RPC-wiring and RLS changes reported this session actually hold up against the deployed build.
+3. **Question-type selector edit-mode nit, duplicate result logic, unused hook, remaining `variant`/`variation` audit (`MCQForm.jsx`, `Button.jsx`, others), commented-out code, `ResetPasswordPage` unused import, `NotFoundPage` styling** — cosmetic/cleanup, low urgency, no functional risk, safe to defer past initial deploy.
 
 ---
 
 ## 8. Supabase-side Security Improvements
 
-> These items require changes in the Supabase project (SQL migrations, RLS policies, or RPC function bodies) rather than in this React codebase. They're tracked here separately so they aren't mistaken for incomplete frontend work — the frontend behavior for each of these is already correct given the constraints of a client-only fix.
+> These items require changes in the Supabase project (SQL migrations, RLS policies, or RPC function bodies) rather than in this React codebase.
 
-| Issue                                                      | Detail                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No RLS policies defined**                                | No Row Level Security policies exist in this repo for `exams`, `exam_attempts`, `answers`, or `profiles`. All ownership/targeting scoping (instructor ownership, student grade/department targeting) is enforced at the query layer in application code only, with no database-level backstop.                                                                                                                                                                                                                         |
-| **`create_exam_attempt` has no server-side authorization** | The RPC accepts only `p_exam_id`/`p_student_id` and performs no grade/department (or any other) validation. Confirmed during the 2026-08-02 exam-session authorization audit (§4, "Exam Session Authorization"): a direct RPC call from outside the React app (e.g. browser devtools) would not be stopped by anything in this repo. Recommend adding a targeting check inside the RPC, and/or an RLS policy on `exam_attempts` that validates the inserting student's `grade`/`department` against the target exam's. |
-| **Supabase keys inline in source**                         | `src/services/supabase.js` contains the project URL and publishable key inline. Typically expected for a publishable/anon key, but worth confirming this key's permissions are appropriately scoped given the lack of RLS above.                                                                                                                                                                                                                                                                                       |
+### Done — 2026-08-05
+
+A migration (`001_security_rls_and_rpc_hardening.sql`) was written and applied covering:
+
+| Issue                                                      | Resolution                                                                                                                                                                                             |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **No RLS policies defined**                                | RLS enabled and policies added on `profiles`, `exams`, `questions`, `exam_attempts`, and `answers`, matching the ownership/targeting rules previously enforced only at the application-query layer.    |
+| **`create_exam_attempt` has no server-side authorization** | Rewritten to take only `p_exam_id` (no client-supplied `p_student_id`) and validate the exam's `status`/`ends_at`/`grade`/`department` against `auth.uid()`'s own profile before creating an attempt.  |
+| **Correct answers reachable via direct table access**      | Added two SECURITY DEFINER RPCs — `get_exam_questions_for_session` (never exposes `correct_answer`) and `get_exam_questions_for_review` (exposes it only after the student's own attempt is finished). |
+| **Storage bucket policies**                                | Added public-read / own-folder-write policies for the `avatars` bucket.                                                                                                                                |
+
+### Done — 2026-08-05 (continued session)
+
+| Issue                                                                   | Resolution                                                                                                                                                                                                                                                                                                                                                                              |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend still reading `questions` directly instead of the new RPCs** | Reported fixed by the project owner: `examSessionApi.js` and the results-review question-fetch now call `get_exam_questions_for_session` / `get_exam_questions_for_review`. Not independently re-verified against source this session — recommend a live smoke test (see §7 priority item 2).                                                                                           |
+| **Other ownership-checking RPCs still trusted client-supplied IDs**     | Reported fixed by the project owner directly in the Supabase dashboard: `update_exam_with_questions`, `update_exam_status`, `delete_exam`, and `submit_exam_attempt` reportedly now use `auth.uid()` internally instead of a client-supplied id. Not independently re-verified against source (function bodies aren't in this repo) — recommend a manual test (see §7 priority item 2). |
+| **Supabase keys inline in source**                                      | Fixed: `src/services/supabase.js` now reads from `import.meta.env`. See §14 for full detail, including the key rotation.                                                                                                                                                                                                                                                                |
+
+### Still open
+
+| Issue                                | Detail                                                                                                                                                                                                                                                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`answers` writes not RPC-wrapped** | Auto-save still writes directly to the `answers` table (RLS-gated to the student's own in-progress attempt, which is a real improvement over before) rather than through a SECURITY DEFINER RPC. Recommended as a future hardening step so `is_correct` can never be client-writable even in theory. |
 
 ---
 
@@ -487,16 +499,16 @@ Confirmed in `useExams`, `useExamDetails`, and `useExamCategories`: hooks that n
 
 ### Supabase Auth
 
-- Client: `@supabase/supabase-js` in `src/services/supabase.js`.
+- Client: `@supabase/supabase-js` in `src/services/supabase.js`, configured via env vars (§14).
 - **Email/password:** sign-up, sign-in, sign-out, password reset, update password.
 - **Google OAuth:** `signInWithOAuth({ provider: "google", redirectTo: origin + "/student/dashboard" })`.
 - **Session listener:** `supabase.auth.onAuthStateChange` in `useUser` syncs React Query `["user"]` cache.
-- **Registration metadata:** `{ full_name, role: "student" }` passed in `signUp` options — implies a DB trigger populates `profiles` from auth metadata (not in repo).
+- **Registration metadata:** `{ full_name, role: "student" }` passed in `signUp` options — implies a DB trigger populates `profiles` from auth metadata (not in repo). Confirmed 2026-08-05 (continued session): a user created directly via the Supabase Auth dashboard ("Add user") also gets a `profiles` row auto-created by this trigger, but with default values (`role = 'student'`, `full_name = 'New User'`) — these need manual correction after dashboard-created users (see §14).
 
 ### Supabase Postgres
 
 - All application data via `.from()` queries and `.rpc()` calls documented above.
-- Row Level Security policies are **not defined in this repo** — assumed configured in Supabase dashboard.
+- Row Level Security policies — **implemented 2026-08-05**, see §8.
 
 ### Supabase Storage
 
@@ -546,10 +558,12 @@ exam-platform/
 │   │   └── students/
 │   ├── hooks/                  # Shared hooks
 │   ├── pages/                  # HomePage, NotFoundPage
-│   ├── services/supabase.js
+│   ├── services/supabase.js    # Reads Supabase URL/key from env vars (see §14)
 │   ├── utils/constants.js
 │   └── lib/utils.js
 ├── public/default-avatar.jpg
+├── .env.example                 # Committed template for required env vars (added 2026-08-05)
+├── .env                          # Git-ignored; real Supabase credentials (added 2026-08-05)
 ├── package.json
 └── vite.config.js
 ```
@@ -558,130 +572,103 @@ exam-platform/
 
 ## 10. Recent Changes (Session — 2026-08-01)
 
-Two features were implemented in this session, moving them from §7 "Known Gaps" into §4 "Features Implemented." Everything below was verified against the actual source files edited, not inferred.
-
-### 1. Exam Edit Wizard
-
-**Problem:** `/instructor/exam-wizard/:examId` existed as a route and `useUpdateExam`/`update_exam_with_questions` already existed, but `ExamWizardPage` never read `:examId` or loaded the existing exam — `ExamWizardProvider` always mounted empty, so `isEditMode` was always `false` and "Edit" silently behaved like "Create."
-
-**Changed:**
-
-- `src/features/exam-wizard/services/examWizardApi.js` — added `getExamById(examId, instructorId)`, ownership-scoped via `.eq("created_by", instructorId)`, returning the exam with its `questions` sorted by `order_index`.
-- `src/features/exam-wizard/hooks/useExamForEdit.js` — **new file.** `useQuery` wrapper around the above, `enabled` only once `examId` and the instructor's profile id are both available.
-- `src/features/exam-wizard/pages/ExamWizardPage.jsx` — now branches on `:examId`: create mode is unchanged; edit mode fetches first, shows a loading state, maps the DB row (including `pass_marks`/`total_marks` → `passPercentage`) into `initialExam`/`initialQuestions`, and only then mounts `ExamWizardProvider`. Header copy reflects create vs. edit. Fetch failure/not-found renders an inline error.
-- No changes were needed in `ExamWizardContext.jsx`, `ReviewStep.jsx`, `MCQForm.jsx`, or `TrueFalseForm.jsx` — their edit-mode branching already existed and simply had never been fed real data before.
-
-### 2. Student Grade/Department Targeting
-
-**Problem:** Exams carry `grade`/`department` targeting fields (set in the wizard), but the student-facing exam queries didn't filter by the viewing student's own `grade`/`department` — students could see, and directly open, exams meant for other cohorts.
-
-**Design decision:** Exact match, hard filter — not a togglable UI filter. A student's `grade`/`department` come from their profile (required to leave `/complete-profile`), so this is treated the same way `applyAvailabilityFilters` (status/end-date) already is: baked into the query, not offered as an option to turn off.
-
-**Changed** (all in `src/features/exams/`):
-
-- `services/examsApi.js` —
-  - `getExams` now accepts `grade`/`department` and applies `.eq(...)` for each when present.
-  - `getExamById` now accepts a second `{ grade, department }` argument and applies the same filter; a mismatch causes `.single()` to return a "no rows" error, which `ExamDetailsPage` already rendered as a generic "Exam not found" state — so **direct URL access to an untargeted exam is now blocked**, not just hidden from the list, with no code changes needed in the page itself.
-  - `getExamCategories` now accepts `{ grade, department }` and applies the same filter, so the category filter dropdown never shows a category with zero visible results for that student.
-- `hooks/useExams.js`, `hooks/useExamDetails.js`, `hooks/useExamCategories.js` — each now reads `grade`/`department` from `useUser()`'s cached profile and gates its query (`enabled`) until both are present, per the new "profile-gated queries" pattern documented in §6.
-- No changes were needed in `AvailableExamsPage.jsx` or `ExamDetailsPage.jsx` — both consume their hooks' existing `{ data, isLoading, error }` contract unchanged.
-
-### Corrections to prior documentation made in this pass
-
-- §4 "Exam Discovery (Student)" previously said the active/not-ended filter was "client-side (in `examsApi`)" — reading the actual code shows `applyAvailabilityFilters` builds a Supabase/PostgREST query filter (server-evaluated), not a client-side JS filter. Corrected.
-
-### Still open after this session
-
-See the "Newly discovered gaps" table in §7 as it stood at the time: exam-session flow not audited for targeting, `useUser()` shape not directly verified, minor question-type-selector UX nit in edit mode, and the pre-existing `ReviewStep.jsx` `variation`/`variant` bug (left alone, out of scope).
-
-> **Update, 2026-08-02:** the exam-session targeting audit and the `useUser()` shape verification were completed in the following session — see §11 below. The question-type-selector nit and the `ReviewStep.jsx` prop bug remain open; see §7.
+Two features were implemented in this session: Exam Edit Wizard and Student Grade/Department Targeting. Both moved from §7 "Known Gaps" into §4 "Features Implemented." See prior versions of this document for full detail; summarized in §4/§6 above.
 
 ---
 
 ## 11. Recent Changes (Session — 2026-08-02)
 
-This session picked up directly from §10's "Still open" list, plus two additional bugs surfaced along the way. Everything below was verified against the actual source files reviewed or edited this session — nothing here is inferred.
-
-### 1. Exam Session Authorization — audited, no code change needed
-
-**Question going in:** did `/student/exam/:examId/session` fetch exam data through the same grade/department-filtered path as `AvailableExamsPage`/`ExamDetailsPage`, or through a separate, unfiltered path?
-
-**Audit performed:** traced the full call graph for `ExamSessionPage` — `App.jsx` routing (no loader), `useExamDetails` → `getExamById` (in `examsApi.js`), `useExamSession` → `examSessionApi.js` (`getExistingAttempt`, `createAttempt`, `getSavedAnswers`, `submitAttempt`), and the supporting hooks `useAutoSave`, `useAntiCheat`, `useCountdownTimer`. Reviewed `useUser.js` and `useStudentExamsHistory`-adjacent `useStudentExamStatus.js` directly (not inferred) to rule out any secondary data path.
-
-**Finding:** `ExamSessionPage` uses `useExamDetails(examId)` — the identical hook and query (`getExamById(examId, { grade, department })`) used by `ExamDetailsPage`. There is no separate fetch. `startSession()` only runs once `exam` is truthy, so a targeting mismatch (which makes `exam` stay `undefined`) prevents attempt creation entirely.
-
-**Verification:** an initial test appeared to show a bypass, but on investigation the test student's profile and the exam's targeting actually matched (the apparent mismatch was a testing-setup issue, not a code defect). Re-tested with a genuinely mismatched student/exam pair: the exam was correctly absent from `AvailableExamsPage`, and direct navigation to the session URL rendered `ExamSessionPage`'s error `EmptyState` rather than starting a session.
-
-**Conclusion:** no code change was required. This item is now resolved and moved out of §7 into §4 ("Exam Session Authorization," under "Exam Session & Anti-Cheat").
-
-**Related, deliberately out of scope:** `create_exam_attempt` (the RPC backing `createAttempt`) has no server-side grade/department check, so a direct RPC call bypassing the React app would not be stopped by anything in this repo. This is not a React-codebase gap — moved to the new §8 "Supabase-side Security Improvements" rather than tracked as unfinished frontend work.
-
-### 2. `useUser()` return shape — confirmed
-
-**Problem:** previously flagged as inferred-by-convention, not verified — multiple hooks assumed `useUser()` returns `{ data: { user, profile }, isLoading }`.
-
-**Verification:** read `src/features/auth/hooks/useUser.js` directly this session. Confirmed: it returns exactly `{ data, isLoading }`, with `data` set via React Query from `getCurrentUser()` and kept in sync with Supabase auth state changes (`onAuthStateChange`). The assumed shape used throughout `useExamDetails`, `useExams`, `useExamCategories`, `useStudentExamStatus`, and `useExamSession` is correct.
-
-**Changed:** no code changes — this closes a documentation/verification gap only. Removed from §7; the previously-inferred shape has been promoted to confirmed fact wherever it's referenced.
-
-### 3. Student exam-history filter crash — fixed
-
-**Problem:** `StudentExamsHistoryPage.jsx` built `filterValues` as `{ difficulty, subject, instructor, status }`, but `status` was never declared anywhere in the component — no state, no prop, no destructure. This isn't a conditional bug; the line executes on every render, so the page threw `ReferenceError: status is not defined` on every load, for every student.
-
-**Investigation:** confirmed `status` was dead/leftover code, not a partially-wired feature — `FilterModal`'s `sections` array never defined a status filter, and the mapper passed to `useFilteredItems` never exposed a `status` field for anything to filter against, so no functioning status filter could have existed even if the variable had been declared.
-
-**Changed:**
-
-- `src/features/exams-history/pages/StudentExamsHistoryPage.jsx` — removed `status` from the `filterValues` object. One-line fix; no other files touched, no behavior change beyond the page no longer crashing.
-
-### 4. `ExamDetailsPage` violated-attempt handling — fixed
-
-**Problem:** the page's status logic only recognized `isCompleted` (`submitted`/`timed_out`) and `isInterrupted` (`in_progress`); a `violated` attempt matched neither, so it silently fell through to the default "never attempted" branch — showing "Start Exam" and allowing a new session to be started, even though `ExamCard` (used on the exams list) already handled `violated` correctly by showing "View Results."
-
-**Changed:**
-
-- `src/features/exams/pages/ExamDetailsPage.jsx` —
-  - Added `const isViolated = attemptInfo?.status === "violated";`, mirroring `ExamCard.jsx`'s existing logic.
-  - `handleActionClick` now routes to the results page for `isCompleted || isViolated`, not just `isCompleted`.
-  - Added a `violated` status badge alongside the existing `completed`/`in-progress` badges.
-  - Action button now has a third branch: `violated` → danger variant, "View Results" (matching `ExamCard`'s treatment), positioned ahead of the `isInterrupted` check.
-- No other files touched; the `disabled={questionCount === 0}` guard and rules-modal-first start flow were left unchanged as out of scope for this fix.
-
-### 5. Documentation housekeeping
-
-- Split previously-mixed "known gap" and "needs Supabase-side change" items into separate sections (§7 vs. new §8), so unresolved React work isn't conflated with backend/infrastructure work this codebase can't fix on its own.
-- Removed resolved items (exam edit wizard, grade/department targeting, exam-session targeting gap) from §7 entirely, per the above.
-- Updated §2, §4, and §6 to state previously-inferred or session-dated information as verified, steady-state fact where this session confirmed it (edit-wizard route description, exam discovery targeting coverage, `useUser()` shape).
+- **Exam Session Authorization** — audited end-to-end, confirmed no separate unfiltered fetch path exists; no code change needed.
+- **`useUser()` return shape** — confirmed by reading source directly: `{ data, isLoading }`.
+- **Student exam-history filter crash** — fixed (removed a dead, never-declared `status` reference in `StudentExamsHistoryPage.jsx`).
+- **`ExamDetailsPage` violated-attempt handling** — fixed (now routes `violated` attempts to the results page like `ExamCard` already did).
+- Documentation split into "known React gaps" (§7) vs. "needs Supabase-side change" (§8).
 
 ---
 
 ## 12. Recent Changes (Session — 2026-08-02, continued)
 
-This session picked up directly from §7's priority ranking as it stood after §11. Everything below reflects what was actually discussed and, where noted, fixed in this session — not a re-audit of the codebase.
+- **`ReviewStep.jsx` `variation`/`variant` prop bug** — fixed.
+- **`useLogin` incomplete profile on sign-in** — fixed; now fetches the real `profiles` row via `getCurrentUser()` instead of caching `user_metadata` as a stand-in.
+- **Registration flow audit** — missing `emailRedirectTo` in `register()` fixed; Google OAuth hardcoded redirect reviewed and confirmed self-correcting via `ProtectedRoute`, left as-is.
+- **No teacher registration UI** — closed as an intentional product decision (admin-provisioned teacher accounts), not a gap.
 
-### 1. `ReviewStep.jsx` `variation`/`variant` prop bug — fixed
+---
 
-Priority-ranking #1. User applied the fix directly (swapped `variation="primary"` for `variant="primary"` to match `Button.jsx`'s actual prop name). Confirmed fixed; no longer tracked as an open bug in §7.
+## 13. Recent Changes (Session — 2026-08-05)
 
-### 2. `useLogin` incomplete profile on sign-in — fixed
+- **Home page** — the drafted redesign (hero, feature rows, CTAs) applied; `HomePage.jsx` is no longer a stub.
+- **Supabase RLS + RPC hardening (first pass)** — migration `001_security_rls_and_rpc_hardening.sql` written and applied: RLS enabled on core tables, `create_exam_attempt` hardened, two new question-read RPCs added, storage policies added for `avatars`. Frontend wiring to the new RPCs and hardening of the remaining ownership-checking RPCs were left open at the end of this session (see §7/§8 at the time).
+- **Cleanup pass** (scoped to 4 files): typo fix in `useSignInWithGoogle`, `console.log` removed and `variation`→`variant` fixed in `ChangePasswordCard.jsx`, `QuestionBuilderStep.jsx` audited (already consistent), `useFilteredExams.js` reviewed (still unused, left in place).
+- **README** — full project README written (overview, features, tech stack, setup/env vars, Supabase migration steps, deploy checklist).
 
-Priority-ranking #2. `src/features/auth/hooks/useLogin.js` previously cached `{ user, profile: data.user.user_metadata }` on login success — a partial stand-in missing `grade`, `department`, `has_password`, `avatar_url`.
+---
 
-**Fix:** `mutationFn` now calls `loginApi(email, password)` to sign in, then calls the existing `getCurrentUser()` (from `authApi.js`) to fetch the real `profiles` row, and returns that. `onSuccess` caches the result directly via `setQueryData(["user"], data)`, and reads `data.profile.role` (DB role) for the post-login redirect instead of `user_metadata.role`. This reuses the same helper `useUser.js` already trusts, so the cached shape now matches `{ user, profile }` exactly.
+## 14. Recent Changes (Session — 2026-08-05, continued)
 
-**Trade-off noted and accepted:** adds one extra network round-trip on login (the profile fetch). Considered low-cost since `useUser.js`'s `onAuthStateChange` listener would fire `getCurrentUser()` again shortly after anyway (on the `SIGNED_IN` event) — this just moves that fetch earlier so `grade`/`department` are correct from the first render after login, which matters given how much targeting logic depends on them.
+This session closed out the remaining pre-deploy checklist from §13. Everything below was either done directly in this conversation (env var migration, key rotation, demo instructor account) or reported done by the project owner outside this conversation (RPC wiring, ownership-RPC hardening) — the distinction matters for what still needs verification, called out explicitly below.
 
-### 3. Registration flow audit
+### 1. Supabase credentials moved to environment variables — done, verified in this session
 
-Reviewed `useRegister.js`, `RegisterForm.jsx`, and `authApi.js`'s `register`/`signInWithGoogle`. Two findings:
+**Problem:** `src/services/supabase.js` had the Supabase project URL and publishable (anon) key hardcoded as string literals directly in source, committed to git.
 
-- **Fixed — missing `emailRedirectTo` in `register()`:** `supabase.auth.signUp()` was called with no `emailRedirectTo`, unlike `forgotPassword()` which does set `redirectTo`. Without it, the confirmation-email link falls back to the Supabase project's default Site URL setting, which may not match this app's actual domain. Added `emailRedirectTo: window.location.origin + "/login"` (chosen to match `ConfirmationScreen`'s existing copy, which already tells the user to sign in after confirming).
-- **Reviewed, not changed — `signInWithGoogle` hardcoded redirect:** initially suspected this needed a dedicated `/auth/callback` route to redirect by role. On reading `ProtectedRoute.jsx`, confirmed it already redirects on role mismatch (`profile.role !== allowedRole` → other role's dashboard) and on incomplete student profile (→ `/complete-profile`) on the very next render. So `redirectTo: window.location.origin + "/student/dashboard"` is a safe landing pad, not a real routing bug — teachers and incomplete profiles self-correct immediately via existing logic. Left the code as-is; recommended adding a clarifying comment (not yet applied to the repo).
+**Changed:**
 
-No changes were needed in `ProtectedRoute.jsx` or `CompleteProfilePage.jsx` — both already handle this correctly.
+- `src/services/supabase.js` — now reads `import.meta.env.VITE_SUPABASE_URL` and `import.meta.env.VITE_SUPABASE_ANON_KEY`, and throws a descriptive startup error if either is missing (pointing to `.env.example`) instead of failing silently or later with an opaque Supabase client error.
+- `.env.example` — new file, committed to git. Documents the two required variable names with placeholder values.
+- `.env` — new file, added to `.gitignore`. Holds the real values locally.
+- `.gitignore` — updated to exclude `.env`.
 
-### 4. No teacher registration UI — closed as a product decision
+**Verified:** the project owner confirmed the app runs correctly locally with the new env-var-based setup.
 
-Priority-ranking #3. Confirmed with the project owner: teacher accounts are created manually by the system administrator; the public registration flow is intentionally restricted to students. This is not an incomplete feature — moved out of §7's "Incomplete or broken features" table entirely, since there is no work planned here.
+### 2. Exposed key rotated — done, verified in this session
+
+**Problem:** `git log -p -- src/services/supabase.js` confirmed the original hardcoded publishable key (`sb_publishable_l29eRpLNMlFVjuhCVsigqg_tnYzM8-q`) was present in an earlier commit — meaning it was exposed in git history even after being removed from the current working file. Since the repository is intended to be shared (e.g. pushed to GitHub for others to clone), this counted as a real exposure, not just a theoretical one.
+
+**Resolution taken:** rather than rewriting git history (higher-effort, riskier with collaborators), the key itself was rotated:
+
+- A new publishable key was generated in Supabase Dashboard → Settings → API.
+- The new key was verified working in the running app.
+- The old, exposed key was explicitly deleted/revoked from the Supabase dashboard, so it can no longer authenticate even though it remains visible in git history.
+
+**Residual note:** the old key string is still readable by anyone who inspects the git history, but it is now inert. If the repository's git history is ever cleaned (e.g. via `git filter-repo` or BFG) that would remove the visible string too, but this is not required for security purposes now that the key is revoked — noted here only as an optional future cleanup, not a blocker.
+
+### 3. Question-fetch RPCs wired into the frontend — reported done, not independently re-verified this session
+
+Per the project owner: `examSessionApi.js` (live exam session) and the results-review question-fetch have been switched from direct `supabase.from('questions')` reads to the two SECURITY DEFINER RPCs added in the 2026-08-05 first-pass migration (`get_exam_questions_for_session`, `get_exam_questions_for_review`).
+
+**This was previously flagged as a functional blocker** — without it, exam sessions and result review would break for students, since students have no direct SELECT policy on `questions` post-migration. The project owner reports this is now done. This document records it as resolved based on that report; it was not re-verified against the actual source files in this session (the files weren't shared in this conversation). **Recommended before/immediately after deploy: a live smoke test** — start an exam session as a student and open a finished attempt's result-review screen, to confirm questions (and, on review, correct answers) load correctly.
+
+### 4. Remaining ownership-checking RPCs hardened — reported done, not independently re-verified this session
+
+Per the project owner: `update_exam_with_questions`, `update_exam_status`, `delete_exam`, and `submit_exam_attempt` have been updated directly in the Supabase dashboard to use `auth.uid()` internally for their ownership/identity checks, instead of trusting a client-supplied `p_instructor_id` / `p_student_id` parameter — matching the pattern already applied to `create_exam_attempt` in the first hardening pass.
+
+Since these RPC function bodies live in Supabase and aren't tracked in this repo, this document records the change as reported rather than independently confirmed. **Recommended before/immediately after deploy:** a couple of quick manual checks — e.g. confirm a teacher account still cannot edit or delete another teacher's exam, and that submitting an attempt under a mismatched student context is rejected.
+
+### 5. Fixed demo instructor account created
+
+**Problem:** during development, the project owner had been signing in as an instructor using their own real personal email. Before handing the project to others to evaluate, a non-personal, disposable "teacher" login was needed — and per the product's existing design (§2, §12), teachers can't self-register through the UI, so this had to be created directly in Supabase.
+
+**Decision:** use a non-real (never-to-be-confirmed) email address rather than a real inbox, since teacher accounts don't go through the email-confirmation flow that student registration does (`role = 'teacher'` accounts are expected to pre-exist in the database, not sign up).
+
+**Steps taken:**
+
+1. Created a new user directly via Supabase Dashboard → Authentication → Users → "Add user", with `Auto Confirm User` enabled, using a disposable, clearly-non-personal address (`instructor@edutest.demo`) and a fresh password unrelated to any personal credentials.
+2. Confirmed via SQL Editor that Supabase's existing signup trigger auto-created a matching `profiles` row for the new user, but with default values (`role = 'student'`, `full_name = 'New User'`) — dashboard-created users don't carry the `role: "teacher"` metadata that the normal `/register` flow would never set anyway (registration is student-only, per §12).
+3. Ran a manual `update` against `profiles` to set `role = 'teacher'` and `full_name = 'Demo Instructor'` for that user's `id`.
+4. Verified via a follow-up `select` that the row updated correctly.
+5. Verified end-to-end by logging into the running app with the new credentials — confirmed it lands on `/instructor/dashboard` as expected (not `/complete-profile`, since the grade/department completeness check in `ProtectedRoute` only applies to students).
+
+**Result:** `instructor@edutest.demo` is now a working, disposable teacher login safe to share with anyone evaluating the project, fully decoupled from the project owner's personal email.
+
+**Note for the README / handoff notes:** if these demo credentials are shared publicly (e.g. printed in the README for evaluators), anyone with them can create/edit/delete exams under this identity. This is expected for a demo account, but worth a one-line callout in the README so evaluators know it's a shared demo identity, not a personal account. Rotating this password periodically, or recreating the account if it gets misused, is a reasonable low-effort safeguard — no urgent action needed before deploy.
+
+### What's still open
+
+Per §7's updated priority list, only the following remain:
+
+1. **Deploy to Vercel**, including setting `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in the Vercel project's environment variables (not just the local `.env`, which won't be picked up by Vercel automatically).
+2. **Post-deploy smoke test** covering: student registration, demo-instructor login, exam creation, taking an exam as a student, and viewing results on both sides — primarily to confirm items 3 and 4 above (RPC wiring and RPC hardening) hold up in the deployed environment, since they weren't independently re-verified against source this session.
+3. Long-standing low-priority cosmetic items (question-type selector nit, duplicate result logic, unused hook, remaining `variant`/`variation` audit, commented-out code, `ResetPasswordPage`/`NotFoundPage` polish) — safe to defer past initial deploy.
 
 ---

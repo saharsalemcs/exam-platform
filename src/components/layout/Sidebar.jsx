@@ -80,10 +80,10 @@ function Sidebar({ isOpen, isCollapsed, onClose }) {
 
         <div className="flex h-16 shrink-0 items-center gap-3 px-4">
           <div
-            className="flex h-13 w-13 shrink-0 items-center justify-center rounded-md border border-solid border-border bg-surface-2 text-lg font-bold text-primary"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-solid border-border bg-surface-2 text-lg font-bold text-primary"
             style={{ boxShadow: "var(--shadow-glow)" }}
           >
-            <GraduationCap strokeWidth={3} />
+            <GraduationCap strokeWidth={2} size={30} />
           </div>
 
           {/* Brand name — hidden when collapsed */}
