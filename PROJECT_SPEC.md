@@ -8,9 +8,11 @@
 >
 > **Updated 2026-08-05** to reflect the pre-deploy hardening pass: the drafted home page redesign is now applied (`HomePage.jsx` is no longer a stub); Row Level Security policies and hardened RPC authorization (`create_exam_attempt`) were added via a new Supabase migration; and a batch of cosmetic/cleanup fixes landed (typo fix in `useSignInWithGoogle`, leftover `console.log` removed from `ChangePasswordCard.jsx`, `variation`→`variant` unified in `ChangePasswordCard.jsx`, project README written). See §13 "Recent Changes (Session — 2026-08-05)" for exactly what changed and what's still open.
 >
-> **Updated 2026-08-05 (continued session)** to close out the remaining pre-deploy checklist: Supabase credentials moved out of `src/services/supabase.js` into environment variables (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`), backed by a committed `.env.example` template; the previously hardcoded publishable key (confirmed present in git history, i.e. exposed) was rotated in the Supabase dashboard and the old key revoked; the two new question-fetch RPCs were wired into the frontend and the remaining ownership-checking RPCs were hardened (both reported done by the project owner this session — see caveat in §14); and a fixed demo instructor account (`instructor@edutest.demo`) was created directly in Supabase (Auth user + `profiles.role = 'teacher'`) so evaluators can reach the teacher portal without a real account. See §14 "Recent Changes (Session — 2026-08-05, continued)" for full detail.
+> **Updated 2026-08-05 (continued session)** to close out the remaining pre-deploy checklist: Supabase credentials moved out of `src/services/supabase.js` into environment variables (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`), backed by a committed `.env.example` template; the previously hardcoded publishable key (confirmed present in git history, i.e. exposed) was rotated in the Supabase dashboard and the old key revoked; the two new question-fetch RPCs were wired into the frontend and the remaining ownership-checking RPCs were hardened (both reported done by the project owner this session — see caveat in §14); and a fixed demo instructor account (`instructor-edutest@gmail.com`) was created directly in Supabase (Auth user + `profiles.role = 'teacher'`) so evaluators can reach the teacher portal without a real account. See §14 "Recent Changes (Session — 2026-08-05, continued)" for full detail.
 >
-> **Updated 2026-08-05 (cleanup pass)** to close out every remaining cosmetic / technical-debt item: the question-type selector edit-mode nit, the duplicated result-shaping logic between the student and instructor result APIs, the unused `useFilteredExams` hook, the full `variant`/`variation` audit (`MCQForm.jsx`, `Button.jsx`, and all other `Button` consumers), the commented-out UI blocks, and small polish passes on `ResetPasswordPage` and `NotFoundPage` are all now fixed. See §15 "Recent Changes (Session — 2026-08-05, cleanup pass)" for detail. **Only the Vercel deploy itself and its post-deploy verification remain open** — see §14/§15 "What's still open."
+> **Updated 2026-08-05 (cleanup pass)** to close out every remaining cosmetic / technical-debt item: the question-type selector edit-mode nit, the duplicated result-shaping logic between the student and instructor result APIs, the unused `useFilteredExams` hook, the full `variant`/`variation` audit (`MCQForm.jsx`, `Button.jsx`, and all other `Button` consumers), the commented-out UI blocks, and small polish passes on `ResetPasswordPage` and `NotFoundPage` are all now fixed. See §15 "Recent Changes (Session — 2026-08-05, cleanup pass)" for detail.
+>
+> **Updated 2026-08-05 (deploy session)** — **the project is now live on Vercel.** Environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) were set in the Vercel project settings using the rotated key; a post-deploy SPA routing bug (client-side routes 404'ing on direct load / OAuth redirect) was found and fixed via a `vercel.json` rewrite rule; Supabase Auth's Site URL / Redirect URLs were updated from `localhost:5173` to the production Vercel domain; and the Google OAuth sign-up flow was verified end-to-end on the deployed URL. See §16 "Recent Changes (Session — 2026-08-05, deploy session)" for full detail and what's left for the README.
 
 ---
 
@@ -79,7 +81,7 @@ Students **cannot** access any `/instructor/`\* route (blocked by `ProtectedRout
 
 Teachers **cannot** access student exam session routes or `/student/`\* routes.
 
-**Demo access (added 2026-08-05, continued session):** a fixed demo instructor account exists for evaluators — `instructor@edutest.demo` (created directly via Supabase Auth, with `profiles.role` manually set to `'teacher'`, since teachers can't self-register). See §14 for how it was created and how to rotate/replace it. This is separate from real teacher accounts, which the project owner still provisions manually per the "no teacher registration UI" product decision (§12).
+**Demo access (added 2026-08-05, continued session):** a fixed demo instructor account exists for evaluators — `instructor-edutest@gmail.com` (created directly via Supabase Auth, with `profiles.role` manually set to `'teacher'`, since teachers can't self-register). See §14 for how it was created and how to rotate/replace it. This is separate from real teacher accounts, which the project owner still provisions manually per the "no teacher registration UI" product decision (§12).
 
 ### Shared
 
@@ -463,7 +465,7 @@ None remaining. The question-type selector edit-mode nit was fixed in the 2026-0
 **Remaining, current priority order:**
 
 1. **Deploy to Vercel** and configure `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` as environment variables in the Vercel project settings (the `.env` file itself is git-ignored and won't ship). See §14 for the pre-deploy checklist.
-2. **Post-deploy smoke test**: register a new student, sign in as the demo instructor (`instructor@edutest.demo`), create an exam, take it as a student, submit, and view results on both sides — to confirm the RPC-wiring and RLS changes reported in §14 actually hold up against the deployed build.
+2. **Post-deploy smoke test**: register a new student, sign in as the demo instructor (`instructor-edutest@gmail.com`), create an exam, take it as a student, submit, and view results on both sides — to confirm the RPC-wiring and RLS changes reported in §14 actually hold up against the deployed build.
 
 ---
 
@@ -656,13 +658,13 @@ Since these RPC function bodies live in Supabase and aren't tracked in this repo
 
 **Steps taken:**
 
-1. Created a new user directly via Supabase Dashboard → Authentication → Users → "Add user", with `Auto Confirm User` enabled, using a disposable, clearly-non-personal address (`instructor@edutest.demo`) and a fresh password unrelated to any personal credentials.
+1. Created a new user directly via Supabase Dashboard → Authentication → Users → "Add user", with `Auto Confirm User` enabled, using a disposable, clearly-non-personal address (`instructor-edutest@gmail.com`) and a simple password (`123456`) chosen for evaluator convenience, unrelated to any personal credentials.
 2. Confirmed via SQL Editor that Supabase's existing signup trigger auto-created a matching `profiles` row for the new user, but with default values (`role = 'student'`, `full_name = 'New User'`) — dashboard-created users don't carry the `role: "teacher"` metadata that the normal `/register` flow would never set anyway (registration is student-only, per §12).
 3. Ran a manual `update` against `profiles` to set `role = 'teacher'` and `full_name = 'Demo Instructor'` for that user's `id`.
 4. Verified via a follow-up `select` that the row updated correctly.
 5. Verified end-to-end by logging into the running app with the new credentials — confirmed it lands on `/instructor/dashboard` as expected (not `/complete-profile`, since the grade/department completeness check in `ProtectedRoute` only applies to students).
 
-**Result:** `instructor@edutest.demo` is now a working, disposable teacher login safe to share with anyone evaluating the project, fully decoupled from the project owner's personal email.
+**Result:** `instructor-edutest@gmail.com` is now a working, disposable teacher login safe to share with anyone evaluating the project, fully decoupled from the project owner's personal email.
 
 **Note for the README / handoff notes:** if these demo credentials are shared publicly (e.g. printed in the README for evaluators), anyone with them can create/edit/delete exams under this identity. This is expected for a demo account, but worth a one-line callout in the README so evaluators know it's a shared demo identity, not a personal account. Rotating this password periodically, or recreating the account if it gets misused, is a reasonable low-effort safeguard — no urgent action needed before deploy.
 
@@ -686,5 +688,60 @@ Only deployment itself remains:
 
 1. **Deploy to Vercel**, including setting `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` in the Vercel project's environment variables (not just the local `.env`, which won't be picked up by Vercel automatically).
 2. **Post-deploy smoke test** covering: student registration, demo-instructor login, exam creation, taking an exam as a student, and viewing results on both sides — primarily to confirm the RPC wiring and RPC hardening reported in §14 hold up in the deployed environment, since they weren't independently re-verified against source.
+
+---
+
+## 16. Recent Changes (Session — 2026-08-05, deploy session)
+
+The project was deployed to Vercel this session. This closes out the last open item from §15. **The app is now live.**
+
+### 1. Vercel project created and environment variables set
+
+- Repo imported into Vercel directly from GitHub (auto-detected as a Vite project — default Build Command `vite build`, Output Directory `dist`, left untouched).
+- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` were added under **Settings → Environment Variables**, scoped to Production and Preview, using the **rotated** publishable key (not the one exposed in git history — see §14 item 2).
+- Confirmed the `.env` file itself is git-ignored, so no credentials were pushed as part of the deploy.
+
+### 2. SPA routing 404 — found and fixed
+
+**Problem:** after the first successful deploy, completing the Google OAuth sign-up flow and landing on a client-side route (e.g. `/student/dashboard#access_token=...`) returned a Vercel `404: NOT_FOUND`. Same issue would have affected any direct load or refresh of a nested route (e.g. `/student/exams/:examId`).
+
+**Cause:** Vercel's default static handling looks for a matching file/folder for each path. Client-side-only routes like `/student/dashboard` don't exist as physical files in the `dist` output, so unless told otherwise, unmatched paths 404 instead of falling through to `index.html` where React Router can take over.
+
+**Fix:** added a `vercel.json` at the project root:
+
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+
+Committed and pushed to `main`; Vercel's Git integration auto-triggered a new deployment (confirmed auto-deploy-on-push is enabled — a new deployment appeared in the **Deployments** tab within seconds of the push, no manual redeploy needed).
+
+### 3. Supabase Auth URL Configuration updated for production
+
+**Problem:** Supabase Auth's **Site URL** and **Redirect URLs** (under Authentication → URL Configuration) were still pointing at `http://localhost:5173`, meaning email confirmation links and the OAuth redirect would send users back to a local dev server instead of the deployed app.
+
+**Fix:**
+
+- **Site URL** set to the production Vercel domain.
+- **Redirect URLs** updated to include the production domain with a wildcard (`https://<vercel-domain>/**`), with the existing `http://localhost:5173/**` entry left in place so local development still works.
+
+### 4. Full post-deploy smoke test — passed
+
+All of the following were verified against the live Vercel deployment, with no issues found:
+
+- Google OAuth sign-up → email verification → redirect to `/student/dashboard` (confirmed working after the `vercel.json` fix and the Supabase URL Configuration update).
+- Email/password student registration.
+- Demo-instructor login (`instructor-edutest@gmail.com`).
+- Exam creation via the instructor wizard.
+- Taking an exam as a student.
+- Viewing results on both the student and instructor sides.
+
+This confirms the RPC wiring and RPC hardening reported in §14 (question-fetch RPCs, ownership-checking RPCs) hold up correctly in the deployed environment, closing the caveat noted there.
+
+### What's still open
+
+- **Nothing functional remains.** The app is deployed, live, and fully smoke-tested end to end.
+- **README** — not yet written for this final state; this document (through §16) is intended as the source material for it.
 
 ---
