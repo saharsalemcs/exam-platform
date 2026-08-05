@@ -724,7 +724,7 @@ Committed and pushed to `main`; Vercel's Git integration auto-triggered a new de
 **Fix:**
 
 - **Site URL** set to the production Vercel domain.
-- **Redirect URLs** updated to include the production domain with a wildcard (`https://<vercel-domain>/**`), with the existing `http://localhost:5173/**` entry left in place so local development still works.
+- **Redirect URLs** updated to include the production domain with a wildcard (`https://exam-platform-beryl.vercel.app/**`), with the existing `http://localhost:5173/**` entry left in place so local development still works.
 
 ### 4. Full post-deploy smoke test — passed
 
