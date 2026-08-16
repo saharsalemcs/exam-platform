@@ -8,7 +8,7 @@ import LandingFooter from "@/components/landing/LandingFooter";
 
 function HomePage() {
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] selection:bg-[var(--color-primary-glow)] selection:text-[var(--color-primary)]">
+    <div className="min-h-screen bg-bg text-text selection:bg-primary-glow selection:text-primary">
       {/* Top Navbar */}
       <LandingNavbar />
 

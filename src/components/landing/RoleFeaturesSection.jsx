@@ -10,10 +10,8 @@ import {
   Layers,
   Send,
   BarChart3,
-  User,
   Users,
   Check,
-  ChevronRight,
 } from "lucide-react";
 
 export default function RoleFeaturesSection() {
@@ -77,37 +75,38 @@ export default function RoleFeaturesSection() {
     activeRole === "student" ? studentFeatures : instructorFeatures;
 
   return (
-    <section id="features" className="py-20 lg:py-28 relative">
+    <section id="features" className="relative pb-20">
       {/* Background ambient glow */}
       <div
-        className="absolute top-1/2 right-0 w-[500px] h-[500px] rounded-full opacity-25 blur-3xl pointer-events-none -z-10"
+        className="pointer-events-none absolute top-1/2 right-0 -z-10 h-[500px] w-[500px] rounded-full opacity-25 blur-3xl"
         style={{
           background:
             "radial-gradient(circle, rgba(212, 175, 88, 0.15) 0%, transparent 70%)",
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)] font-mono">
-            BUILT FOR EVERY ROLE
+        <div className="mx-auto mb-14 space-y-4 text-center">
+          <span className="font-mono text-xs font-semibold tracking-widest text-primary uppercase">
+            Built for every role
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold font-display text-[var(--color-text)] tracking-tight">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-text sm:text-4xl">
             Everything you need for better assessments
           </h2>
-          <p className="text-base sm:text-lg text-[var(--color-text-muted)]">
-            A focused experience tailored for the people who create, take, and review exams.
+          <p className="text-base text-text-muted sm:text-lg">
+            A focused experience tailored for the people who create, take, and
+            review exams.
           </p>
 
           {/* Role Selector Tabs */}
-          <div className="inline-flex p-1.5 rounded-xl bg-[var(--color-surface)] border border-white/10 mt-4">
+          <div className="mt-4 inline-flex w-full max-w-3xl rounded-xl border border-white/10 bg-surface p-1.5">
             <button
               onClick={() => setActiveRole("student")}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all sm:px-6 ${
                 activeRole === "student"
-                  ? "bg-[var(--color-primary)] text-[#0d1117] shadow-md"
-                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  ? "bg-primary text-bg shadow-md"
+                  : "text-text-muted hover:text-text"
               }`}
             >
               <GraduationCap size={18} />
@@ -115,10 +114,10 @@ export default function RoleFeaturesSection() {
             </button>
             <button
               onClick={() => setActiveRole("instructor")}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all sm:px-6 ${
                 activeRole === "instructor"
-                  ? "bg-[var(--color-primary)] text-[#0d1117] shadow-md"
-                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  ? "bg-primary text-bg shadow-md"
+                  : "text-text-muted hover:text-text"
               }`}
             >
               <Users size={18} />
@@ -128,55 +127,41 @@ export default function RoleFeaturesSection() {
         </div>
 
         {/* Feature Panel */}
-        <div
-          className="rounded-2xl p-6 sm:p-10 transition-all duration-300 backdrop-blur-xl"
-          style={{
-            backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-            boxShadow: "var(--shadow-md)",
-          }}
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div className="rounded-2xl border border-border bg-surface p-6 shadow-md backdrop-blur-xl transition-all duration-300 sm:p-10">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
             {/* Left Side: Feature List */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="flex items-center gap-2 text-xs font-mono text-[var(--color-primary)]">
-                <span className="w-2 h-2 rounded-full bg-[var(--color-primary)]" />
-                <span className="uppercase tracking-wider">
+            <div className="space-y-6 lg:col-span-6">
+              <div className="flex items-center gap-2 font-mono text-xs text-primary">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                <span className="tracking-wider uppercase">
                   {activeRole === "student"
                     ? "Student Assessment Hub"
                     : "Instructor Control Suite"}
                 </span>
               </div>
 
-              <h3 className="text-2xl font-bold font-display text-[var(--color-text)]">
+              <h3 className="font-display text-2xl font-bold text-text">
                 {activeRole === "student"
                   ? "Seamless Exam Taking & Real-time Feedback"
                   : "Effortless Exam Creation & Result Analytics"}
               </h3>
 
               <div className="space-y-4 pt-2">
-                {currentFeatures.map((item, index) => {
+                {currentFeatures.map((item) => {
                   const IconComponent = item.icon;
                   return (
                     <div
                       key={item.title}
-                      className="p-4 rounded-xl transition-colors duration-200 border border-transparent hover:border-white/5 hover:bg-white/[0.02] flex items-start gap-4"
+                      className="flex items-start gap-4 rounded-xl border border-transparent p-4 transition-colors duration-200 hover:border-white/5 hover:bg-white/[0.02]"
                     >
-                      <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                        style={{
-                          backgroundColor: "rgba(212, 175, 88, 0.1)",
-                          color: "var(--color-primary)",
-                          border: "1px solid rgba(212, 175, 88, 0.2)",
-                        }}
-                      >
+                      <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
                         <IconComponent size={20} />
                       </div>
                       <div>
-                        <h4 className="text-base font-semibold text-[var(--color-text)] mb-1">
+                        <h4 className="mb-1 text-base font-semibold text-text">
                           {item.title}
                         </h4>
-                        <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+                        <p className="text-sm leading-relaxed text-text-muted">
                           {item.description}
                         </p>
                       </div>
@@ -190,60 +175,52 @@ export default function RoleFeaturesSection() {
             <div className="lg:col-span-6">
               {activeRole === "student" ? (
                 /* Student Role Mock Preview */
-                <div
-                  className="rounded-xl p-6 relative overflow-hidden transition-all duration-300"
-                  style={{
-                    backgroundColor: "var(--color-surface-2)",
-                    border: "1px solid rgba(212, 175, 88, 0.2)",
-                  }}
-                >
-                  <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-[var(--color-primary-glow)] text-[var(--color-primary)] flex items-center justify-center">
+                <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-surface-2 p-6 transition-all duration-300">
+                  <div className="mb-4 flex items-center justify-between gap-3 border-b border-white/5 pb-4">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-glow text-primary">
                         <BookOpen size={16} />
                       </div>
-                      <div>
-                        <h5 className="text-sm font-semibold text-[var(--color-text)]">
+                      <div className="min-w-0">
+                        <h5 className="truncate text-sm font-semibold text-text">
                           Software Engineering Fundamentals
                         </h5>
-                        <p className="text-xs text-[var(--color-text-muted)]">
+                        <p className="text-xs text-text-muted">
                           25 Questions • 45 Mins
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="shrink-0 rounded border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-400">
                       Available Now
                     </span>
                   </div>
 
                   {/* Feature preview item cards */}
                   <div className="space-y-3">
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-                      <span className="text-[var(--color-text-muted)]">
-                        Session Status
-                      </span>
-                      <span className="font-semibold text-emerald-400 flex items-center gap-1">
+                    <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3 text-xs">
+                      <span className="text-text-muted">Session Status</span>
+                      <span className="flex items-center gap-1 font-semibold text-emerald-400">
                         <Check size={14} /> Ready to start
                       </span>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-                      <span className="text-[var(--color-text-muted)]">
+                    <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3 text-xs">
+                      <span className="text-text-muted">
                         Autosave Protection
                       </span>
-                      <span className="font-mono text-[var(--color-primary)]">
+                      <span className="font-mono text-primary">
                         Active Sync
                       </span>
                     </div>
 
-                    <div className="p-3.5 rounded-lg bg-[var(--color-primary-glow)] border border-[var(--color-primary)]/30 text-xs">
-                      <div className="flex justify-between font-semibold text-[var(--color-primary)] mb-1.5">
+                    <div className="rounded-lg border border-primary/30 bg-primary-glow p-3.5 text-xs">
+                      <div className="mb-1.5 flex justify-between font-semibold text-primary">
                         <span>Latest Score Result</span>
                         <span>94 / 100</span>
                       </div>
-                      <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
                         <div
-                          className="bg-[var(--color-primary)] h-full rounded-full"
+                          className="h-full rounded-full bg-primary"
                           style={{ width: "94%" }}
                         />
                       </div>
@@ -252,58 +229,51 @@ export default function RoleFeaturesSection() {
                 </div>
               ) : (
                 /* Instructor Role Mock Preview */
-                <div
-                  className="rounded-xl p-6 relative overflow-hidden transition-all duration-300"
-                  style={{
-                    backgroundColor: "var(--color-surface-2)",
-                    border: "1px solid rgba(74, 124, 255, 0.3)",
-                  }}
-                >
-                  <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-[var(--color-accent)] flex items-center justify-center">
+                <div className="relative overflow-hidden rounded-xl border border-accent/30 bg-surface-2 p-6 transition-all duration-300">
+                  <div className="mb-4 flex items-center justify-between gap-3 border-b border-white/5 pb-4">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-accent">
                         <CirclePlus size={16} />
                       </div>
-                      <div>
-                        <h5 className="text-sm font-semibold text-[var(--color-text)]">
+                      <div className="min-w-0">
+                        <h5 className="truncate text-sm font-semibold text-text">
                           Exam Creation Wizard
                         </h5>
-                        <p className="text-xs text-[var(--color-text-muted)]">
+                        <p className="text-xs text-text-muted">
                           Drafting: Database Systems Final
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <span className="shrink-0 rounded border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-semibold text-blue-400">
                       Step 2 of 3
                     </span>
                   </div>
 
                   <div className="space-y-3">
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-                      <span className="text-[var(--color-text-muted)]">
+                    <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3 text-xs">
+                      <span className="text-text-muted">
                         Configured Questions
                       </span>
-                      <span className="font-mono text-[var(--color-text)] font-semibold">
+                      <span className="font-mono font-semibold text-text">
                         18 Questions (90 Pts)
                       </span>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs">
-                      <span className="text-[var(--color-text-muted)]">
-                        Passing Benchmark
-                      </span>
-                      <span className="font-mono text-[var(--color-primary)] font-semibold">
+                    <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3 text-xs">
+                      <span className="text-text-muted">Passing Benchmark</span>
+                      <span className="font-mono font-semibold text-primary">
                         70% Minimum Score
                       </span>
                     </div>
 
-                    <div className="p-3.5 rounded-lg bg-blue-500/10 border border-blue-500/30 text-xs">
-                      <div className="flex justify-between font-semibold text-blue-400 mb-1">
+                    <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-3.5 text-xs">
+                      <div className="mb-1 flex justify-between font-semibold text-blue-400">
                         <span>Student Submissions Review</span>
                         <span>42 Completed</span>
                       </div>
-                      <p className="text-[11px] text-[var(--color-text-muted)]">
-                        Average Class Grade: 86.4% • Instant grading breakdown active
+                      <p className="text-[11px] text-text-muted">
+                        Average Class Grade: 86.4% • Instant grading breakdown
+                        active
                       </p>
                     </div>
                   </div>

@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { GraduationCap, Menu, X, LayoutDashboard, ArrowRight } from "lucide-react";
+import {
+  GraduationCap,
+  Menu,
+  X,
+  LayoutDashboard,
+  ArrowRight,
+} from "lucide-react";
 import { useUser } from "@/features/auth/hooks/useUser";
 import { ROLES } from "@/utils/constants";
 import Button from "@/components/shared/Button";
@@ -27,52 +33,39 @@ export default function LandingNavbar() {
   };
 
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-md"
-      style={{
-        backgroundColor: "rgba(13, 17, 23, 0.8)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.07)",
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="fixed top-0 right-0 left-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md transition-all duration-300">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 group transition-transform duration-200 hover:scale-[1.02]"
+          className="group flex shrink-0 items-center gap-2.5 transition-transform duration-200 hover:scale-[1.02]"
         >
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors group-hover:bg-[var(--color-primary)] group-hover:text-[#0d1117]"
-            style={{
-              backgroundColor: "rgba(212, 175, 88, 0.12)",
-              border: "1px solid rgba(212, 175, 88, 0.3)",
-              color: "var(--color-primary)",
-            }}
-          >
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-bg">
             <GraduationCap size={20} />
           </div>
-          <span className="text-lg font-bold tracking-tight text-[var(--color-text)] font-display">
-            Edu<span className="text-[var(--color-primary)]">Test</span>
+          <span className="font-display text-lg font-bold tracking-tight text-text">
+            Edu<span className="text-primary">Test</span>
           </span>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8">
-          <button
-            onClick={() => handleNavClick("features")}
-            className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
-          >
-            Features
-          </button>
+        <nav className="hidden items-center gap-8 md:flex">
           <button
             onClick={() => handleNavClick("how-it-works")}
-            className="text-sm font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
+            className="cursor-pointer text-sm font-medium text-text-muted transition-colors hover:text-text"
           >
             How it works
+          </button>
+          <button
+            onClick={() => handleNavClick("features")}
+            className="cursor-pointer text-sm font-medium text-text-muted transition-colors hover:text-text"
+          >
+            Features
           </button>
         </nav>
 
         {/* Desktop Action Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden items-center gap-3 md:flex">
           {!isLoading && user ? (
             <Button
               variant="primary"
@@ -87,7 +80,7 @@ export default function LandingNavbar() {
             <>
               <Link
                 to="/login"
-                className="text-sm font-medium px-4 py-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-white/5 transition-all"
+                className="rounded-md px-4 py-2 text-sm font-medium text-text-muted transition-all hover:bg-white/5 hover:text-text"
               >
                 Sign In
               </Link>
@@ -107,8 +100,9 @@ export default function LandingNavbar() {
         {/* Mobile Menu Toggle Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-white/5 transition-colors cursor-pointer"
+          className="cursor-pointer rounded-md p-2 text-text-muted transition-colors hover:bg-white/5 hover:text-text md:hidden"
           aria-label="Toggle navigation menu"
+          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -116,25 +110,22 @@ export default function LandingNavbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div
-          className="md:hidden px-4 pt-3 pb-6 border-b border-white/10 backdrop-blur-xl animate-fade-scale"
-          style={{ backgroundColor: "rgba(17, 19, 24, 0.98)" }}
-        >
+        <div className="animate-fade-scale border-b border-white/10 bg-surface/98 px-4 pt-3 pb-6 backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-3">
             <button
               onClick={() => handleNavClick("features")}
-              className="text-left text-sm font-medium py-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              className="py-2 text-left text-sm font-medium text-text-muted hover:text-text"
             >
               Features
             </button>
             <button
               onClick={() => handleNavClick("how-it-works")}
-              className="text-left text-sm font-medium py-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              className="py-2 text-left text-sm font-medium text-text-muted hover:text-text"
             >
               How it works
             </button>
 
-            <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2.5 border-t border-white/10 pt-3">
               {!isLoading && user ? (
                 <Button
                   variant="primary"
@@ -153,7 +144,7 @@ export default function LandingNavbar() {
                   <Link
                     to="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full text-center text-sm font-medium py-2.5 rounded-md border border-[var(--color-border)] text-[var(--color-text)] hover:bg-white/5"
+                    className="w-full rounded-md border border-border py-2.5 text-center text-sm font-medium text-text hover:bg-white/5"
                   >
                     Sign In
                   </Link>
