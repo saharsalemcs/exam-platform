@@ -1,10 +1,8 @@
-import CountdownTimer from "./CountdownTimer";
 import QuestionMap from "./QuestionMap";
 
 function ExamSidebar({ session }) {
   return (
-    <aside className="sticky top-6 flex flex-col gap-md">
-      <CountdownTimer timeLeft={session.timeLeft} />
+    <aside className="flex flex-col gap-6 lg:sticky lg:top-24">
       <QuestionMap session={session} />
     </aside>
   );

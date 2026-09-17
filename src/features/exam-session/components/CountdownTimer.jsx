@@ -1,5 +1,7 @@
+import { Clock } from "lucide-react";
 import { formatTime } from "@/lib/utils";
 
+/** Compact timer pill — lives in the sticky exam header. */
 function CountdownTimer({ timeLeft }) {
   const isWarning = timeLeft <= 120 && timeLeft > 60;
   const isDanger = timeLeft <= 60;
@@ -10,11 +12,11 @@ function CountdownTimer({ timeLeft }) {
       ? "var(--color-warning)"
       : "var(--color-text)";
 
-  const bgColor = isDanger
+  const backgroundColor = isDanger
     ? "rgba(200,93,106,0.1)"
     : isWarning
       ? "rgba(237,216,138,0.1)"
-      : "var(--color-surface)";
+      : "var(--color-surface-2)";
 
   const borderColor = isDanger
     ? "rgba(200,93,106,0.3)"
@@ -24,29 +26,25 @@ function CountdownTimer({ timeLeft }) {
 
   return (
     <div
-      className="flex flex-col items-center gap-2 rounded-lg p-md text-center transition-all duration-500"
-      style={{
-        backgroundColor: bgColor,
-        border: `1px solid ${borderColor}`,
-        animation: isDanger ? "pulse 1.5s ease-in-out infinite" : "none",
-      }}
+      role="timer"
+      aria-live="off"
+      aria-label={`Time remaining ${formatTime(timeLeft)}`}
+      className="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 transition-colors duration-500"
+      style={{ backgroundColor, border: `1px solid ${borderColor}` }}
     >
-      {/* <Clock size={17} className="shrink-0" style={{ color }} /> */}
-      <p className="mt-2 mb-2 font-mono text-sm tracking-[0.08em] text-text-muted uppercase">
-        Time Remaining
-      </p>
+      <Clock size={15} className="shrink-0" style={{ color }} />
 
-      <p
-        className="font-mono text-[35px] leading-none font-medium tracking-tight"
+      <span className="hidden font-mono text-[10px] tracking-[0.08em] text-text-muted uppercase lg:inline">
+        Time left
+      </span>
+
+      <span
+        className={`font-mono text-base leading-none font-medium tabular-nums ${
+          isDanger ? "animate-pulse-red" : ""
+        }`}
         style={{ color }}
       >
         {formatTime(timeLeft)}
-      </p>
-      <span
-        className="hidden text-sm sm:inline"
-        style={{ color, opacity: 0.75 }}
-      >
-        {isDanger ? "Hurry up!" : isWarning ? "Running out" : ""}
       </span>
     </div>
   );

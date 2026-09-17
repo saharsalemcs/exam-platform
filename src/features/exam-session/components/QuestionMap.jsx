@@ -4,22 +4,39 @@ function QuestionMap({ session }) {
   const answeredCount = Object.keys(answers).length;
   const flaggedCount = Object.values(bookmarks).filter(Boolean).length;
 
-  return (
-    <div
-      className="flex flex-col gap-md rounded-lg p-lg"
-      style={{
-        backgroundColor: "var(--color-surface)",
+  const legend = [
+    {
+      label: "Answered",
+      count: answeredCount,
+      style: { backgroundColor: "var(--color-success)" },
+    },
+    {
+      label: "Flagged",
+      count: flaggedCount,
+      style: { backgroundColor: "var(--color-warning)" },
+    },
+    {
+      label: "Unanswered",
+      count: questions.length - answeredCount,
+      style: {
+        backgroundColor: "var(--color-surface-2)",
         border: "1px solid var(--color-border)",
-      }}
-    >
-      <h3
-        className="font-mono text-base font-semibold tracking-tight"
-        style={{ color: "var(--color-text)" }}
-      >
-        Question Map
-      </h3>
+      },
+    },
+  ];
 
-      <div className="grid grid-cols-4 gap-sm">
+  return (
+    <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="font-mono text-xs font-bold tracking-[0.08em] text-text uppercase">
+          Question Map
+        </h2>
+        <span className="font-mono text-xs text-text-muted">
+          {answeredCount}/{questions.length}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-6 gap-2 sm:grid-cols-8 lg:grid-cols-5">
         {questions.map((q, i) => {
           const isAnswered = answers[q.id] != null;
           const isFlagged = !!bookmarks[q.id];
@@ -32,7 +49,7 @@ function QuestionMap({ session }) {
               onClick={() => goToQuestion(i)}
               aria-current={isCurrent}
               aria-label={`Question ${i + 1}${isAnswered ? ", answered" : ""}${isFlagged ? ", flagged" : ""}`}
-              className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-sm text-sm font-semibold transition-all duration-150 outline-none"
+              className="relative flex h-10 w-full cursor-pointer items-center justify-center rounded-sm text-sm font-semibold transition-all duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               style={{
                 backgroundColor: isAnswered
                   ? "var(--color-success)"
@@ -40,11 +57,9 @@ function QuestionMap({ session }) {
                 color: isAnswered
                   ? "var(--color-bg)"
                   : "var(--color-text-muted)",
-                border: isAnswered
-                  ? "1px solid var(--color-border)"
-                  : isCurrent
-                    ? "2px solid var(--color-primary)"
-                    : "1px solid var(--color-border)",
+                border: isCurrent
+                  ? "2px solid var(--color-primary)"
+                  : "1px solid var(--color-border)",
                 boxShadow: isAnswered
                   ? "0 0 0 3px rgba(45,212,191,0.1)"
                   : isCurrent
@@ -55,11 +70,8 @@ function QuestionMap({ session }) {
               {i + 1}
               {isFlagged && (
                 <span
-                  className="absolute -top-1 -left-1 h-2.5 w-2.5 rounded-full"
-                  style={{
-                    backgroundColor: "var(--color-warning)",
-                    border: "1.5px solid var(--color-surface)",
-                  }}
+                  className="absolute top-1 right-1 h-2 w-2 rounded-full"
+                  style={{ backgroundColor: "var(--color-warning)" }}
                 />
               )}
             </button>
@@ -68,38 +80,17 @@ function QuestionMap({ session }) {
       </div>
 
       {/* Legend */}
-      <div
-        className="flex flex-col gap-1.5 border-t pt-3 text-sm"
-        style={{
-          borderColor: "var(--color-border)",
-          color: "var(--color-text-muted)",
-        }}
-      >
-        <div className="flex items-center gap-2">
-          <span
-            className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: "var(--color-success)" }}
-          />
-          Answered ({answeredCount})
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className="h-2.5 w-2.5 rounded-full"
-            style={{ backgroundColor: "var(--color-warning)" }}
-          />
-          Flagged ({flaggedCount})
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className="h-2.5 w-2.5 rounded-full"
-            style={{
-              backgroundColor: "var(--color-surface-2)",
-              border: "1px solid var(--color-border)",
-            }}
-          />
-          Unanswered ({questions.length - answeredCount})
-        </div>
-      </div>
+      <ul className="flex flex-col gap-2 border-t border-border pt-4 text-sm text-text-muted">
+        {legend.map((item) => (
+          <li key={item.label} className="flex items-center gap-2">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full"
+              style={item.style}
+            />
+            {item.label} ({item.count})
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

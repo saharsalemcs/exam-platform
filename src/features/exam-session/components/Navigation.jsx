@@ -1,39 +1,42 @@
 import { ChevronLeft, ChevronRight, Flag } from "lucide-react";
-import { useState } from "react";
 import Button from "@/components/shared/Button";
-import SubmitConfirmModal from "./SubmitConfirmModal";
 
+/**
+ * Footer row of the question card. On the last question "Next" becomes
+ * "Submit Exam", opening the same confirm modal as the header button.
+ */
 function Navigation({ session }) {
-  const { currentIndex, questions, goNext, goPrev, handleSubmit } = session;
+  const { currentIndex, questions, goNext, goPrev, setShowConfirm, status } =
+    session;
+
   const isLastQuestion = currentIndex === questions.length - 1;
-  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   return (
-    <div className="mt-6 flex items-center justify-between">
-      <Button variant="ghost" onClick={goPrev} disabled={currentIndex === 0}>
+    <div className="mt-auto flex items-center justify-between gap-3 border-t border-border p-6">
+      <Button
+        variant="secondary"
+        onClick={goPrev}
+        disabled={currentIndex === 0}
+      >
         <ChevronLeft size={16} /> Previous
       </Button>
 
+      <span className="font-mono text-xs text-text-muted">
+        {currentIndex + 1} / {questions.length}
+      </span>
+
       {isLastQuestion ? (
         <Button
-          variant="primary"
-          onClick={() => setIsSubmitModalOpen(true)}
-          // disabled={}
+          onClick={() => setShowConfirm(true)}
+          disabled={status === "submitting"}
         >
           <Flag size={16} /> Submit Exam
         </Button>
       ) : (
-        <Button variant="primary" onClick={goNext}>
+        <Button onClick={goNext}>
           Next <ChevronRight size={16} />
         </Button>
       )}
-
-      <SubmitConfirmModal
-        isOpen={isSubmitModalOpen}
-        onClose={() => setIsSubmitModalOpen(false)}
-        onConfirm={() => handleSubmit("submitted")}
-        isPending={session.status === "submitting"}
-      />
     </div>
   );
 }

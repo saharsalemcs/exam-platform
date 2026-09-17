@@ -105,14 +105,14 @@ All routes are defined in `src/App.jsx`. Pages are lazy-loaded. `AppLayout` (sid
 
 ### Public
 
-| Path               | Component            | Purpose                                                                                                        |
-| ------------------ | -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `/`                | `HomePage`           | Landing page — hero, student/instructor feature rows, CTAs (applied 2026-08-05; previously a placeholder stub) |
-| `/login`           | `LoginPage`          | Email/password + Google sign-in; redirects if already authenticated                                            |
-| `/register`        | `RegisterPage`       | Student registration with email confirmation flow                                                              |
-| `/forgot-password` | `ForgotPasswordPage` | Sends Supabase password reset email                                                                            |
-| `/reset-password`  | `ResetPasswordPage`  | Sets new password after recovery token                                                                         |
-| `*`                | `NotFoundPage`       | 404 page — styled, on-brand (polished in the 2026-08-05 cleanup pass, see §15)                                 |
+| Path               | Component            | Purpose                                                                                 |
+| ------------------ | -------------------- | --------------------------------------------------------------------------------------- |
+| `/`                | `HomePage`           | Public landing page — implemented 2026-09-17 (see §17); sections in `features/landing`  |
+| `/login`           | `LoginPage`          | Email/password + Google sign-in; redirects if already authenticated                     |
+| `/register`        | `RegisterPage`       | Student registration with email confirmation flow                                       |
+| `/forgot-password` | `ForgotPasswordPage` | Sends Supabase password reset email                                                     |
+| `/reset-password`  | `ResetPasswordPage`  | Sets new password after recovery token                                                  |
+| `*`                | `NotFoundPage`       | 404 page — styled, on-brand (polished in the 2026-08-05 cleanup pass, see §15)          |
 
 ### Student (`ProtectedRoute allowedRole="student"`)
 
@@ -558,6 +558,7 @@ exam-platform/
 │   │   ├── exam-wizard/
 │   │   ├── exams/
 │   │   ├── exams-history/
+│   │   ├── landing/            # Public landing page sections (see §17)
 │   │   ├── profile/
 │   │   ├── results/            # includes shared result-shaping helper (see §15)
 │   │   └── students/
@@ -602,7 +603,7 @@ Two features were implemented in this session: Exam Edit Wizard and Student Grad
 
 ## 13. Recent Changes (Session — 2026-08-05)
 
-- **Home page** — the drafted redesign (hero, feature rows, CTAs) applied; `HomePage.jsx` is no longer a stub.
+- **Home page** — not implemented yet. `HomePage.jsx` still needs the landing-page design/implementation.
 - **Supabase RLS + RPC hardening (first pass)** — migration `001_security_rls_and_rpc_hardening.sql` written and applied: RLS enabled on core tables, `create_exam_attempt` hardened, two new question-read RPCs added, storage policies added for `avatars`. Frontend wiring to the new RPCs and hardening of the remaining ownership-checking RPCs were left open at the end of this session (see §7/§8 at the time).
 - **Cleanup pass** (scoped to 4 files): typo fix in `useSignInWithGoogle`, `console.log` removed and `variation`→`variant` fixed in `ChangePasswordCard.jsx`, `QuestionBuilderStep.jsx` audited (already consistent), `useFilteredExams.js` reviewed (still unused, left in place).
 - **README** — full project README written (overview, features, tech stack, setup/env vars, Supabase migration steps, deploy checklist).
@@ -745,3 +746,49 @@ This confirms the RPC wiring and RPC hardening reported in §14 (question-fetch 
 - **README** — not yet written for this final state; this document (through §16) is intended as the source material for it.
 
 ---
+
+## 17. Recent Changes (Session — 2026-09-17)
+
+### Home page implemented
+
+`/` is no longer a stub. `src/pages/HomePage.jsx` now composes a public landing page from sections in a new `src/features/landing/` feature folder, following the existing feature-based structure (`components/`, `constants/`, `helpers/`, `hooks/`).
+
+| File                                        | Role                                                                            |
+| ------------------------------------------- | ------------------------------------------------------------------------------- |
+| `components/LandingNavbar.jsx`              | Fixed nav — brand, in-page anchors, auth-aware actions, mobile disclosure menu  |
+| `components/HeroSection.jsx`                | Headline, value proposition, primary/secondary CTAs                             |
+| `components/ExamPreviewCard.jsx`            | Decorative still of the real exam-session UI (timer + question map)             |
+| `components/RolesSection.jsx`               | Student vs. teacher capability cards                                            |
+| `components/FeaturesSection.jsx`            | Six capability cards                                                            |
+| `components/HowItWorksSection.jsx`          | Three-step onboarding flow                                                      |
+| `components/CtaSection.jsx`                 | Closing call to action                                                          |
+| `components/LandingFooter.jsx`              | Brand blurb + explore/account links                                             |
+| `components/SectionHeading.jsx`             | Shared eyebrow/title/description heading                                        |
+| `components/Reveal.jsx`                     | IntersectionObserver fade-up wrapper; skipped under `prefers-reduced-motion`    |
+| `constants/landingContent.js`               | All landing copy (nav links, role cards, features, steps)                       |
+| `helpers/scrollToSection.js`                | Smooth in-page anchor scrolling                                                 |
+| `hooks/useLandingCta.js`                    | Auth-aware CTA target via `useUser` — signed-in visitors go to their dashboard  |
+
+Notes:
+
+- **No new dependencies.** Existing theme tokens, `components/shared/Button`, `lucide-react` icons and the `fade-up` / `fade-scale` / `pulse-ring` keyframes already in `index.css` are reused throughout.
+- **No app logic touched** — routing, auth, Supabase and exam functionality are unchanged; CTAs navigate to the existing `/register` and `/login` routes.
+- **Copy is claim-free**: every statement maps to a feature that exists (targeting, autosave/resume, anti-cheat, server-side scoring, answer review). No invented statistics or testimonials.
+- **Tailwind gotcha worth remembering:** the `@theme` block defines `--spacing-xs … --spacing-2xl`, which shadows Tailwind v4's default `max-w-xs … max-w-2xl` container sizes (`max-w-xl` resolves to 40px, not 576px). Landing sections use numeric widths (`max-w-300`, `max-w-145`) instead. `EmptyState.jsx` still uses `max-w-xs`/`max-w-sm` and is likely rendering far narrower than intended — untouched here, worth a look.
+- **Verified** at 390 / 834 / 1440px with no console errors, no horizontal overflow, clean heading outline, and every CTA resolving to the right route. `npm run lint` and `npm run build` pass.
+
+### Exam session layout rework
+
+`ExamSessionPage` and its components were restructured for a cleaner two-column layout. State, hooks, API calls and anti-cheat behaviour are unchanged — this is layout and presentation only.
+
+- **Sticky header** (`ExamHeader.jsx`) — full-width bar holding exam title, meta, category/marks/difficulty tags, the countdown, and **Submit Exam**. Submit is now reachable from any question instead of appearing only on the last one, and it drives the hook's existing `showConfirm` / `setShowConfirm` state (previously duplicated as local state inside `Navigation`).
+- **`CountdownTimer.jsx`** — rewritten from a sidebar block into a compact header pill; warning/danger thresholds unchanged, danger state now uses the theme's `animate-pulse-red` (the old inline `animation: pulse …` referenced a keyframe that was never emitted).
+- **Page shell** — `max-w-165` container replaced with `mx-auto max-w-7xl px-4 py-6` inside a `min-h-screen` flex column; content is `grid grid-cols-1 lg:grid-cols-3 gap-6`.
+- **Left column (`lg:col-span-2`)** — one card: question meta row (counter, points badge, bookmark), question body and options, then `Navigation` (Previous / position / Next) as a bottom-bordered footer. On the last question the Next button becomes **Submit Exam**, opening the same confirm modal as the header button (both drive the hook's `showConfirm` state).
+- **Right column (`lg:col-span-1`)** — `ExamSidebar` is now a sticky wrapper (`lg:top-24`) around `QuestionMap` only; the map uses a responsive grid (`grid-cols-6 sm:grid-cols-8 lg:grid-cols-5`) with the legend stacked beneath a divider.
+- Small fixes along the way: the options list now sets `group` so the existing `group-hover:` styles on the letter badge actually fire, `aria-pressed` added to options and the bookmark toggle, and the flag marker sits inside its map cell instead of floating in the grid gap.
+- Verified at 390 / 1024 / 1440px (including the sub-60s danger timer state) with no console errors and no horizontal overflow.
+
+### Noted, not fixed
+
+- `RegisterForm.jsx` (lines 154, 173) and `ForgotPasswordPage.jsx` (line 61) pass a `hasIcon` prop that `FormInput` forwards to the DOM, producing a React unknown-prop warning on those pages. Pre-existing and out of scope for this session.
