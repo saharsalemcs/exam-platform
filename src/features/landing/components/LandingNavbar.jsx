@@ -1,215 +1,146 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { GraduationCap, Menu, X, ArrowRight, LayoutDashboard, Sparkles } from "lucide-react";
-import { useUser } from "@/features/auth/hooks/useUser";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { GraduationCap, Menu, X } from "lucide-react";
+import Button from "@/components/shared/Button";
+import { cn } from "@/lib/utils";
+import { NAV_LINKS } from "../constants/landingContent";
+import { useLandingCta } from "../hooks/useLandingCta";
+import { scrollToSection } from "../helpers/scrollToSection";
 
-export default function LandingNavbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data } = useUser();
-  const profile = data?.profile;
+function LandingNavbar() {
+  const navigate = useNavigate();
+  const { isAuthenticated, primaryTo, primaryLabel } = useLandingCta();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const getDashboardLink = () => {
-    if (profile?.role === "teacher") return "/instructor/dashboard";
-    if (profile?.role === "student") return "/student/dashboard";
-    return "/login";
-  };
+  useEffect(() => {
+    function onScroll() {
+      setIsScrolled(window.scrollY > 8);
+    }
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  function handleAnchorClick(event, href) {
+    setIsMenuOpen(false);
+    scrollToSection(event, href);
+  }
 
   return (
-    <nav
-      aria-label="Main Navigation"
-      className="fixed top-3 sm:top-5 left-0 right-0 z-50 px-3 sm:px-6"
+    <header
+      className={cn(
+        "fixed top-0 right-0 left-0 z-50 transition-all duration-300",
+        isScrolled
+          ? "border-b border-border bg-bg/85 backdrop-blur-md"
+          : "border-b border-transparent",
+      )}
     >
-      <div
-        className="mx-auto flex max-w-7xl items-center justify-between rounded-2xl border border-border px-4 py-2.5 sm:px-6 sm:py-3 shadow-xl backdrop-blur-xl transition-all duration-200"
-        style={{
-          backgroundColor: "rgba(17, 19, 24, 0.85)",
-          boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
-        }}
-      >
-        {/* Brand Logo */}
+      <div className="mx-auto flex h-16 max-w-300 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        {/* Brand */}
         <Link
           to="/"
-          className="group flex items-center gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg"
-          aria-label="EduTest Home"
+          className="flex items-center gap-3"
+          aria-label="EduTest home"
         >
-          <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-surface-2 text-primary transition-all duration-300 group-hover:border-primary group-hover:scale-105"
-            style={{
-              boxShadow: "0 0 16px rgba(212, 175, 88, 0.15)",
-            }}
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-primary"
+            style={{ boxShadow: "var(--shadow-glow)" }}
           >
-            <GraduationCap strokeWidth={2.2} size={22} />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="font-display text-lg sm:text-xl font-bold tracking-tight text-text">
-                Edu<span className="text-primary">Test</span>
-              </span>
-              <span className="hidden sm:inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary border border-primary/20">
-                PRO
-              </span>
-            </div>
-            <span className="text-[11px] text-text-muted hidden sm:block -mt-0.5">
-              Online Examination Suite
-            </span>
-          </div>
+            <GraduationCap strokeWidth={2.5} size={22} />
+          </span>
+          <span className="font-display text-lg font-bold tracking-tight text-primary">
+            EduTest
+          </span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden items-center gap-7 lg:flex">
-          <a
-            href="#features"
-            className="text-sm font-medium text-text-muted hover:text-text transition-colors duration-150 cursor-pointer"
-          >
-            Features
-          </a>
-          <a
-            href="#roles"
-            className="text-sm font-medium text-text-muted hover:text-text transition-colors duration-150 cursor-pointer"
-          >
-            For Teachers & Students
-          </a>
-          {/* <a
-            href="#live-demo"
-            className="text-sm font-medium text-text-muted hover:text-text transition-colors duration-150 cursor-pointer flex items-center gap-1.5"
-          >
-            <Sparkles size={14} className="text-primary" />
-            Live Demo
-          </a> */}
-          <a
-            href="#how-it-works"
-            className="text-sm font-medium text-text-muted hover:text-text transition-colors duration-150 cursor-pointer"
-          >
-            How It Works
-          </a>
-          {/* <a
-            href="#security"
-            className="text-sm font-medium text-text-muted hover:text-text transition-colors duration-150 cursor-pointer"
-          >
-            Security
-          </a> */}
-        </div>
+        {/* Desktop nav */}
+        <nav aria-label="Page sections" className="hidden md:block">
+          <ul className="flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={(e) => handleAnchorClick(e, link.href)}
+                  className="rounded-sm px-3 py-2 text-sm font-semibold text-text-muted transition-colors duration-150 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-        {/* Right CTA Cluster */}
-        <div className="hidden sm:flex items-center gap-3">
-          {profile ? (
-            <Link
-              to={getDashboardLink()}
-              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-bg transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] cursor-pointer"
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-2 md:flex">
+          {!isAuthenticated && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/login")}
             >
-              <LayoutDashboard size={16} />
-              <span>Go to Dashboard</span>
-              <ArrowRight size={15} />
-            </Link>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="rounded-xl px-4 py-2 text-sm font-medium text-text-muted hover:text-text hover:bg-surface-2/60 transition-all duration-150 cursor-pointer"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="group relative flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-bg transition-all duration-200 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] cursor-pointer"
-              >
-                <span>Get Started Free</span>
-                <ArrowRight
-                  size={15}
-                  className="transition-transform duration-200 group-hover:translate-x-0.5"
-                />
-              </Link>
-            </>
+              Sign in
+            </Button>
           )}
+          <Button size="sm" onClick={() => navigate(primaryTo)}>
+            {isAuthenticated ? primaryLabel : "Get started"}
+          </Button>
         </div>
 
-        {/* Mobile Menu Toggle Button */}
+        {/* Mobile menu toggle */}
         <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface-2 text-text-muted hover:text-text lg:hidden cursor-pointer transition-colors"
+          type="button"
+          onClick={() => setIsMenuOpen((open) => !open)}
+          aria-expanded={isMenuOpen}
+          aria-controls="landing-mobile-menu"
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="flex cursor-pointer items-center justify-center rounded-sm border border-border bg-surface p-2 text-text-muted transition-colors duration-150 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:hidden"
         >
-          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
       </div>
 
-      {/* Mobile Drawer Dropdown */}
-      {mobileMenuOpen && (
+      {/* Mobile panel */}
+      {isMenuOpen && (
         <div
-          className="mx-auto mt-2 max-w-7xl rounded-2xl border border-border bg-surface/95 p-5 shadow-2xl backdrop-blur-2xl lg:hidden animate-fade-scale"
-          style={{ backgroundColor: "rgba(17, 19, 24, 0.98)" }}
+          id="landing-mobile-menu"
+          className="animate-fade-up border-t border-border bg-surface px-4 pt-3 pb-5 sm:px-6 md:hidden"
         >
-          <div className="flex flex-col gap-3">
-            <a
-              href="#features"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-2 hover:text-text transition-colors cursor-pointer"
-            >
-              Features
-            </a>
-            <a
-              href="#roles"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-2 hover:text-text transition-colors cursor-pointer"
-            >
-              For Teachers & Students
-            </a>
-            {/* <a
-              href="#live-demo"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-2 hover:text-text transition-colors cursor-pointer flex items-center gap-2"
-            >
-              <Sparkles size={15} className="text-primary" />
-              Live Interactive Demo
-            </a> */}
-            <a
-              href="#how-it-works"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-2 hover:text-text transition-colors cursor-pointer"
-            >
-              How It Works
-            </a>
-            {/* <a
-              href="#security"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-2 hover:text-text transition-colors cursor-pointer"
-            >
-              Security & Integrity
-            </a> */}
+          <nav aria-label="Page sections">
+            <ul className="flex flex-col">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => handleAnchorClick(e, link.href)}
+                    className="block rounded-sm px-2 py-3 text-sm font-semibold text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-            <div className="mt-2 flex flex-col gap-2 border-t border-border pt-4">
-              {profile ? (
-                <Link
-                  to={getDashboardLink()}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-bg"
-                >
-                  <LayoutDashboard size={16} />
-                  <span>Go to Dashboard</span>
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-sm font-medium text-text hover:bg-surface-2/80"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-bg"
-                  >
-                    <span>Get Started Free</span>
-                    <ArrowRight size={15} />
-                  </Link>
-                </>
-              )}
-            </div>
+          <div className="mt-3 flex flex-col gap-2 border-t border-border pt-4">
+            {!isAuthenticated && (
+              <Button
+                variant="secondary"
+                fullWidth
+                onClick={() => navigate("/login")}
+              >
+                Sign in
+              </Button>
+            )}
+            <Button fullWidth onClick={() => navigate(primaryTo)}>
+              {primaryLabel}
+            </Button>
           </div>
         </div>
       )}
-    </nav>
+    </header>
   );
 }
+
+export default LandingNavbar;

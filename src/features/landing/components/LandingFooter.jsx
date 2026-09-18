@@ -1,131 +1,89 @@
 import { Link } from "react-router-dom";
-import { GraduationCap, ShieldCheck, Heart } from "lucide-react";
+import { GraduationCap } from "lucide-react";
+import { NAV_LINKS } from "../constants/landingContent";
+import { scrollToSection } from "../helpers/scrollToSection";
 
-export default function LandingFooter() {
+const ACCOUNT_LINKS = [
+  { label: "Sign in", to: "/login" },
+  { label: "Create an account", to: "/register" },
+  { label: "Forgot password", to: "/forgot-password" },
+];
+
+function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-surface-2/40 pt-16 pb-12">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-border">
-          {/* Brand & Summary (2 cols) */}
-          <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center gap-3">
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-surface text-primary"
-                style={{ boxShadow: "0 0 16px rgba(212, 175, 88, 0.15)" }}
-              >
-                <GraduationCap strokeWidth={2.2} size={22} />
-              </div>
-              <span className="font-display text-xl font-bold tracking-tight text-text">
-                Edu<span className="text-primary">Test</span>
-              </span>
-            </Link>
-
-            <p className="mt-4 text-xs sm:text-sm text-text-muted leading-relaxed">
-              The modern online examination platform for schools, universities, and educators.
-              Delivering secure, adaptive, and stress-free testing environments.
-            </p>
-
-            {/* Live System Status Pill */}
-            {/* <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-medium text-success">
-              <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-              <span>All Systems Operational (99.99% Uptime)</span>
-            </div> */}
+    <footer className="border-t border-border px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-300 flex-col gap-8 sm:flex-row sm:justify-between">
+        {/* Brand */}
+        <div className="max-w-80">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-surface-2 text-primary">
+              <GraduationCap strokeWidth={2.5} size={19} />
+            </span>
+            <span className="font-display text-base font-bold tracking-tight text-primary">
+              EduTest
+            </span>
           </div>
 
-          {/* Column 1: Platform */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-text mb-4 font-mono">
-              Platform
-            </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm">
-              <li>
-                <a href="#features" className="text-text-muted hover:text-primary transition-colors">
-                  Adaptive Exam Builder
-                </a>
-              </li>
-              {/* <li>
-                <a href="#live-demo" className="text-text-muted hover:text-primary transition-colors">
-                  Interactive Test Demo
-                </a>
-              </li> */}
-              <li>
-                <a href="#how-it-works" className="text-text-muted hover:text-primary transition-colors">
-                  Automated Grading
-                </a>
-              </li>
-              <li>
-                <a href="#security" className="text-text-muted hover:text-primary transition-colors">
-                  Session Auto-Save
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 2: Portals */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-text mb-4 font-mono">
-              Portals
-            </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm">
-              <li>
-                <Link to="/login" className="text-text-muted hover:text-primary transition-colors">
-                  Instructor Dashboard
-                </Link>
-              </li>
-              {/* <li>
-                <Link to="/login" className="text-text-muted hover:text-primary transition-colors">
-                  Student Examination Room
-                </Link>
-              </li> */}
-              <li>
-                <Link to="/register" className="text-text-muted hover:text-primary transition-colors">
-                  Create Free Account
-                </Link>
-              </li>
-              <li>
-                <Link to="/login" className="text-text-muted hover:text-primary transition-colors">
-                  Sign In to Portal
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Trust & Compliance */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-text mb-4 font-mono">
-              Trust & Integrity
-            </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm">
-              <li>
-                <a href="#security" className="text-text-muted hover:text-primary transition-colors">
-                  Session Tokenization
-                </a>
-              </li>
-              {/* <li>
-                <a href="#security" className="text-text-muted hover:text-primary transition-colors">
-                  Data Encryption
-                </a>
-              </li> */}
-              <li>
-                <span className="text-text-muted">Single-Attempt Rules</span>
-              </li>
-              <li>
-                <span className="text-text-muted">Academic Fair Play</span>
-              </li>
-            </ul>
-          </div>
+          <p className="mt-3 text-sm leading-relaxed text-text-muted">
+            An online examination platform for students and teachers — exam
+            creation, timed sessions, scoring and results in one place.
+          </p>
         </div>
 
-        {/* Bottom copyright row */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-faint">
-          <div>
-            © {new Date().getFullYear()} EduTest Platform. All rights reserved.
-          </div>
-          <div className="flex items-center gap-1">
-            <span>Designed for precision & academic excellence</span>
-          </div>
+        {/* Links */}
+        <div className="flex gap-12 sm:gap-16">
+          <nav aria-labelledby="footer-explore">
+            <h2
+              id="footer-explore"
+              className="mb-3 text-[11px] font-semibold tracking-widest text-text-muted uppercase"
+            >
+              Explore
+            </h2>
+            <ul className="flex flex-col gap-2">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => scrollToSection(e, link.href)}
+                    className="text-sm text-text-muted transition-colors duration-150 hover:text-text"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <nav aria-labelledby="footer-account">
+            <h2
+              id="footer-account"
+              className="mb-3 text-[11px] font-semibold tracking-widest text-text-muted uppercase"
+            >
+              Account
+            </h2>
+            <ul className="flex flex-col gap-2">
+              {ACCOUNT_LINKS.map((link) => (
+                <li key={link.to}>
+                  <Link
+                    to={link.to}
+                    className="text-sm text-text-muted transition-colors duration-150 hover:text-text"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
+      </div>
+
+      <div className="mx-auto mt-8 max-w-300 border-t border-border pt-6">
+        <p className="text-xs text-text-muted">
+          &copy; {new Date().getFullYear()} EduTest. All rights reserved.
+        </p>
       </div>
     </footer>
   );
 }
+
+export default LandingFooter;
